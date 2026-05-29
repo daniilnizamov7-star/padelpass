@@ -1,0 +1,1222 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="theme-color" content="#0a0f1e" id="themeColorMeta">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="PadelPass">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="description" content="Бронирование кортов, лояльность и турниры падел-клуба Челябинск">
+<title>PadelPass — Падел-клуб Челябинск</title>
+<link rel="manifest" href="/manifest.json">
+<link rel="apple-touch-icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 192 192'%3E%3Crect width='192' height='192' rx='32' fill='%230a0f1e'/%3E%3Ctext x='96' y='130' font-family='Arial Black' font-size='100' font-weight='900' fill='%2322c55e' text-anchor='middle'%3EP%3C/text%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Manrope:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #0a0f1e;
+  --bg2: #111827;
+  --bg3: #1a2235;
+  --surface: #1e2d42;
+  --accent: #22c55e;
+  --accent2: #16a34a;
+  --gold: #f59e0b;
+  --text: #f1f5f9;
+  --muted: #64748b;
+  --border: rgba(255,255,255,0.07);
+  --nav-bg: rgba(10,15,30,0.95);
+  --radius: 16px;
+  --font-display: 'Bebas Neue', sans-serif;
+  --font-body: 'Manrope', sans-serif;
+}
+
+/* THEME: LIGHT */
+[data-theme="light"] {
+  --bg: #f0f4f8;
+  --bg2: #e2e8f0;
+  --bg3: #ffffff;
+  --surface: #e8edf5;
+  --accent: #16a34a;
+  --accent2: #15803d;
+  --gold: #d97706;
+  --text: #0f172a;
+  --muted: #94a3b8;
+  --border: rgba(0,0,0,0.08);
+  --nav-bg: rgba(240,244,248,0.97);
+}
+
+/* THEME: OCEAN */
+[data-theme="ocean"] {
+  --bg: #050d1a;
+  --bg2: #0a1628;
+  --bg3: #0f2040;
+  --surface: #162a52;
+  --accent: #3b82f6;
+  --accent2: #2563eb;
+  --gold: #f59e0b;
+  --text: #e0f0ff;
+  --muted: #5b7fa6;
+  --border: rgba(59,130,246,0.12);
+  --nav-bg: rgba(5,13,26,0.97);
+}
+
+/* THEME: FLAME */
+[data-theme="flame"] {
+  --bg: #180a04;
+  --bg2: #271006;
+  --bg3: #331508;
+  --surface: #451d0a;
+  --accent: #f97316;
+  --accent2: #ea580c;
+  --gold: #fbbf24;
+  --text: #fff7ed;
+  --muted: #7c5c45;
+  --border: rgba(249,115,22,0.12);
+  --nav-bg: rgba(24,10,4,0.97);
+}
+
+/* THEME: ROYAL */
+[data-theme="royal"] {
+  --bg: #0d0818;
+  --bg2: #150d28;
+  --bg3: #1e1038;
+  --surface: #2a1850;
+  --accent: #a855f7;
+  --accent2: #9333ea;
+  --gold: #f59e0b;
+  --text: #f3e8ff;
+  --muted: #6b4e8a;
+  --border: rgba(168,85,247,0.12);
+  --nav-bg: rgba(13,8,24,0.97);
+}
+* { margin:0; padding:0; box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
+html, body { height:100%; background:var(--bg); color:var(--text); font-family:var(--font-body); overflow:hidden; }
+
+/* SPLASH */
+#splash {
+  position:fixed; inset:0; background:var(--bg); display:flex; flex-direction:column;
+  align-items:center; justify-content:center; z-index:999; transition:opacity .5s;
+}
+#splash.hidden { opacity:0; pointer-events:none; }
+.splash-logo { font-family:var(--font-display); font-size:64px; letter-spacing:3px; color:var(--text); line-height:1; }
+.splash-logo span { color:var(--accent); }
+.splash-sub { font-size:13px; color:var(--muted); letter-spacing:3px; text-transform:uppercase; margin-top:6px; }
+.splash-bar { width:120px; height:2px; background:var(--border); border-radius:2px; margin-top:32px; overflow:hidden; }
+.splash-fill { height:100%; background:var(--accent); width:0; animation:load 1.4s ease forwards; }
+@keyframes load { to { width:100%; } }
+
+/* LAYOUT */
+#app { display:flex; flex-direction:column; height:100vh; max-width:430px; margin:0 auto; }
+.screen { display:none; flex:1; flex-direction:column; overflow:hidden; }
+.screen.active { display:flex; }
+.scroll-area { flex:1; overflow-y:auto; padding:0 0 80px; }
+.scroll-area::-webkit-scrollbar { display:none; }
+
+/* NAV */
+nav {
+  position:fixed; bottom:0; left:50%; transform:translateX(-50%);
+  width:100%; max-width:430px;
+  background:var(--nav-bg); backdrop-filter:blur(20px);
+  border-top:1px solid var(--border);
+  display:flex; align-items:center; justify-content:space-around;
+  padding:8px 0 max(8px, env(safe-area-inset-bottom));
+  z-index:100;
+}
+.nav-btn {
+  display:flex; flex-direction:column; align-items:center; gap:4px;
+  background:none; border:none; color:var(--muted); cursor:pointer;
+  padding:4px 12px; border-radius:12px; transition:color .2s;
+  font-family:var(--font-body); font-size:10px;
+}
+.nav-btn.active { color:var(--accent); }
+.nav-btn svg { width:22px; height:22px; }
+
+/* HEADER */
+.header {
+  padding:20px 20px 0;
+  display:flex; align-items:center; justify-content:space-between;
+}
+.header-logo { font-family:var(--font-display); font-size:28px; letter-spacing:2px; }
+.header-logo span { color:var(--accent); }
+.avatar {
+  width:40px; height:40px; border-radius:50%;
+  background:linear-gradient(135deg,#22c55e,#16a34a);
+  display:flex; align-items:center; justify-content:center;
+  font-weight:700; font-size:15px; color:#fff; cursor:pointer;
+}
+
+/* CARDS */
+.card {
+  background:var(--bg3); border:1px solid var(--border);
+  border-radius:var(--radius); padding:16px;
+}
+.card-accent { border-color:rgba(34,197,94,0.3); background:rgba(34,197,94,0.07); }
+
+/* HOME SCREEN */
+.hero-card {
+  margin:16px 20px 0;
+  background:var(--bg3);
+  border:1px solid rgba(34,197,94,0.25);
+  border-radius:20px; padding:20px;
+  position:relative; overflow:hidden;
+}
+.hero-card::before {
+  content:''; position:absolute; top:-60px; right:-40px;
+  width:180px; height:180px; border-radius:50%;
+  background:radial-gradient(circle,rgba(34,197,94,0.15),transparent 70%);
+}
+.hero-greeting { font-size:13px; color:var(--accent); font-weight:600; letter-spacing:1px; text-transform:uppercase; }
+.hero-name { font-family:var(--font-display); font-size:38px; letter-spacing:2px; line-height:1.1; margin-top:2px; }
+.hero-level { display:inline-flex; align-items:center; gap:6px; background:rgba(245,158,11,0.15); border:1px solid rgba(245,158,11,0.3); border-radius:20px; padding:4px 12px; margin-top:10px; }
+.hero-level-text { font-size:12px; font-weight:600; color:var(--gold); }
+.hero-stats { display:grid; grid-template-columns:1fr 1fr 1fr; gap:10px; margin-top:16px; }
+.hero-stat { text-align:center; }
+.hero-stat-num { font-family:var(--font-display); font-size:28px; color:var(--text); letter-spacing:1px; }
+.hero-stat-label { font-size:10px; color:var(--muted); text-transform:uppercase; letter-spacing:1px; margin-top:1px; }
+
+.section-title { font-size:12px; font-weight:700; color:var(--muted); text-transform:uppercase; letter-spacing:2px; margin:20px 20px 10px; }
+
+/* QUICK ACTIONS */
+.quick-grid { display:grid; grid-template-columns:1fr 1fr; gap:10px; padding:0 20px; }
+.quick-btn {
+  background:var(--bg3); border:1px solid var(--border);
+  border-radius:14px; padding:14px; cursor:pointer;
+  transition:transform .15s, border-color .2s; text-align:left;
+  display:flex; flex-direction:column; gap:8px;
+}
+.quick-btn:active { transform:scale(0.97); }
+.quick-btn.primary { border-color:rgba(34,197,94,0.3); background:rgba(34,197,94,0.08); }
+.quick-icon { width:36px; height:36px; border-radius:10px; display:flex; align-items:center; justify-content:center; }
+.quick-icon.green { background:rgba(34,197,94,0.15); }
+.quick-icon.gold { background:rgba(245,158,11,0.15); }
+.quick-icon.blue { background:rgba(59,130,246,0.15); }
+.quick-icon.purple { background:rgba(168,85,247,0.15); }
+.quick-label { font-size:13px; font-weight:600; }
+.quick-sub { font-size:11px; color:var(--muted); }
+
+/* NEXT SESSION */
+.session-card {
+  margin:0 20px;
+  background:var(--bg3); border:1px solid var(--border);
+  border-radius:var(--radius); padding:16px;
+  display:flex; align-items:center; gap:14px;
+}
+.session-court {
+  width:52px; height:52px; border-radius:12px;
+  background:linear-gradient(135deg,#1a3a25,#0d2018);
+  border:1px solid rgba(34,197,94,0.2);
+  display:flex; flex-direction:column; align-items:center; justify-content:center;
+  flex-shrink:0;
+}
+.session-court-num { font-family:var(--font-display); font-size:22px; color:var(--accent); }
+.session-court-label { font-size:9px; color:var(--muted); text-transform:uppercase; }
+.session-info { flex:1; }
+.session-time { font-size:16px; font-weight:700; }
+.session-date { font-size:12px; color:var(--muted); margin-top:2px; }
+.session-players { display:flex; margin-top:6px; gap:-4px; }
+.session-avatar { width:22px; height:22px; border-radius:50%; border:2px solid var(--bg3); background:var(--surface); font-size:9px; font-weight:700; display:flex; align-items:center; justify-content:center; margin-right:-6px; }
+.session-countdown { text-align:right; }
+.session-in { font-size:10px; color:var(--muted); }
+.session-mins { font-family:var(--font-display); font-size:24px; color:var(--accent); line-height:1; }
+.session-mins-label { font-size:9px; color:var(--muted); }
+
+/* LOYALTY PROGRESS */
+.loyalty-bar-wrap { margin:0 20px; padding:14px; background:var(--bg3); border:1px solid var(--border); border-radius:var(--radius); }
+.loyalty-row { display:flex; align-items:center; justify-content:space-between; margin-bottom:10px; }
+.loyalty-name { font-size:14px; font-weight:700; }
+.loyalty-pts { font-size:13px; color:var(--accent); font-weight:600; }
+.loyalty-track { background:var(--surface); border-radius:6px; height:8px; overflow:hidden; }
+.loyalty-fill { height:100%; background:linear-gradient(90deg,var(--accent2),var(--accent)); border-radius:6px; width:68%; transition:width 1s ease; }
+.loyalty-labels { display:flex; justify-content:space-between; margin-top:5px; }
+.loyalty-label-text { font-size:10px; color:var(--muted); }
+
+/* BOOKING SCREEN */
+.booking-header { padding:20px 20px 0; }
+.booking-title { font-family:var(--font-display); font-size:40px; letter-spacing:2px; }
+.booking-sub { font-size:13px; color:var(--muted); margin-top:2px; }
+
+.date-scroll { display:flex; gap:8px; padding:16px 20px; overflow-x:auto; }
+.date-scroll::-webkit-scrollbar { display:none; }
+.date-chip {
+  flex-shrink:0; display:flex; flex-direction:column; align-items:center;
+  padding:10px 14px; border-radius:14px; border:1px solid var(--border);
+  background:var(--bg3); cursor:pointer; transition:all .2s; min-width:52px;
+}
+.date-chip.selected { background:var(--accent); border-color:var(--accent); }
+.date-chip-day { font-size:10px; color:var(--muted); text-transform:uppercase; letter-spacing:1px; }
+.date-chip.selected .date-chip-day { color:rgba(255,255,255,0.8); }
+.date-chip-num { font-family:var(--font-display); font-size:22px; margin-top:1px; }
+.date-chip.selected .date-chip-num { color:#fff; }
+
+.courts-label { padding:0 20px 10px; font-size:12px; font-weight:700; color:var(--muted); text-transform:uppercase; letter-spacing:2px; }
+.court-tabs { display:flex; gap:8px; padding:0 20px 14px; overflow-x:auto; }
+.court-tabs::-webkit-scrollbar { display:none; }
+.court-tab {
+  flex-shrink:0; padding:8px 18px; border-radius:20px; font-size:13px; font-weight:600;
+  border:1px solid var(--border); background:var(--bg3); color:var(--muted); cursor:pointer; transition:all .2s;
+}
+.court-tab.active { background:var(--accent); border-color:var(--accent); color:#fff; }
+
+.time-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:8px; padding:0 20px; }
+.time-slot {
+  padding:12px 8px; border-radius:12px; text-align:center; cursor:pointer;
+  border:1px solid var(--border); background:var(--bg3); transition:all .2s;
+}
+.time-slot:active { transform:scale(0.96); }
+.time-slot.selected { background:var(--accent); border-color:var(--accent); }
+.time-slot.booked { background:var(--bg); border-color:var(--border); opacity:.4; cursor:default; }
+.time-slot-hour { font-size:15px; font-weight:700; }
+.time-slot.selected .time-slot-hour { color:#fff; }
+.time-slot-price { font-size:11px; color:var(--muted); margin-top:2px; }
+.time-slot.selected .time-slot-price { color:rgba(255,255,255,0.8); }
+.time-slot.booked .time-slot-price { color:var(--muted); }
+.time-slot-tag { font-size:9px; color:var(--accent); font-weight:600; text-transform:uppercase; letter-spacing:.5px; }
+
+.book-summary {
+  margin:16px 20px 0; padding:16px;
+  background:rgba(34,197,94,0.08); border:1px solid rgba(34,197,94,0.25);
+  border-radius:var(--radius); display:none;
+}
+.book-summary.visible { display:block; }
+.book-sum-row { display:flex; justify-content:space-between; align-items:center; margin-bottom:8px; }
+.book-sum-label { font-size:13px; color:var(--muted); }
+.book-sum-value { font-size:13px; font-weight:600; }
+.btn-book {
+  margin:12px 0 0; width:100%; padding:14px;
+  background:var(--accent); border:none; border-radius:12px;
+  font-family:var(--font-body); font-size:15px; font-weight:700; color:#fff;
+  cursor:pointer; transition:transform .15s, opacity .2s;
+}
+.btn-book:active { transform:scale(0.98); opacity:.9; }
+
+/* LOYALTY SCREEN */
+.loyalty-header { padding:20px 20px 0; }
+.loyalty-hero {
+  margin:16px 20px 0;
+  background:var(--bg3);
+  border:1px solid rgba(245,158,11,0.25);
+  border-radius:20px; padding:20px; text-align:center; position:relative; overflow:hidden;
+}
+.loyalty-hero::before {
+  content:''; position:absolute; top:-40px; left:50%; transform:translateX(-50%);
+  width:200px; height:200px; border-radius:50%;
+  background:radial-gradient(circle,rgba(245,158,11,0.1),transparent 70%);
+}
+.loyalty-badge {
+  width:70px; height:70px; border-radius:50%; margin:0 auto 10px;
+  background:linear-gradient(135deg,#f59e0b,#d97706);
+  display:flex; align-items:center; justify-content:center;
+  font-size:30px; box-shadow:0 0 30px rgba(245,158,11,0.3);
+}
+.loyalty-tier { font-family:var(--font-display); font-size:36px; color:var(--gold); letter-spacing:2px; }
+.loyalty-pts-big { font-size:40px; font-weight:700; margin:4px 0; }
+.loyalty-pts-big span { font-size:16px; color:var(--muted); font-weight:400; }
+.loyalty-next { font-size:12px; color:var(--muted); }
+.loyalty-track2 { margin:12px auto 0; max-width:260px; background:rgba(255,255,255,0.1); border-radius:6px; height:6px; overflow:hidden; }
+.loyalty-fill2 { height:100%; background:linear-gradient(90deg,#d97706,#f59e0b); border-radius:6px; width:68%; }
+
+.tiers-grid { display:grid; grid-template-columns:1fr 1fr; gap:10px; padding:0 20px; }
+.tier-card {
+  padding:14px; border-radius:14px; border:1px solid var(--border); background:var(--bg3);
+  text-align:center;
+}
+.tier-card.current { border-color:rgba(245,158,11,0.4); background:rgba(245,158,11,0.07); }
+.tier-icon { font-size:24px; margin-bottom:6px; }
+.tier-name { font-family:var(--font-display); font-size:18px; letter-spacing:1px; }
+.tier-req { font-size:11px; color:var(--muted); margin-top:3px; }
+.tier-perk { font-size:11px; color:var(--accent); margin-top:4px; font-weight:600; }
+
+.history-item {
+  display:flex; align-items:center; gap:12px; padding:12px 20px;
+  border-bottom:1px solid var(--border);
+}
+.history-icon { width:36px; height:36px; border-radius:10px; display:flex; align-items:center; justify-content:center; flex-shrink:0; font-size:16px; }
+.history-icon.plus { background:rgba(34,197,94,0.15); }
+.history-icon.minus { background:rgba(239,68,68,0.1); }
+.history-desc { flex:1; }
+.history-title { font-size:13px; font-weight:600; }
+.history-date { font-size:11px; color:var(--muted); margin-top:1px; }
+.history-pts { font-size:15px; font-weight:700; }
+.history-pts.plus { color:var(--accent); }
+.history-pts.minus { color:#ef4444; }
+
+/* TOURNAMENTS */
+.tourn-header { padding:20px 20px 0; }
+.tourn-title { font-family:var(--font-display); font-size:40px; letter-spacing:2px; }
+
+.tourn-card {
+  margin:16px 20px 0; border-radius:20px; overflow:hidden;
+  background:var(--bg3);
+  border:1px solid rgba(168,85,247,0.25);
+}
+.tourn-banner {
+  padding:20px; position:relative;
+}
+.tourn-status { display:inline-flex; align-items:center; gap:6px; background:rgba(168,85,247,0.2); border:1px solid rgba(168,85,247,0.4); border-radius:20px; padding:4px 12px; margin-bottom:10px; }
+.tourn-status-dot { width:6px; height:6px; border-radius:50%; background:#a855f7; animation:pulse 1.5s infinite; }
+.tourn-status-text { font-size:11px; font-weight:600; color:#a855f7; text-transform:uppercase; letter-spacing:1px; }
+@keyframes pulse { 0%,100%{opacity:1} 50%{opacity:.4} }
+.tourn-name { font-family:var(--font-display); font-size:28px; letter-spacing:2px; }
+.tourn-date { font-size:13px; color:var(--muted); margin-top:4px; }
+.tourn-prize { display:flex; align-items:center; gap:6px; margin-top:10px; }
+.tourn-prize-amount { font-family:var(--font-display); font-size:26px; color:var(--gold); }
+.tourn-prize-label { font-size:11px; color:var(--muted); }
+.tourn-footer { padding:12px 20px; background:rgba(0,0,0,0.3); display:flex; align-items:center; justify-content:space-between; }
+.tourn-spots { font-size:13px; }
+.tourn-spots strong { color:var(--accent); }
+.btn-join { padding:8px 20px; background:#a855f7; border:none; border-radius:10px; font-family:var(--font-body); font-size:13px; font-weight:700; color:#fff; cursor:pointer; }
+
+.bracket-title { padding:0 20px; font-size:12px; font-weight:700; color:var(--muted); text-transform:uppercase; letter-spacing:2px; margin:16px 0 10px; }
+.bracket { padding:0 20px; }
+.bracket-match {
+  display:flex; align-items:stretch; gap:0; margin-bottom:8px;
+  background:var(--bg3); border:1px solid var(--border); border-radius:12px; overflow:hidden;
+}
+.bracket-team { flex:1; padding:10px 12px; display:flex; align-items:center; justify-content:space-between; }
+.bracket-team:first-child { border-right:1px solid var(--border); }
+.bracket-team-name { font-size:13px; font-weight:600; }
+.bracket-team-score { font-family:var(--font-display); font-size:22px; }
+.bracket-team.winner .bracket-team-score { color:var(--accent); }
+.bracket-vs { width:30px; display:flex; align-items:center; justify-content:center; font-size:10px; color:var(--muted); font-weight:700; flex-shrink:0; }
+
+/* PROFILE/DIRECTOR */
+.profile-header { padding:20px 20px 0; }
+.profile-avatar-wrap { display:flex; flex-direction:column; align-items:center; padding:24px 20px 16px; }
+.profile-avatar-big {
+  width:80px; height:80px; border-radius:50%;
+  background:linear-gradient(135deg,#22c55e,#16a34a);
+  display:flex; align-items:center; justify-content:center;
+  font-family:var(--font-display); font-size:32px; color:#fff; letter-spacing:2px;
+  box-shadow:0 0 30px rgba(34,197,94,0.3);
+}
+.profile-name-big { font-family:var(--font-display); font-size:30px; letter-spacing:2px; margin-top:10px; }
+.profile-phone { font-size:13px; color:var(--muted); margin-top:2px; }
+.stats-row { display:grid; grid-template-columns:repeat(3,1fr); gap:10px; padding:0 20px; }
+.stat-item { background:var(--bg3); border:1px solid var(--border); border-radius:14px; padding:14px; text-align:center; }
+.stat-big { font-family:var(--font-display); font-size:30px; color:var(--accent); }
+.stat-small { font-size:11px; color:var(--muted); margin-top:2px; text-transform:uppercase; letter-spacing:.5px; }
+
+.menu-item {
+  display:flex; align-items:center; gap:14px; padding:14px 20px;
+  border-bottom:1px solid var(--border); cursor:pointer; transition:background .15s;
+}
+.menu-item:active { background:var(--bg3); }
+.menu-icon { width:36px; height:36px; border-radius:10px; display:flex; align-items:center; justify-content:center; }
+.menu-label { font-size:14px; font-weight:600; flex:1; }
+.menu-arrow { color:var(--muted); }
+
+/* NOTIFICATION TOAST */
+.toast {
+  position:fixed; top:20px; left:50%; transform:translateX(-50%) translateY(-80px);
+  background:var(--accent); color:#fff; padding:12px 20px; border-radius:12px;
+  font-size:14px; font-weight:600; z-index:999; transition:transform .3s;
+  white-space:nowrap; box-shadow:0 8px 24px rgba(34,197,94,0.3);
+}
+.toast.show { transform:translateX(-50%) translateY(0); }
+
+/* THEME SWITCHER */
+.theme-picker { display:flex; gap:10px; padding:14px 20px; border-bottom:1px solid var(--border); align-items:center; }
+.theme-dot {
+  width:32px; height:32px; border-radius:50%; cursor:pointer;
+  border:3px solid transparent; transition:transform .2s, border-color .2s;
+  position:relative; flex-shrink:0;
+}
+.theme-dot:active { transform:scale(0.9); }
+.theme-dot.active { border-color:var(--text); transform:scale(1.1); }
+.theme-dot.t-dark  { background:linear-gradient(135deg,#0a0f1e,#22c55e); }
+.theme-dot.t-light { background:linear-gradient(135deg,#f0f4f8,#16a34a); }
+.theme-dot.t-ocean { background:linear-gradient(135deg,#050d1a,#3b82f6); }
+.theme-dot.t-flame { background:linear-gradient(135deg,#180a04,#f97316); }
+.theme-dot.t-royal { background:linear-gradient(135deg,#0d0818,#a855f7); }
+.theme-label { font-size:12px; color:var(--muted); margin-left:4px; }
+.success-overlay {
+  position:fixed; inset:0; background:rgba(10,15,30,0.95); z-index:500;
+  display:flex; flex-direction:column; align-items:center; justify-content:center;
+  opacity:0; pointer-events:none; transition:opacity .3s;
+}
+.success-overlay.show { opacity:1; pointer-events:all; }
+.success-icon { font-size:64px; margin-bottom:16px; }
+.success-title { font-family:var(--font-display); font-size:48px; color:var(--accent); letter-spacing:3px; }
+.success-sub { font-size:15px; color:var(--muted); margin-top:8px; text-align:center; line-height:1.6; }
+.success-card { background:var(--bg3); border:1px solid rgba(34,197,94,0.25); border-radius:20px; padding:20px; margin:20px 30px; width:calc(100% - 60px); }
+.success-row { display:flex; justify-content:space-between; padding:8px 0; border-bottom:1px solid var(--border); }
+.success-row:last-child { border:none; }
+.btn-close-success {
+  margin-top:10px; padding:14px 40px; background:var(--accent);
+  border:none; border-radius:12px; font-family:var(--font-body);
+  font-size:15px; font-weight:700; color:#fff; cursor:pointer;
+}
+</style>
+</head>
+<body>
+
+<!-- SPLASH -->
+<div id="splash">
+  <div class="splash-logo">PADEL<span>PASS</span></div>
+  <div class="splash-sub">Челябинск • Падел-клуб</div>
+  <div class="splash-bar"><div class="splash-fill"></div></div>
+</div>
+
+<!-- TOAST -->
+<div class="toast" id="toast"></div>
+
+<!-- BOOKING SUCCESS -->
+<div class="success-overlay" id="successOverlay">
+  <div class="success-icon">🎾</div>
+  <div class="success-title">ГОТОВО!</div>
+  <div class="success-sub">Корт забронирован.<br>Ждём тебя на игре!</div>
+  <div class="success-card" id="successCard"></div>
+  <button class="btn-close-success" onclick="closeSuccess()">Отлично!</button>
+</div>
+
+<!-- APP -->
+<div id="app">
+
+<!-- ===== HOME SCREEN ===== -->
+<div class="screen active" id="screen-home">
+  <div class="scroll-area">
+    <div class="header">
+      <div class="header-logo">PADEL<span>PASS</span></div>
+      <div style="display:flex;gap:10px;align-items:center;">
+        <div style="width:10px;height:10px;border-radius:50%;background:var(--accent);box-shadow:0 0 8px var(--accent);"></div>
+        <div class="avatar" onclick="switchScreen('profile')">АП</div>
+      </div>
+    </div>
+
+    <!-- HERO -->
+    <div class="hero-card">
+      <div class="hero-greeting">Добро пожаловать</div>
+      <div class="hero-name">АЛЕКСЕЙ<br>ПЕТРОВ</div>
+      <div class="hero-level">
+        <span>🏆</span>
+        <span class="hero-level-text">ИГРОК — II уровень</span>
+      </div>
+      <div class="hero-stats">
+        <div class="hero-stat">
+          <div class="hero-stat-num">47</div>
+          <div class="hero-stat-label">Игр</div>
+        </div>
+        <div class="hero-stat">
+          <div class="hero-stat-num">31</div>
+          <div class="hero-stat-label">Побед</div>
+        </div>
+        <div class="hero-stat">
+          <div class="hero-stat-num">66%</div>
+          <div class="hero-stat-label">Винрейт</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- NEXT SESSION -->
+    <div class="section-title">Ближайшая игра</div>
+    <div class="session-card">
+      <div class="session-court">
+        <div class="session-court-num">2</div>
+        <div class="session-court-label">Корт</div>
+      </div>
+      <div class="session-info">
+        <div class="session-time">19:00 — 20:00</div>
+        <div class="session-date">Сегодня, 29 мая</div>
+        <div class="session-players" style="margin-top:6px;">
+          <div class="session-avatar" style="background:#1e4d2b;">АП</div>
+          <div class="session-avatar" style="background:#1a2d4e;">СМ</div>
+          <div class="session-avatar" style="background:#3d1a4e;">ДК</div>
+          <div class="session-avatar" style="background:#4e3d1a;">ТН</div>
+        </div>
+      </div>
+      <div class="session-countdown">
+        <div class="session-in">через</div>
+        <div class="session-mins" id="countdown">2:14</div>
+        <div class="session-mins-label">ч:мин</div>
+      </div>
+    </div>
+
+    <!-- QUICK ACTIONS -->
+    <div class="section-title">Быстрые действия</div>
+    <div class="quick-grid">
+      <div class="quick-btn primary" onclick="switchScreen('booking')">
+        <div class="quick-icon green">
+          <svg viewBox="0 0 24 24" fill="none" stroke="#22c55e" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg>
+        </div>
+        <div class="quick-label">Забронировать</div>
+        <div class="quick-sub">4 корта доступны</div>
+      </div>
+      <div class="quick-btn" onclick="switchScreen('loyalty')">
+        <div class="quick-icon gold">
+          <svg viewBox="0 0 24 24" fill="none" stroke="#f59e0b" stroke-width="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+        </div>
+        <div class="quick-label">Лояльность</div>
+        <div class="quick-sub">1 240 баллов</div>
+      </div>
+      <div class="quick-btn" onclick="switchScreen('tournaments')">
+        <div class="quick-icon purple">
+          <svg viewBox="0 0 24 24" fill="none" stroke="#a855f7" stroke-width="2"><path d="M6 9H4a2 2 0 0 0-2 2v3a2 2 0 0 0 2 2h2v-7zM20 9h-2v7h2a2 2 0 0 0 2-2v-3a2 2 0 0 0-2-2z"/><path d="M6 5a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2V5z"/></svg>
+        </div>
+        <div class="quick-label">Турниры</div>
+        <div class="quick-sub">1 активный</div>
+      </div>
+      <div class="quick-btn" onclick="showToast('📊 Аналитика — модуль директора')">
+        <div class="quick-icon blue">
+          <svg viewBox="0 0 24 24" fill="none" stroke="#3b82f6" stroke-width="2"><path d="M18 20V10M12 20V4M6 20v-6"/></svg>
+        </div>
+        <div class="quick-label">Статистика</div>
+        <div class="quick-sub">Win rate растёт</div>
+      </div>
+    </div>
+
+    <!-- LOYALTY BAR -->
+    <div class="section-title">Прогресс уровня</div>
+    <div class="loyalty-bar-wrap">
+      <div class="loyalty-row">
+        <span class="loyalty-name">Игрок → Про</span>
+        <span class="loyalty-pts">1 240 / 1 800 ⭐</span>
+      </div>
+      <div class="loyalty-track"><div class="loyalty-fill"></div></div>
+      <div class="loyalty-labels">
+        <span class="loyalty-label-text">🏆 Игрок</span>
+        <span class="loyalty-label-text">560 до уровня Про</span>
+        <span class="loyalty-label-text">🥇 Про</span>
+      </div>
+    </div>
+
+    <div style="height:16px;"></div>
+  </div>
+</div>
+
+<!-- ===== BOOKING SCREEN ===== -->
+<div class="screen" id="screen-booking">
+  <div class="scroll-area">
+    <div class="booking-header">
+      <div class="booking-title">БРОНЬ</div>
+      <div class="booking-sub">Выберите дату, корт и время</div>
+    </div>
+
+    <!-- DATES -->
+    <div class="date-scroll" id="dateScroll"></div>
+
+    <!-- COURTS -->
+    <div class="courts-label">Корт</div>
+    <div class="court-tabs">
+      <div class="court-tab active" onclick="selectCourt(this,1)">Корт 1</div>
+      <div class="court-tab" onclick="selectCourt(this,2)">Корт 2</div>
+      <div class="court-tab" onclick="selectCourt(this,3)">Корт 3</div>
+      <div class="court-tab" onclick="selectCourt(this,4)">Корт 4</div>
+    </div>
+
+    <!-- TIME SLOTS -->
+    <div class="courts-label">Время</div>
+    <div class="time-grid" id="timeGrid"></div>
+
+    <!-- SUMMARY -->
+    <div class="book-summary" id="bookSummary">
+      <div class="book-sum-row">
+        <span class="book-sum-label">Корт</span>
+        <span class="book-sum-value" id="sumCourt">—</span>
+      </div>
+      <div class="book-sum-row">
+        <span class="book-sum-label">Дата</span>
+        <span class="book-sum-value" id="sumDate">—</span>
+      </div>
+      <div class="book-sum-row">
+        <span class="book-sum-label">Время</span>
+        <span class="book-sum-value" id="sumTime">—</span>
+      </div>
+      <div class="book-sum-row" style="border:none;">
+        <span class="book-sum-label">Стоимость</span>
+        <span class="book-sum-value" id="sumPrice" style="color:var(--accent);font-size:18px;">—</span>
+      </div>
+      <button class="btn-book" onclick="confirmBooking()">Подтвердить бронирование</button>
+    </div>
+    <div style="height:16px;"></div>
+  </div>
+</div>
+
+<!-- ===== LOYALTY SCREEN ===== -->
+<div class="screen" id="screen-loyalty">
+  <div class="scroll-area">
+    <div class="loyalty-header">
+      <div class="booking-title">БОНУСЫ</div>
+      <div class="booking-sub">Играй больше — получай больше</div>
+    </div>
+
+    <div class="loyalty-hero">
+      <div class="loyalty-badge">🏆</div>
+      <div class="loyalty-tier">ИГРОК</div>
+      <div class="loyalty-pts-big">1 240 <span>баллов</span></div>
+      <div class="loyalty-next">До уровня Про: 560 баллов</div>
+      <div class="loyalty-track2"><div class="loyalty-fill2"></div></div>
+    </div>
+
+    <div class="section-title">Уровни клуба</div>
+    <div class="tiers-grid">
+      <div class="tier-card">
+        <div class="tier-icon">⚪</div>
+        <div class="tier-name">НОВИЧОК</div>
+        <div class="tier-req">0 — 499 баллов</div>
+        <div class="tier-perk">+5% кешбэк</div>
+      </div>
+      <div class="tier-card current">
+        <div class="tier-icon">🏆</div>
+        <div class="tier-name">ИГРОК</div>
+        <div class="tier-req">500 — 1 799 баллов</div>
+        <div class="tier-perk">+10% кешбэк ✓</div>
+      </div>
+      <div class="tier-card">
+        <div class="tier-icon">🥇</div>
+        <div class="tier-name">ПРО</div>
+        <div class="tier-req">1 800 — 3 999 баллов</div>
+        <div class="tier-perk">+15% кешбэк</div>
+      </div>
+      <div class="tier-card">
+        <div class="tier-icon">👑</div>
+        <div class="tier-name">ЧЕМПИОН</div>
+        <div class="tier-req">от 4 000 баллов</div>
+        <div class="tier-perk">+20% + VIP-слоты</div>
+      </div>
+    </div>
+
+    <div class="section-title">История начислений</div>
+    <div class="history-item">
+      <div class="history-icon plus">🎾</div>
+      <div class="history-desc">
+        <div class="history-title">Игра на Корте 2</div>
+        <div class="history-date">Сегодня, 14:00</div>
+      </div>
+      <div class="history-pts plus">+80</div>
+    </div>
+    <div class="history-item">
+      <div class="history-icon plus">👥</div>
+      <div class="history-desc">
+        <div class="history-title">Реферальный бонус</div>
+        <div class="history-date">27 мая</div>
+      </div>
+      <div class="history-pts plus">+200</div>
+    </div>
+    <div class="history-item">
+      <div class="history-icon minus">🛒</div>
+      <div class="history-desc">
+        <div class="history-title">Скидка на аренду ракетки</div>
+        <div class="history-date">25 мая</div>
+      </div>
+      <div class="history-pts minus">−50</div>
+    </div>
+    <div class="history-item">
+      <div class="history-icon plus">🎾</div>
+      <div class="history-desc">
+        <div class="history-title">Игра на Корте 1</div>
+        <div class="history-date">22 мая</div>
+      </div>
+      <div class="history-pts plus">+80</div>
+    </div>
+    <div class="history-item">
+      <div class="history-icon plus">🏆</div>
+      <div class="history-desc">
+        <div class="history-title">Турнир «Май Open» — 2 место</div>
+        <div class="history-date">18 мая</div>
+      </div>
+      <div class="history-pts plus">+300</div>
+    </div>
+    <div style="height:16px;"></div>
+  </div>
+</div>
+
+<!-- ===== TOURNAMENTS SCREEN ===== -->
+<div class="screen" id="screen-tournaments">
+  <div class="scroll-area">
+    <div class="tourn-header">
+      <div class="tourn-title">ТУРНИРЫ</div>
+      <div class="booking-sub">Соревнуйся и побеждай</div>
+    </div>
+
+    <div class="tourn-card">
+      <div class="tourn-banner">
+        <div class="tourn-status">
+          <div class="tourn-status-dot"></div>
+          <div class="tourn-status-text">Идёт регистрация</div>
+        </div>
+        <div class="tourn-name">JUNE OPEN 2025</div>
+        <div class="tourn-date">📅 14–15 июня • Все корты</div>
+        <div class="tourn-prize">
+          <span style="font-size:20px;">🏆</span>
+          <div class="tourn-prize-amount">15 000 ₽</div>
+          <div class="tourn-prize-label">призовой фонд</div>
+        </div>
+      </div>
+      <div class="tourn-footer">
+        <div class="tourn-spots">Зарегистрировано: <strong>6 / 16</strong> команд</div>
+        <button class="btn-join" onclick="showToast('✅ Вы зарегистрированы на June Open!')">Участвовать</button>
+      </div>
+    </div>
+
+    <div class="bracket-title">Сетка — Май Open (завершён)</div>
+    <div class="bracket">
+      <div style="font-size:11px;color:var(--muted);margin-bottom:8px;text-transform:uppercase;letter-spacing:1px;">Полуфинал</div>
+      <div class="bracket-match">
+        <div class="bracket-team winner">
+          <span class="bracket-team-name">Петров / Смирнов</span>
+          <span class="bracket-team-score" style="color:var(--accent);">6</span>
+        </div>
+        <div class="bracket-vs">vs</div>
+        <div class="bracket-team">
+          <span class="bracket-team-name">Козлов / Иванов</span>
+          <span class="bracket-team-score" style="color:var(--muted);">4</span>
+        </div>
+      </div>
+      <div class="bracket-match" style="margin-top:6px;">
+        <div class="bracket-team winner">
+          <span class="bracket-team-name">Фролов / Орлов</span>
+          <span class="bracket-team-score" style="color:var(--accent);">6</span>
+        </div>
+        <div class="bracket-vs">vs</div>
+        <div class="bracket-team">
+          <span class="bracket-team-name">Дятлов / Нечаев</span>
+          <span class="bracket-team-score" style="color:var(--muted);">3</span>
+        </div>
+      </div>
+      <div style="font-size:11px;color:var(--muted);margin:12px 0 8px;text-transform:uppercase;letter-spacing:1px;">Финал</div>
+      <div class="bracket-match">
+        <div class="bracket-team">
+          <span class="bracket-team-name">Петров / Смирнов</span>
+          <span class="bracket-team-score" style="color:var(--muted);">4</span>
+        </div>
+        <div class="bracket-vs">vs</div>
+        <div class="bracket-team winner">
+          <span class="bracket-team-name">👑 Фролов / Орлов</span>
+          <span class="bracket-team-score" style="color:var(--accent);">6</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="section-title" style="margin-top:16px;">Рейтинг игроков</div>
+    <div style="padding:0 20px;">
+      <div class="history-item" style="padding:10px 0; background:rgba(245,158,11,0.05); border-radius:12px; border-bottom:none; padding:12px;">
+        <div style="font-family:var(--font-display);font-size:22px;color:var(--gold);min-width:28px;">1</div>
+        <div class="history-desc"><div class="history-title">Фролов Максим</div><div class="history-date">3 победы в турнирах</div></div>
+        <div style="font-size:13px;font-weight:700;color:var(--gold);">2 400 ⭐</div>
+      </div>
+      <div class="history-item" style="padding:10px 0;">
+        <div style="font-family:var(--font-display);font-size:22px;color:var(--muted);min-width:28px;">2</div>
+        <div class="history-desc"><div class="history-title">Петров Алексей</div><div class="history-date">Это ты 🎾</div></div>
+        <div style="font-size:13px;font-weight:700;color:var(--accent);">1 240 ⭐</div>
+      </div>
+      <div class="history-item" style="padding:10px 0;">
+        <div style="font-family:var(--font-display);font-size:22px;color:var(--muted);min-width:28px;">3</div>
+        <div class="history-desc"><div class="history-title">Смирнов Дмитрий</div><div class="history-date">2 победы в турнирах</div></div>
+        <div style="font-size:13px;font-weight:700;color:var(--muted);">980 ⭐</div>
+      </div>
+    </div>
+    <div style="height:16px;"></div>
+  </div>
+</div>
+
+<!-- ===== PROFILE SCREEN ===== -->
+<div class="screen" id="screen-profile">
+  <div class="scroll-area">
+    <div style="padding:20px 20px 0; display:flex; align-items:center; justify-content:space-between;">
+      <div class="booking-title" style="font-family:var(--font-display);font-size:40px;letter-spacing:2px;">ПРОФИЛЬ</div>
+      <div style="padding:6px 14px;background:rgba(168,85,247,0.15);border:1px solid rgba(168,85,247,0.3);border-radius:20px;font-size:12px;font-weight:600;color:#a855f7;" onclick="showToast('👋 Добро пожаловать, директор!')">Директор</div>
+    </div>
+
+    <div class="profile-avatar-wrap">
+      <div class="profile-avatar-big">АП</div>
+      <div class="profile-name-big">АЛЕКСЕЙ ПЕТРОВ</div>
+      <div class="profile-phone">+7 (951) 448-96-66</div>
+    </div>
+
+    <div class="stats-row">
+      <div class="stat-item">
+        <div class="stat-big">47</div>
+        <div class="stat-small">Игр</div>
+      </div>
+      <div class="stat-item">
+        <div class="stat-big">31</div>
+        <div class="stat-small">Побед</div>
+      </div>
+      <div class="stat-item">
+        <div class="stat-big">1 240</div>
+        <div class="stat-small">Баллов</div>
+      </div>
+    </div>
+
+    <div class="section-title" style="margin-top:16px;">Меню</div>
+    <div class="menu-item" onclick="switchScreen('booking')">
+      <div class="menu-icon" style="background:rgba(34,197,94,0.15);">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#22c55e" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg>
+      </div>
+      <div class="menu-label">Мои бронирования</div>
+      <div class="menu-arrow">›</div>
+    </div>
+    <div class="menu-item" onclick="switchScreen('loyalty')">
+      <div class="menu-icon" style="background:rgba(245,158,11,0.15);">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#f59e0b" stroke-width="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+      </div>
+      <div class="menu-label">Бонусные баллы</div>
+      <div class="menu-arrow">›</div>
+    </div>
+    <div class="menu-item" onclick="showDirectorPanel()">
+      <div class="menu-icon" style="background:rgba(239,68,68,0.12);">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#ef4444" stroke-width="2"><path d="M18 20V10M12 20V4M6 20v-6"/></svg>
+      </div>
+      <div class="menu-label">Аналитика директора</div>
+      <div class="menu-arrow">›</div>
+    </div>
+    <div class="menu-item" onclick="showToast('📲 Уведомления настроены')" style="cursor:pointer;">
+      <div class="menu-icon" style="background:rgba(59,130,246,0.12);">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#3b82f6" stroke-width="2"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+      </div>
+      <div class="menu-label">Уведомления</div>
+      <div class="menu-arrow">›</div>
+    </div>
+
+    <!-- THEME SWITCHER -->
+    <div style="padding:14px 20px 10px; border-bottom:1px solid var(--border);">
+      <div style="font-size:11px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:1.5px;margin-bottom:12px;">Тема оформления</div>
+      <div style="display:flex;gap:12px;align-items:center;">
+        <div class="theme-dot t-dark active" id="td-dark" onclick="setTheme('dark','td-dark')" title="Ночь"></div>
+        <div class="theme-dot t-light" id="td-light" onclick="setTheme('light','td-light')" title="Свет"></div>
+        <div class="theme-dot t-ocean" id="td-ocean" onclick="setTheme('ocean','td-ocean')" title="Океан"></div>
+        <div class="theme-dot t-flame" id="td-flame" onclick="setTheme('flame','td-flame')" title="Огонь"></div>
+        <div class="theme-dot t-royal" id="td-royal" onclick="setTheme('royal','td-royal')" title="Роял"></div>
+        <span class="theme-label" id="themeLabel">Ночь</span>
+      </div>
+    </div>
+    <div class="menu-item" onclick="showToast('👋 Пригласи друга — получи 200 баллов!')">
+      <div class="menu-icon" style="background:rgba(168,85,247,0.12);">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#a855f7" stroke-width="2"><path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="8.5" cy="7" r="4"/><line x1="20" y1="8" x2="20" y2="14"/><line x1="23" y1="11" x2="17" y2="11"/></svg>
+      </div>
+      <div class="menu-label">Пригласить друга</div>
+      <div class="menu-arrow">›</div>
+    </div>
+
+    <!-- DIRECTOR PANEL (hidden by default) -->
+    <div id="directorPanel" style="display:none; padding:0 20px; margin-top:4px;">
+      <div style="background:var(--bg3);border:1px solid rgba(239,68,68,0.25);border-radius:var(--radius);padding:16px;margin-bottom:10px;">
+        <div style="font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:1px;margin-bottom:12px;">Аналитика — сегодня</div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">
+          <div style="background:var(--bg);border-radius:10px;padding:12px;text-align:center;">
+            <div style="font-family:var(--font-display);font-size:28px;color:var(--accent);">18</div>
+            <div style="font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;">Броней</div>
+          </div>
+          <div style="background:var(--bg);border-radius:10px;padding:12px;text-align:center;">
+            <div style="font-family:var(--font-display);font-size:28px;color:var(--gold);">54к</div>
+            <div style="font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;">Выручка ₽</div>
+          </div>
+          <div style="background:var(--bg);border-radius:10px;padding:12px;text-align:center;">
+            <div style="font-family:var(--font-display);font-size:28px;color:#a855f7;">78%</div>
+            <div style="font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;">Загрузка</div>
+          </div>
+          <div style="background:var(--bg);border-radius:10px;padding:12px;text-align:center;">
+            <div style="font-family:var(--font-display);font-size:28px;color:#3b82f6;">142</div>
+            <div style="font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;">Игроков</div>
+          </div>
+        </div>
+        <div style="margin-top:12px; padding-top:12px; border-top:1px solid var(--border);">
+          <div style="font-size:12px;color:var(--muted);margin-bottom:8px;">Загрузка по кортам сегодня</div>
+          <div style="display:flex;flex-direction:column;gap:6px;">
+            <div><div style="display:flex;justify-content:space-between;font-size:11px;margin-bottom:3px;"><span>Корт 1</span><span style="color:var(--accent);">90%</span></div><div style="background:var(--surface);border-radius:4px;height:6px;overflow:hidden;"><div style="width:90%;height:100%;background:var(--accent);border-radius:4px;"></div></div></div>
+            <div><div style="display:flex;justify-content:space-between;font-size:11px;margin-bottom:3px;"><span>Корт 2</span><span style="color:var(--accent);">80%</span></div><div style="background:var(--surface);border-radius:4px;height:6px;overflow:hidden;"><div style="width:80%;height:100%;background:var(--accent);border-radius:4px;"></div></div></div>
+            <div><div style="display:flex;justify-content:space-between;font-size:11px;margin-bottom:3px;"><span>Корт 3</span><span style="color:var(--gold);">60%</span></div><div style="background:var(--surface);border-radius:4px;height:6px;overflow:hidden;"><div style="width:60%;height:100%;background:var(--gold);border-radius:4px;"></div></div></div>
+            <div><div style="display:flex;justify-content:space-between;font-size:11px;margin-bottom:3px;"><span>Корт 4</span><span style="color:var(--muted);">40%</span></div><div style="background:var(--surface);border-radius:4px;height:6px;overflow:hidden;"><div style="width:40%;height:100%;background:var(--muted);border-radius:4px;"></div></div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div style="height:16px;"></div>
+  </div>
+</div>
+
+<!-- NAV -->
+<nav>
+  <button class="nav-btn active" id="nav-home" onclick="switchScreen('home')">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+    Главная
+  </button>
+  <button class="nav-btn" id="nav-booking" onclick="switchScreen('booking')">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg>
+    Бронь
+  </button>
+  <button class="nav-btn" id="nav-loyalty" onclick="switchScreen('loyalty')">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+    Бонусы
+  </button>
+  <button class="nav-btn" id="nav-tournaments" onclick="switchScreen('tournaments')">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9H4a2 2 0 0 0-2 2v3a2 2 0 0 0 2 2h2v-7zM20 9h-2v7h2a2 2 0 0 0 2-2v-3a2 2 0 0 0-2-2z"/><path d="M6 5a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2V5z"/></svg>
+    Турниры
+  </button>
+  <button class="nav-btn" id="nav-profile" onclick="switchScreen('profile')">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+    Профиль
+  </button>
+</nav>
+</div>
+
+<script>
+// STATE
+let selectedDate = 0;
+let selectedCourt = 1;
+let selectedTime = null;
+let directorVisible = false;
+
+// SPLASH
+setTimeout(() => {
+  document.getElementById('splash').classList.add('hidden');
+}, 1800);
+
+// SCREEN NAVIGATION
+function switchScreen(name) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById('screen-' + name).classList.add('active');
+  const navBtn = document.getElementById('nav-' + name);
+  if (navBtn) navBtn.classList.add('active');
+}
+
+// TOAST
+let toastTimer;
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => t.classList.remove('show'), 2800);
+}
+
+// COUNTDOWN
+function updateCountdown() {
+  const now = new Date();
+  const target = new Date();
+  target.setHours(19, 0, 0, 0);
+  if (target <= now) target.setDate(target.getDate() + 1);
+  const diff = Math.max(0, target - now);
+  const h = Math.floor(diff / 3600000);
+  const m = Math.floor((diff % 3600000) / 60000);
+  document.getElementById('countdown').textContent = h + ':' + String(m).padStart(2,'0');
+}
+updateCountdown();
+setInterval(updateCountdown, 60000);
+
+// DATES
+function initDates() {
+  const days = ['Вс','Пн','Вт','Ср','Чт','Пт','Сб'];
+  const container = document.getElementById('dateScroll');
+  container.innerHTML = '';
+  const today = new Date();
+  for (let i = 0; i < 7; i++) {
+    const d = new Date(today);
+    d.setDate(today.getDate() + i);
+    const chip = document.createElement('div');
+    chip.className = 'date-chip' + (i === 0 ? ' selected' : '');
+    chip.innerHTML = `<div class="date-chip-day">${i===0?'Сег':days[d.getDay()]}</div><div class="date-chip-num">${d.getDate()}</div>`;
+    chip.onclick = () => {
+      document.querySelectorAll('.date-chip').forEach(c => c.classList.remove('selected'));
+      chip.classList.add('selected');
+      selectedDate = i;
+      selectedTime = null;
+      renderSlots();
+      updateSummary();
+    };
+    container.appendChild(chip);
+  }
+}
+
+// SLOTS
+const bookedSlots = {
+  '0-1': [8,10,14],
+  '0-2': [9,11,19],
+  '0-3': [13,15],
+  '0-4': [10,12,18],
+  '1-1': [9,11,16],
+  '1-2': [8,14,20],
+};
+const prices = { 8:900,9:900,10:1200,11:1200,12:1200,13:1200,14:1200,15:1200,16:1500,17:1500,18:1500,19:1500,20:1500,21:900,22:900 };
+
+function renderSlots() {
+  const grid = document.getElementById('timeGrid');
+  grid.innerHTML = '';
+  const booked = bookedSlots[selectedDate + '-' + selectedCourt] || [];
+  for (let h = 8; h <= 22; h++) {
+    const isBooked = booked.includes(h);
+    const isSelected = selectedTime === h;
+    const price = prices[h] || 1200;
+    const slot = document.createElement('div');
+    slot.className = 'time-slot' + (isBooked ? ' booked' : '') + (isSelected ? ' selected' : '');
+    const isPeak = h >= 16 && h <= 21;
+    slot.innerHTML = `
+      <div class="time-slot-hour">${h}:00</div>
+      <div class="time-slot-price">${isBooked ? 'Занято' : price + ' ₽'}</div>
+      ${isPeak && !isBooked ? '<div class="time-slot-tag">Пик</div>' : ''}
+    `;
+    if (!isBooked) {
+      slot.onclick = () => {
+        selectedTime = h;
+        renderSlots();
+        updateSummary();
+      };
+    }
+    grid.appendChild(slot);
+  }
+}
+
+function selectCourt(el, num) {
+  document.querySelectorAll('.court-tab').forEach(t => t.classList.remove('active'));
+  el.classList.add('active');
+  selectedCourt = num;
+  selectedTime = null;
+  renderSlots();
+  updateSummary();
+}
+
+function updateSummary() {
+  const s = document.getElementById('bookSummary');
+  if (selectedTime === null) { s.classList.remove('visible'); return; }
+  s.classList.add('visible');
+  const days = ['сегодня','завтра','послезавтра','в чт','в пт','в сб','в вс'];
+  document.getElementById('sumCourt').textContent = 'Корт ' + selectedCourt;
+  document.getElementById('sumDate').textContent = days[selectedDate] || ('через ' + selectedDate + ' дня');
+  document.getElementById('sumTime').textContent = selectedTime + ':00 — ' + (selectedTime+1) + ':00';
+  document.getElementById('sumPrice').textContent = (prices[selectedTime] || 1200) + ' ₽';
+}
+
+function confirmBooking() {
+  if (!selectedTime) return;
+  const days = ['Сегодня','Завтра','Послезавтра'];
+  const overlay = document.getElementById('successOverlay');
+  document.getElementById('successCard').innerHTML = `
+    <div class="success-row"><span style="color:var(--muted)">Корт</span><span style="font-weight:700">Корт ${selectedCourt}</span></div>
+    <div class="success-row"><span style="color:var(--muted)">Дата</span><span style="font-weight:700">${days[selectedDate] || '29 мая'}</span></div>
+    <div class="success-row"><span style="color:var(--muted)">Время</span><span style="font-weight:700">${selectedTime}:00 — ${selectedTime+1}:00</span></div>
+    <div class="success-row"><span style="color:var(--muted)">Оплата</span><span style="font-weight:700;color:var(--accent)">${prices[selectedTime] || 1200} ₽</span></div>
+    <div class="success-row" style="border-top:1px solid var(--border);margin-top:4px;padding-top:8px;"><span style="color:var(--accent)">Начислено</span><span style="font-weight:700;color:var(--accent)">+80 баллов 🎾</span></div>
+  `;
+  overlay.classList.add('show');
+  if (bookedSlots[selectedDate + '-' + selectedCourt] === undefined) bookedSlots[selectedDate + '-' + selectedCourt] = [];
+  bookedSlots[selectedDate + '-' + selectedCourt].push(selectedTime);
+  selectedTime = null;
+  renderSlots();
+  updateSummary();
+}
+
+function closeSuccess() {
+  document.getElementById('successOverlay').classList.remove('show');
+  switchScreen('home');
+  showToast('🎾 Корт забронирован! +80 баллов');
+}
+
+function showDirectorPanel() {
+  directorVisible = !directorVisible;
+  document.getElementById('directorPanel').style.display = directorVisible ? 'block' : 'none';
+  if (directorVisible) {
+    document.getElementById('directorPanel').scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }
+}
+
+// THEME SWITCHER
+const themeNames = { dark:'Ночь', light:'Свет', ocean:'Океан', flame:'Огонь', royal:'Роял' };
+const themeBg = { dark:'#0a0f1e', light:'#f0f4f8', ocean:'#050d1a', flame:'#180a04', royal:'#0d0818' };
+function setTheme(name, dotId) {
+  const html = document.documentElement;
+  if (name === 'dark') {
+    html.removeAttribute('data-theme');
+  } else {
+    html.setAttribute('data-theme', name);
+  }
+  document.querySelectorAll('.theme-dot').forEach(d => d.classList.remove('active'));
+  document.getElementById(dotId).classList.add('active');
+  document.getElementById('themeLabel').textContent = themeNames[name];
+  document.getElementById('themeColorMeta').setAttribute('content', themeBg[name] || '#0a0f1e');
+  localStorage.setItem('pp-theme', name);
+  localStorage.setItem('pp-theme-dot', dotId);
+}
+// restore saved theme
+const savedTheme = localStorage.getItem('pp-theme');
+const savedDot = localStorage.getItem('pp-theme-dot');
+if (savedTheme && savedDot) setTheme(savedTheme, savedDot);
+
+// INIT
+initDates();
+renderSlots();
+</script>
+
+<!-- UPDATE BANNER -->
+<div id="updateBanner" style="
+  display:none; position:fixed; top:0; left:50%; transform:translateX(-50%);
+  width:100%; max-width:430px; background:#f59e0b; color:#1a0a00;
+  padding:12px 20px; z-index:9999; text-align:center;
+  font-family:var(--font-body); font-size:14px; font-weight:700;
+  box-shadow:0 2px 12px rgba(0,0,0,0.3); cursor:pointer;
+" onclick="location.reload()">
+  🔄 Доступно обновление — нажмите чтобы обновить
+</div>
+
+<!-- INSTALL PROMPT -->
+<div id="installBanner" style="
+  display:none; position:fixed; bottom:90px; left:50%; transform:translateX(-50%);
+  width:calc(100% - 32px); max-width:398px;
+  background:var(--bg3); border:1px solid rgba(34,197,94,0.3);
+  border-radius:16px; padding:14px 16px; z-index:500;
+  font-family:var(--font-body); box-shadow:0 8px 32px rgba(0,0,0,0.4);
+  display:flex; align-items:center; gap:12px;
+">
+  <div style="font-size:28px;">📲</div>
+  <div style="flex:1;">
+    <div style="font-size:14px;font-weight:700;color:var(--text);">Установить PadelPass</div>
+    <div style="font-size:12px;color:var(--muted);margin-top:2px;">Добавить на главный экран</div>
+  </div>
+  <button id="installBtn" style="
+    padding:8px 14px; background:var(--accent); border:none; border-radius:10px;
+    font-family:var(--font-body); font-size:13px; font-weight:700; color:#fff; cursor:pointer;
+  ">Установить</button>
+  <button onclick="document.getElementById('installBanner').style.display='none'" style="
+    background:none; border:none; color:var(--muted); font-size:18px; cursor:pointer; padding:0 4px;
+  ">×</button>
+</div>
+
+<script>
+// SERVICE WORKER
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('/sw.js').then(reg => {
+      // Check for updates on each load
+      reg.update();
+
+      reg.addEventListener('updatefound', () => {
+        const newSW = reg.installing;
+        newSW.addEventListener('statechange', () => {
+          if (newSW.state === 'installed' && navigator.serviceWorker.controller) {
+            document.getElementById('updateBanner').style.display = 'block';
+          }
+        });
+      });
+    });
+
+    navigator.serviceWorker.addEventListener('controllerchange', () => {
+      location.reload();
+    });
+  });
+}
+
+// INSTALL PROMPT
+let deferredPrompt;
+window.addEventListener('beforeinstallprompt', e => {
+  e.preventDefault();
+  deferredPrompt = e;
+  const banner = document.getElementById('installBanner');
+  banner.style.display = 'flex';
+  document.getElementById('installBtn').addEventListener('click', async () => {
+    banner.style.display = 'none';
+    deferredPrompt.prompt();
+    const { outcome } = await deferredPrompt.userChoice;
+    if (outcome === 'accepted') showToast('✅ PadelPass установлен!');
+    deferredPrompt = null;
+  });
+});
+
+window.addEventListener('appinstalled', () => {
+  document.getElementById('installBanner').style.display = 'none';
+  showToast('🎾 PadelPass установлен на главный экран!');
+});
+</script>
+</body>
+</html>
