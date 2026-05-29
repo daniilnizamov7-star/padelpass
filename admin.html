@@ -1,0 +1,765 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="theme-color" content="#f0f7f0">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="PadelPass Admin">
+<title>PadelPass Admin</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Manrope:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #f0f7f0;
+  --bg2: #e6f0e6;
+  --bg3: #ffffff;
+  --surface: #dceadc;
+  --accent: #16a34a;
+  --accent2: #15803d;
+  --danger: #dc2626;
+  --warn: #d97706;
+  --blue: #2563eb;
+  --purple: #7c3aed;
+  --text: #0f1f0f;
+  --muted: #6b8c6b;
+  --border: rgba(0,0,0,0.09);
+  --nav-bg: rgba(240,247,240,0.97);
+  --radius: 16px;
+  --font-display: 'Bebas Neue', sans-serif;
+  --font-body: 'Manrope', sans-serif;
+}
+* { margin:0; padding:0; box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
+html, body { height:100%; background:var(--bg); color:var(--text); font-family:var(--font-body); overflow:hidden; }
+
+/* LOGIN */
+#loginScreen {
+  position:fixed; inset:0; background:var(--bg);
+  display:flex; flex-direction:column; align-items:center; justify-content:center;
+  z-index:9999; padding:30px;
+}
+.login-logo { font-family:var(--font-display); font-size:52px; letter-spacing:3px; color:var(--text); }
+.login-logo span { color:var(--accent); }
+.login-badge { background:rgba(22,163,74,0.1); border:1px solid rgba(22,163,74,0.25); border-radius:20px; padding:4px 16px; font-size:11px; font-weight:600; color:var(--accent); letter-spacing:2px; text-transform:uppercase; margin-top:6px; }
+.login-form { width:100%; max-width:320px; margin-top:36px; display:flex; flex-direction:column; gap:12px; }
+.login-input {
+  width:100%; padding:14px 16px; background:var(--bg3); border:1px solid var(--border);
+  border-radius:12px; font-family:var(--font-body); font-size:15px; color:var(--text);
+  outline:none; transition:border-color .2s;
+}
+.login-input:focus { border-color:rgba(34,197,94,0.5); }
+.login-input::placeholder { color:var(--muted); }
+.btn-login {
+  width:100%; padding:14px; background:var(--accent); border:none; border-radius:12px;
+  font-family:var(--font-body); font-size:15px; font-weight:700; color:#fff; cursor:pointer;
+  transition:opacity .2s; margin-top:4px;
+}
+.btn-login:active { opacity:.85; }
+.login-error { font-size:13px; color:var(--danger); text-align:center; display:none; }
+
+/* LAYOUT */
+#app { display:flex; flex-direction:column; height:100vh; max-width:430px; margin:0 auto; }
+.screen { display:none; flex:1; flex-direction:column; overflow:hidden; }
+.screen.active { display:flex; }
+.scroll-area { flex:1; overflow-y:auto; padding:0 0 90px; }
+.scroll-area::-webkit-scrollbar { display:none; }
+
+/* NAV */
+nav {
+  position:fixed; bottom:0; left:50%; transform:translateX(-50%);
+  width:100%; max-width:430px;
+  background:var(--nav-bg); backdrop-filter:blur(20px);
+  border-top:1px solid var(--border);
+  display:flex; align-items:center; justify-content:space-around;
+  padding:8px 0 max(8px, env(safe-area-inset-bottom));
+  z-index:100;
+}
+.nav-btn {
+  display:flex; flex-direction:column; align-items:center; gap:4px;
+  background:none; border:none; color:var(--muted); cursor:pointer;
+  padding:4px 10px; border-radius:12px; transition:color .2s;
+  font-family:var(--font-body); font-size:10px;
+}
+.nav-btn.active { color:var(--accent); }
+.nav-btn svg { width:22px; height:22px; }
+
+/* HEADER */
+.page-header { padding:20px 20px 0; display:flex; align-items:center; justify-content:space-between; }
+.page-title { font-family:var(--font-display); font-size:38px; letter-spacing:2px; }
+.admin-badge { background:rgba(239,68,68,0.12); border:1px solid rgba(239,68,68,0.25); border-radius:20px; padding:4px 12px; font-size:11px; font-weight:700; color:var(--danger); letter-spacing:1px; }
+
+/* METRIC CARDS */
+.metrics-grid { display:grid; grid-template-columns:1fr 1fr; gap:10px; padding:0 20px; }
+.metric-card {
+  background:var(--bg3); border:1px solid var(--border); border-radius:var(--radius);
+  padding:14px; position:relative; overflow:hidden;
+}
+.metric-card::before { content:''; position:absolute; top:-20px; right:-20px; width:60px; height:60px; border-radius:50%; opacity:.08; }
+.metric-card.green::before { background:var(--accent); }
+.metric-card.gold::before { background:var(--warn); }
+.metric-card.blue::before { background:var(--blue); }
+.metric-card.purple::before { background:var(--purple); }
+.metric-label { font-size:11px; color:var(--muted); text-transform:uppercase; letter-spacing:1px; margin-bottom:6px; }
+.metric-value { font-family:var(--font-display); font-size:34px; letter-spacing:1px; line-height:1; }
+.metric-value.green { color:var(--accent); }
+.metric-value.gold { color:var(--warn); }
+.metric-value.blue { color:var(--blue); }
+.metric-value.purple { color:var(--purple); }
+.metric-delta { font-size:11px; margin-top:4px; font-weight:600; }
+.metric-delta.up { color:var(--accent); }
+.metric-delta.down { color:var(--danger); }
+
+/* SECTION */
+.section-header { display:flex; align-items:center; justify-content:space-between; padding:20px 20px 10px; }
+.section-title { font-size:12px; font-weight:700; color:var(--muted); text-transform:uppercase; letter-spacing:2px; }
+.section-action { font-size:12px; color:var(--accent); font-weight:600; cursor:pointer; }
+
+/* COURT LOAD BARS */
+.court-item { padding:12px 20px; border-bottom:1px solid var(--border); }
+.court-row { display:flex; align-items:center; justify-content:space-between; margin-bottom:7px; }
+.court-name { font-size:14px; font-weight:600; }
+.court-stat { font-size:12px; color:var(--muted); }
+.court-pct { font-size:14px; font-weight:700; }
+.bar-track { background:var(--surface); border-radius:6px; height:8px; overflow:hidden; }
+.bar-fill { height:100%; border-radius:6px; transition:width 1s ease; }
+.bar-fill.high { background:var(--accent); }
+.bar-fill.mid { background:var(--warn); }
+.bar-fill.low { background:var(--muted); }
+
+/* BOOKINGS TABLE */
+.booking-row {
+  display:flex; align-items:center; gap:12px; padding:12px 20px;
+  border-bottom:1px solid var(--border); cursor:pointer; transition:background .15s;
+}
+.booking-row:active { background:var(--bg3); }
+.booking-court-badge {
+  width:36px; height:36px; border-radius:10px; flex-shrink:0;
+  display:flex; flex-direction:column; align-items:center; justify-content:center;
+  background:rgba(34,197,94,0.1); border:1px solid rgba(34,197,94,0.2);
+}
+.booking-court-num { font-family:var(--font-display); font-size:18px; color:var(--accent); line-height:1; }
+.booking-info { flex:1; }
+.booking-player { font-size:13px; font-weight:600; }
+.booking-time { font-size:11px; color:var(--muted); margin-top:2px; }
+.booking-price { font-size:14px; font-weight:700; color:var(--accent); }
+.booking-status { font-size:10px; font-weight:700; padding:3px 8px; border-radius:20px; }
+.booking-status.confirmed { background:rgba(34,197,94,0.12); color:var(--accent); }
+.booking-status.pending { background:rgba(245,158,11,0.12); color:var(--warn); }
+.booking-status.cancelled { background:rgba(239,68,68,0.1); color:var(--danger); }
+
+/* SLOT GRID (admin view) */
+.slot-grid-wrap { padding:0 20px; }
+.slot-grid { display:grid; grid-template-columns:auto repeat(4,1fr); gap:4px; }
+.slot-head { font-size:10px; font-weight:700; color:var(--muted); text-align:center; padding:6px 2px; text-transform:uppercase; letter-spacing:.5px; }
+.slot-time { font-size:10px; color:var(--muted); padding:4px 6px 4px 0; display:flex; align-items:center; white-space:nowrap; }
+.slot-cell {
+  height:28px; border-radius:6px; cursor:pointer; transition:opacity .15s;
+  display:flex; align-items:center; justify-content:center; font-size:9px; font-weight:700;
+}
+.slot-cell.free { background:rgba(34,197,94,0.1); border:1px solid rgba(34,197,94,0.2); color:var(--accent); }
+.slot-cell.booked { background:rgba(34,197,94,0.85); color:#fff; }
+.slot-cell.my-block { background:rgba(239,68,68,0.3); border:1px solid rgba(239,68,68,0.4); color:var(--danger); }
+.slot-cell:active { opacity:.7; }
+
+/* PLAYERS */
+.player-row {
+  display:flex; align-items:center; gap:12px; padding:12px 20px;
+  border-bottom:1px solid var(--border);
+}
+.player-ava {
+  width:38px; height:38px; border-radius:50%; flex-shrink:0;
+  display:flex; align-items:center; justify-content:center;
+  font-weight:700; font-size:13px; color:#fff;
+}
+.player-info { flex:1; }
+.player-name { font-size:13px; font-weight:600; }
+.player-meta { font-size:11px; color:var(--muted); margin-top:1px; }
+.player-pts { font-size:13px; font-weight:700; }
+.player-level { font-size:10px; font-weight:600; padding:2px 8px; border-radius:20px; margin-top:3px; display:inline-block; }
+
+/* REVENUE CHART (CSS bars) */
+.rev-chart { padding:0 20px; display:flex; align-items:flex-end; gap:8px; height:100px; }
+.rev-bar-wrap { flex:1; display:flex; flex-direction:column; align-items:center; gap:4px; height:100%; justify-content:flex-end; }
+.rev-bar { width:100%; background:rgba(34,197,94,0.25); border-radius:4px 4px 0 0; position:relative; transition:height .6s ease; min-height:4px; }
+.rev-bar.today { background:var(--accent); }
+.rev-bar-label { font-size:9px; color:var(--muted); text-transform:uppercase; }
+.rev-bar-val { font-size:10px; font-weight:700; color:var(--accent); }
+
+/* MODAL */
+.modal-overlay {
+  position:fixed; inset:0; background:rgba(0,0,0,0.7); z-index:800;
+  display:flex; align-items:flex-end; opacity:0; pointer-events:none; transition:opacity .25s;
+}
+.modal-overlay.show { opacity:1; pointer-events:all; }
+.modal-sheet {
+  background:var(--bg2); border-radius:20px 20px 0 0; width:100%; max-width:430px;
+  margin:0 auto; padding:24px 20px 40px; transform:translateY(100%); transition:transform .3s ease;
+}
+.modal-overlay.show .modal-sheet { transform:translateY(0); }
+.modal-title { font-family:var(--font-display); font-size:28px; letter-spacing:2px; margin-bottom:16px; }
+.modal-row { display:flex; justify-content:space-between; padding:10px 0; border-bottom:1px solid var(--border); font-size:14px; }
+.modal-row:last-child { border:none; }
+.modal-label { color:var(--muted); }
+.btn-danger { width:100%; padding:13px; background:rgba(239,68,68,0.15); border:1px solid rgba(239,68,68,0.3); border-radius:12px; font-family:var(--font-body); font-size:14px; font-weight:700; color:var(--danger); cursor:pointer; margin-top:12px; }
+.btn-success { width:100%; padding:13px; background:var(--accent); border:none; border-radius:12px; font-family:var(--font-body); font-size:14px; font-weight:700; color:#fff; cursor:pointer; margin-top:8px; }
+
+/* TOAST */
+.toast {
+  position:fixed; top:20px; left:50%; transform:translateX(-50%) translateY(-80px);
+  background:var(--accent); color:#fff; padding:12px 20px; border-radius:12px;
+  font-size:14px; font-weight:600; z-index:9999; transition:transform .3s;
+  white-space:nowrap; box-shadow:0 8px 24px rgba(34,197,94,0.3);
+}
+.toast.show { transform:translateX(-50%) translateY(0); }
+
+/* UPDATE BANNER */
+#updateBanner {
+  display:none; position:fixed; top:0; left:50%; transform:translateX(-50%);
+  width:100%; max-width:430px; background:var(--warn); color:#1a0a00;
+  padding:12px 20px; z-index:9999; text-align:center;
+  font-family:var(--font-body); font-size:14px; font-weight:700; cursor:pointer;
+}
+</style>
+</head>
+<body>
+
+<!-- LOGIN -->
+<div id="loginScreen">
+  <div class="login-logo">PADEL<span>PASS</span></div>
+  <div class="login-badge">Панель директора</div>
+  <div class="login-form">
+    <input class="login-input" type="text" id="loginPin" placeholder="Введите PIN-код" maxlength="6"
+      inputmode="numeric" pattern="[0-9]*" autocomplete="off">
+    <button class="btn-login" onclick="doLogin()">Войти</button>
+    <div class="login-error" id="loginError">Неверный PIN-код</div>
+  </div>
+  <div style="margin-top:20px;font-size:12px;color:var(--muted);">Демо-PIN: 1234</div>
+</div>
+
+<!-- TOAST -->
+<div class="toast" id="toast"></div>
+<div id="updateBanner" onclick="location.reload()">🔄 Доступно обновление — нажмите чтобы обновить</div>
+
+<!-- MODAL -->
+<div class="modal-overlay" id="modalOverlay" onclick="closeModal(event)">
+  <div class="modal-sheet" id="modalSheet">
+    <div class="modal-title" id="modalTitle">Бронирование</div>
+    <div id="modalBody"></div>
+    <button class="btn-danger" onclick="closeModal()">Отменить бронирование</button>
+    <button class="btn-success" onclick="closeModal();showToast('✅ Изменения сохранены')">Готово</button>
+  </div>
+</div>
+
+<!-- APP -->
+<div id="app" style="display:none;">
+
+<!-- ===== DASHBOARD ===== -->
+<div class="screen active" id="screen-dash">
+  <div class="scroll-area">
+    <div class="page-header">
+      <div>
+        <div class="page-title">ДАШБОРД</div>
+        <div style="font-size:12px;color:var(--muted);margin-top:2px)" id="dateLabel"></div>
+      </div>
+      <div class="admin-badge">ADMIN</div>
+    </div>
+
+    <div class="section-header">
+      <div class="section-title">Сегодня</div>
+      <div class="section-action" onclick="showToast('📊 Отчёт за неделю')">За неделю ›</div>
+    </div>
+    <div class="metrics-grid">
+      <div class="metric-card green">
+        <div class="metric-label">Выручка</div>
+        <div class="metric-value green">54к</div>
+        <div class="metric-delta up">↑ +12% вчера</div>
+      </div>
+      <div class="metric-card gold">
+        <div class="metric-label">Броней</div>
+        <div class="metric-value gold">18</div>
+        <div class="metric-delta up">↑ 4 от нормы</div>
+      </div>
+      <div class="metric-card blue">
+        <div class="metric-label">Загрузка</div>
+        <div class="metric-value blue">78%</div>
+        <div class="metric-delta up">↑ пиковый день</div>
+      </div>
+      <div class="metric-card purple">
+        <div class="metric-label">Игроков</div>
+        <div class="metric-value purple">142</div>
+        <div class="metric-delta up">↑ +8 за неделю</div>
+      </div>
+    </div>
+
+    <!-- REVENUE CHART -->
+    <div class="section-header">
+      <div class="section-title">Выручка — 7 дней</div>
+    </div>
+    <div class="rev-chart" id="revChart"></div>
+    <div style="display:flex;justify-content:center;gap:6px;padding:6px 20px 0;flex-wrap:wrap;" id="revLabels"></div>
+
+    <!-- COURT LOAD -->
+    <div class="section-header">
+      <div class="section-title">Загрузка кортов</div>
+      <div class="section-action" onclick="switchScreen('slots')">Слоты ›</div>
+    </div>
+    <div id="courtBars"></div>
+
+    <!-- QUICK STATS -->
+    <div class="section-header"><div class="section-title">Показатели</div></div>
+    <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;padding:0 20px;">
+      <div style="background:var(--bg3);border:1px solid var(--border);border-radius:14px;padding:12px;text-align:center;">
+        <div style="font-family:var(--font-display);font-size:26px;color:var(--accent);">3 000</div>
+        <div style="font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;">Ср. чек ₽</div>
+      </div>
+      <div style="background:var(--bg3);border:1px solid var(--border);border-radius:14px;padding:12px;text-align:center;">
+        <div style="font-family:var(--font-display);font-size:26px;color:var(--warn);">2.4</div>
+        <div style="font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;">Игр/неделю</div>
+      </div>
+      <div style="background:var(--bg3);border:1px solid var(--border);border-radius:14px;padding:12px;text-align:center;">
+        <div style="font-family:var(--font-display);font-size:26px;color:var(--blue);">68%</div>
+        <div style="font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;">Возврат</div>
+      </div>
+    </div>
+
+    <div style="height:16px;"></div>
+  </div>
+</div>
+
+<!-- ===== SLOTS ===== -->
+<div class="screen" id="screen-slots">
+  <div class="scroll-area">
+    <div class="page-header" style="margin-bottom:16px;">
+      <div>
+        <div class="page-title">РАСПИСАНИЕ</div>
+        <div style="font-size:12px;color:var(--muted);margin-top:2px;">Все корты — сегодня</div>
+      </div>
+    </div>
+
+    <!-- LEGEND -->
+    <div style="display:flex;gap:10px;padding:0 20px 12px;flex-wrap:wrap;">
+      <div style="display:flex;align-items:center;gap:5px;"><div style="width:14px;height:14px;border-radius:3px;background:rgba(34,197,94,0.85);"></div><span style="font-size:11px;color:var(--muted);">Занято</span></div>
+      <div style="display:flex;align-items:center;gap:5px;"><div style="width:14px;height:14px;border-radius:3px;background:rgba(34,197,94,0.1);border:1px solid rgba(34,197,94,0.2);"></div><span style="font-size:11px;color:var(--muted);">Свободно</span></div>
+      <div style="display:flex;align-items:center;gap:5px;"><div style="width:14px;height:14px;border-radius:3px;background:rgba(239,68,68,0.3);border:1px solid rgba(239,68,68,0.4);"></div><span style="font-size:11px;color:var(--muted);">Блок</span></div>
+    </div>
+
+    <div class="slot-grid-wrap">
+      <div class="slot-grid" id="slotGrid"></div>
+    </div>
+    <div style="height:16px;"></div>
+  </div>
+</div>
+
+<!-- ===== BOOKINGS ===== -->
+<div class="screen" id="screen-bookings">
+  <div class="scroll-area">
+    <div class="page-header">
+      <div class="page-title">БРОНИ</div>
+    </div>
+
+    <!-- FILTER TABS -->
+    <div style="display:flex;gap:8px;padding:14px 20px 4px;overflow-x:auto;">
+      <div class="court-tab active" id="f-all" onclick="filterBookings('all',this)">Все</div>
+      <div class="court-tab" id="f-today" onclick="filterBookings('today',this)">Сегодня</div>
+      <div class="court-tab" id="f-pending" onclick="filterBookings('pending',this)">Ожидают</div>
+      <div class="court-tab" id="f-cancel" onclick="filterBookings('cancelled',this)">Отменены</div>
+    </div>
+
+    <div id="bookingsList"></div>
+    <div style="height:16px;"></div>
+  </div>
+</div>
+
+<!-- ===== PLAYERS ===== -->
+<div class="screen" id="screen-players">
+  <div class="scroll-area">
+    <div class="page-header">
+      <div class="page-title">ИГРОКИ</div>
+    </div>
+
+    <div style="padding:12px 20px 4px;">
+      <input style="
+        width:100%; padding:11px 14px; background:var(--bg3); border:1px solid var(--border);
+        border-radius:12px; font-family:var(--font-body); font-size:14px; color:var(--text);
+        outline:none;
+      " placeholder="🔍 Поиск игрока..." id="playerSearch" oninput="filterPlayers(this.value)">
+    </div>
+
+    <div id="playersList"></div>
+    <div style="height:16px;"></div>
+  </div>
+</div>
+
+<!-- ===== SETTINGS ===== -->
+<div class="screen" id="screen-settings">
+  <div class="scroll-area">
+    <div class="page-header">
+      <div class="page-title">НАСТРОЙКИ</div>
+    </div>
+
+    <div class="section-header"><div class="section-title">Цены кортов</div></div>
+    <div style="padding:0 20px;display:flex;flex-direction:column;gap:8px;">
+      <div style="background:var(--bg3);border:1px solid var(--border);border-radius:12px;padding:14px;display:flex;align-items:center;justify-content:space-between;">
+        <div><div style="font-size:13px;font-weight:600;">Пиковые часы</div><div style="font-size:11px;color:var(--muted);">16:00 — 22:00</div></div>
+        <div style="font-size:16px;font-weight:700;color:var(--accent);">1 500 ₽</div>
+      </div>
+      <div style="background:var(--bg3);border:1px solid var(--border);border-radius:12px;padding:14px;display:flex;align-items:center;justify-content:space-between;">
+        <div><div style="font-size:13px;font-weight:600;">Обычные часы</div><div style="font-size:11px;color:var(--muted);">10:00 — 16:00</div></div>
+        <div style="font-size:16px;font-weight:700;color:var(--warn);">1 200 ₽</div>
+      </div>
+      <div style="background:var(--bg3);border:1px solid var(--border);border-radius:12px;padding:14px;display:flex;align-items:center;justify-content:space-between;">
+        <div><div style="font-size:13px;font-weight:600;">Утро / поздний вечер</div><div style="font-size:11px;color:var(--muted);">08:00 — 10:00 / 22:00+</div></div>
+        <div style="font-size:16px;font-weight:700;color:var(--muted);">900 ₽</div>
+      </div>
+    </div>
+
+    <div class="section-header" style="margin-top:8px;"><div class="section-title">Лояльность</div></div>
+    <div style="padding:0 20px;display:flex;flex-direction:column;gap:8px;">
+      <div style="background:var(--bg3);border:1px solid var(--border);border-radius:12px;padding:14px;">
+        <div style="display:flex;justify-content:space-between;align-items:center;">
+          <div style="font-size:13px;font-weight:600;">Баллов за игру</div>
+          <div style="font-size:16px;font-weight:700;color:var(--accent);">80 ⭐</div>
+        </div>
+      </div>
+      <div style="background:var(--bg3);border:1px solid var(--border);border-radius:12px;padding:14px;">
+        <div style="display:flex;justify-content:space-between;align-items:center;">
+          <div style="font-size:13px;font-weight:600;">Реферальный бонус</div>
+          <div style="font-size:16px;font-weight:700;color:var(--warn);">200 ⭐</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="section-header" style="margin-top:8px;"><div class="section-title">Система</div></div>
+    <div style="padding:0 20px;display:flex;flex-direction:column;gap:8px;">
+      <div style="background:var(--bg3);border:1px solid var(--border);border-radius:12px;padding:14px;display:flex;align-items:center;justify-content:space-between;cursor:pointer;" onclick="showToast('📤 Отчёт отправлен на email')">
+        <div style="font-size:13px;font-weight:600;">Экспорт отчёта CSV</div>
+        <div style="color:var(--accent);">›</div>
+      </div>
+      <div style="background:var(--bg3);border:1px solid var(--border);border-radius:12px;padding:14px;display:flex;align-items:center;justify-content:space-between;cursor:pointer;" onclick="showToast('📲 Push отправлен всем игрокам')">
+        <div style="font-size:13px;font-weight:600;">Рассылка Push-уведомления</div>
+        <div style="color:var(--accent);">›</div>
+      </div>
+      <div style="background:rgba(239,68,68,0.05);border:1px solid rgba(239,68,68,0.2);border-radius:12px;padding:14px;display:flex;align-items:center;justify-content:space-between;cursor:pointer;" onclick="doLogout()">
+        <div style="font-size:13px;font-weight:600;color:var(--danger);">Выйти из панели</div>
+        <div style="color:var(--danger);">›</div>
+      </div>
+    </div>
+    <div style="height:16px;"></div>
+  </div>
+</div>
+
+<!-- NAV -->
+<nav>
+  <button class="nav-btn active" id="nav-dash" onclick="switchScreen('dash')">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg>
+    Дашборд
+  </button>
+  <button class="nav-btn" id="nav-slots" onclick="switchScreen('slots')">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg>
+    Слоты
+  </button>
+  <button class="nav-btn" id="nav-bookings" onclick="switchScreen('bookings')">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="9" y1="13" x2="15" y2="13"/><line x1="9" y1="17" x2="13" y2="17"/></svg>
+    Брони
+  </button>
+  <button class="nav-btn" id="nav-players" onclick="switchScreen('players')">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+    Игроки
+  </button>
+  <button class="nav-btn" id="nav-settings" onclick="switchScreen('settings')">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 1 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 1 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 1 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 1 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+    Настройки
+  </button>
+</nav>
+</div>
+
+<!-- CSS for court-tab (reuse) -->
+<style>
+.court-tab { flex-shrink:0; padding:8px 16px; border-radius:20px; font-size:12px; font-weight:600; border:1px solid var(--border); background:var(--bg3); color:var(--muted); cursor:pointer; transition:all .2s; }
+.court-tab.active { background:var(--accent); border-color:var(--accent); color:#fff; }
+</style>
+
+<script>
+// ——— LOGIN ———
+const PIN = '1234';
+function doLogin() {
+  const v = document.getElementById('loginPin').value;
+  if (v === PIN) {
+    document.getElementById('loginScreen').style.display = 'none';
+    document.getElementById('app').style.display = 'flex';
+    initApp();
+  } else {
+    const e = document.getElementById('loginError');
+    e.style.display = 'block';
+    setTimeout(() => e.style.display = 'none', 2000);
+  }
+}
+document.getElementById('loginPin').addEventListener('keydown', e => { if (e.key === 'Enter') doLogin(); });
+
+function doLogout() {
+  document.getElementById('app').style.display = 'none';
+  document.getElementById('loginScreen').style.display = 'flex';
+  document.getElementById('loginPin').value = '';
+}
+
+// ——— SCREEN NAV ———
+function switchScreen(name) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById('screen-' + name).classList.add('active');
+  const btn = document.getElementById('nav-' + name);
+  if (btn) btn.classList.add('active');
+}
+
+// ——— TOAST ———
+let toastTimer;
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => t.classList.remove('show'), 2800);
+}
+
+// ——— MODAL ———
+function openModal(title, rows) {
+  document.getElementById('modalTitle').textContent = title;
+  document.getElementById('modalBody').innerHTML = rows.map(([l, v]) =>
+    `<div class="modal-row"><span class="modal-label">${l}</span><span style="font-weight:600">${v}</span></div>`
+  ).join('');
+  document.getElementById('modalOverlay').classList.add('show');
+}
+function closeModal(e) {
+  if (!e || e.target === document.getElementById('modalOverlay')) {
+    document.getElementById('modalOverlay').classList.remove('show');
+  }
+}
+
+// ——— DATA ———
+const courts = [
+  { name:'Корт 1', pct:90, bookings:9 },
+  { name:'Корт 2', pct:80, bookings:8 },
+  { name:'Корт 3', pct:60, bookings:6 },
+  { name:'Корт 4', pct:40, bookings:4 },
+];
+
+const revenueWeek = [
+  { day:'Пн', val:38 },
+  { day:'Вт', val:45 },
+  { day:'Ср', val:42 },
+  { day:'Чт', val:50 },
+  { day:'Пт', val:61 },
+  { day:'Сб', val:72 },
+  { day:'Вс', val:54, today:true },
+];
+
+const bookings = [
+  { court:1, player:'Петров Алексей', phone:'+7 951 448-96-66', time:'10:00—11:00', price:'1 200 ₽', status:'confirmed', date:'Сегодня' },
+  { court:2, player:'Смирнов Дмитрий', phone:'+7 900 123-45-67', time:'11:00—12:00', price:'1 200 ₽', status:'confirmed', date:'Сегодня' },
+  { court:1, player:'Козлов Игорь', phone:'+7 922 555-11-22', time:'14:00—15:00', price:'1 200 ₽', status:'pending', date:'Сегодня' },
+  { court:3, player:'Фролов Максим', phone:'+7 912 777-88-99', time:'16:00—17:00', price:'1 500 ₽', status:'confirmed', date:'Сегодня' },
+  { court:4, player:'Нечаев Андрей', phone:'+7 951 333-22-11', time:'18:00—19:00', price:'1 500 ₽', status:'confirmed', date:'Сегодня' },
+  { court:2, player:'Орлов Сергей', phone:'+7 900 444-55-66', time:'19:00—20:00', price:'1 500 ₽', status:'confirmed', date:'Сегодня' },
+  { court:1, player:'Тихонов Роман', phone:'+7 912 111-22-33', time:'09:00—10:00', price:'900 ₽', status:'cancelled', date:'Вчера' },
+  { court:3, player:'Дятлов Виктор', phone:'+7 922 888-99-00', time:'20:00—21:00', price:'1 500 ₽', status:'pending', date:'Завтра' },
+];
+
+const players = [
+  { initials:'АП', color:'#16803d', name:'Петров Алексей', games:47, pts:1240, level:'Игрок', wins:31 },
+  { initials:'ФМ', color:'#1d4ed8', name:'Фролов Максим', games:63, pts:2400, level:'Про', wins:48 },
+  { initials:'СД', color:'#7c3aed', name:'Смирнов Дмитрий', games:38, pts:980, level:'Игрок', wins:24 },
+  { initials:'КИ', color:'#b45309', name:'Козлов Игорь', games:22, pts:540, level:'Игрок', wins:14 },
+  { initials:'НА', color:'#dc2626', name:'Нечаев Андрей', games:71, pts:4200, level:'Чемпион', wins:55 },
+  { initials:'ОС', color:'#0891b2', name:'Орлов Сергей', games:15, pts:310, level:'Новичок', wins:8 },
+  { initials:'ТР', color:'#059669', name:'Тихонов Роман', games:9, pts:120, level:'Новичок', wins:3 },
+  { initials:'ДВ', color:'#9333ea', name:'Дятлов Виктор', games:51, pts:1890, level:'Про', wins:37 },
+];
+
+const levelColors = { 'Новичок':'rgba(100,116,139,0.15)','Игрок':'rgba(34,197,94,0.12)','Про':'rgba(59,130,246,0.12)','Чемпион':'rgba(245,158,11,0.15)' };
+const levelTextColors = { 'Новичок':'#64748b','Игрок':'#22c55e','Про':'#3b82f6','Чемпион':'#f59e0b' };
+
+// slots data
+const slotBookings = {
+  '1': [9,10,11,14,16,19,20],
+  '2': [8,11,15,16,18,21],
+  '3': [10,13,14,17,19],
+  '4': [9,12,16,20],
+};
+const blockedSlots = { '2': [22], '3': [8,22] };
+
+// ——— INIT ———
+function initApp() {
+  // date
+  const now = new Date();
+  document.getElementById('dateLabel').textContent = now.toLocaleDateString('ru-RU', { weekday:'long', day:'numeric', month:'long' });
+
+  renderRevChart();
+  renderCourtBars();
+  renderSlotGrid();
+  renderBookings('all');
+  renderPlayers('');
+}
+
+function renderRevChart() {
+  const max = Math.max(...revenueWeek.map(d => d.val));
+  const chart = document.getElementById('revChart');
+  const labels = document.getElementById('revLabels');
+  chart.innerHTML = '';
+  labels.innerHTML = '';
+  revenueWeek.forEach(d => {
+    const pct = Math.round((d.val / max) * 100);
+    const wrap = document.createElement('div');
+    wrap.className = 'rev-bar-wrap';
+    wrap.innerHTML = `
+      <div class="rev-bar-val">${d.val}к</div>
+      <div class="rev-bar ${d.today ? 'today' : ''}" style="height:${pct}%;"></div>
+    `;
+    chart.appendChild(wrap);
+
+    const lbl = document.createElement('div');
+    lbl.className = 'rev-bar-label';
+    lbl.textContent = d.day;
+    lbl.style.flex = '1';
+    lbl.style.textAlign = 'center';
+    labels.appendChild(lbl);
+  });
+}
+
+function renderCourtBars() {
+  const container = document.getElementById('courtBars');
+  container.innerHTML = courts.map(c => {
+    const cls = c.pct >= 75 ? 'high' : c.pct >= 50 ? 'mid' : 'low';
+    const color = c.pct >= 75 ? 'var(--accent)' : c.pct >= 50 ? 'var(--warn)' : 'var(--muted)';
+    return `
+      <div class="court-item">
+        <div class="court-row">
+          <span class="court-name">${c.name}</span>
+          <span class="court-stat">${c.bookings}/10 броней</span>
+          <span class="court-pct" style="color:${color}">${c.pct}%</span>
+        </div>
+        <div class="bar-track"><div class="bar-fill ${cls}" style="width:${c.pct}%"></div></div>
+      </div>
+    `;
+  }).join('');
+}
+
+function renderSlotGrid() {
+  const grid = document.getElementById('slotGrid');
+  // header row
+  let html = '<div></div>';
+  for (let c = 1; c <= 4; c++) html += `<div class="slot-head">К${c}</div>`;
+
+  for (let h = 8; h <= 22; h++) {
+    html += `<div class="slot-time">${h}:00</div>`;
+    for (let c = 1; c <= 4; c++) {
+      const key = String(c);
+      const isBooked = (slotBookings[key] || []).includes(h);
+      const isBlocked = (blockedSlots[key] || []).includes(h);
+      let cls = 'free', label = '';
+      if (isBooked) { cls = 'booked'; label = '✓'; }
+      if (isBlocked) { cls = 'my-block'; label = '✕'; }
+      html += `<div class="slot-cell ${cls}" onclick="slotClick(${c},${h},'${cls}')">${label}</div>`;
+    }
+  }
+  grid.innerHTML = html;
+}
+
+function slotClick(court, hour, status) {
+  if (status === 'booked') {
+    const b = bookings.find(b => b.court === court && b.time.startsWith(hour + ':'));
+    if (b) {
+      openModal('Бронирование', [
+        ['Корт', 'Корт ' + court],
+        ['Время', b.time],
+        ['Игрок', b.player],
+        ['Телефон', b.phone],
+        ['Статус', b.status === 'confirmed' ? '✅ Подтверждено' : '⏳ Ожидает'],
+        ['Сумма', b.price],
+      ]);
+    }
+  } else if (status === 'free') {
+    showToast(`📋 Корт ${court} · ${hour}:00 — свободен`);
+  }
+}
+
+function renderBookings(filter) {
+  const list = document.getElementById('bookingsList');
+  let data = bookings;
+  if (filter === 'today') data = data.filter(b => b.date === 'Сегодня');
+  if (filter === 'pending') data = data.filter(b => b.status === 'pending');
+  if (filter === 'cancelled') data = data.filter(b => b.status === 'cancelled');
+
+  list.innerHTML = data.map((b, i) => `
+    <div class="booking-row" onclick="openBookingModal(${i})">
+      <div class="booking-court-badge">
+        <div class="booking-court-num">${b.court}</div>
+      </div>
+      <div class="booking-info">
+        <div class="booking-player">${b.player}</div>
+        <div class="booking-time">${b.date} · ${b.time}</div>
+      </div>
+      <div style="text-align:right;">
+        <div class="booking-price">${b.price}</div>
+        <div class="booking-status ${b.status}">${b.status === 'confirmed' ? 'Подтверждено' : b.status === 'pending' ? 'Ожидает' : 'Отменено'}</div>
+      </div>
+    </div>
+  `).join('') || '<div style="padding:30px 20px;text-align:center;color:var(--muted);font-size:14px;">Нет броней</div>';
+}
+
+function openBookingModal(idx) {
+  const b = bookings[idx];
+  openModal('Бронирование', [
+    ['Корт', 'Корт ' + b.court],
+    ['Дата', b.date],
+    ['Время', b.time],
+    ['Игрок', b.player],
+    ['Телефон', b.phone],
+    ['Статус', b.status === 'confirmed' ? '✅ Подтверждено' : b.status === 'pending' ? '⏳ Ожидает' : '❌ Отменено'],
+    ['Сумма', b.price],
+  ]);
+}
+
+function filterBookings(f, el) {
+  document.querySelectorAll('#screen-bookings .court-tab').forEach(t => t.classList.remove('active'));
+  el.classList.add('active');
+  renderBookings(f);
+}
+
+function renderPlayers(q) {
+  const list = document.getElementById('playersList');
+  const data = players.filter(p => p.name.toLowerCase().includes(q.toLowerCase()));
+  list.innerHTML = data.map(p => `
+    <div class="player-row" onclick="showToast('👤 ${p.name} · ${p.games} игр · ${p.pts} баллов')">
+      <div class="player-ava" style="background:${p.color};">${p.initials}</div>
+      <div class="player-info">
+        <div class="player-name">${p.name}</div>
+        <div class="player-meta">${p.games} игр · ${p.wins} побед</div>
+        <div class="player-level" style="background:${levelColors[p.level]};color:${levelTextColors[p.level]};">${p.level}</div>
+      </div>
+      <div style="text-align:right;">
+        <div class="player-pts" style="color:${levelTextColors[p.level]};">${p.pts} ⭐</div>
+      </div>
+    </div>
+  `).join('') || '<div style="padding:30px 20px;text-align:center;color:var(--muted);font-size:14px;">Игроки не найдены</div>';
+}
+
+function filterPlayers(q) { renderPlayers(q); }
+
+// ——— SW ———
+if ('serviceWorker' in navigator) {
+  navigator.serviceWorker.register('/sw.js').then(reg => {
+    reg.update();
+    reg.addEventListener('updatefound', () => {
+      const nw = reg.installing;
+      nw.addEventListener('statechange', () => {
+        if (nw.state === 'installed' && navigator.serviceWorker.controller) {
+          document.getElementById('updateBanner').style.display = 'block';
+        }
+      });
+    });
+  });
+}
+</script>
+</body>
+</html>
