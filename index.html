@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<meta name="theme-color" content="#0a0f1e" id="themeColorMeta">
+<meta name="theme-color" content="#f4f7f4" id="themeColorMeta">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="PadelPass">
@@ -15,7 +15,71 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Manrope:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
+/* ===== СВЕТЛАЯ ТЕМА — ДЕФОЛТ ===== */
 :root {
+  --bg: #f4f7f4;
+  --bg2: #eaf0ea;
+  --bg3: #ffffff;
+  --surface: #e2ebe2;
+  --accent: #16a34a;
+  --accent2: #15803d;
+  --gold: #d97706;
+  --text: #0f1f0f;
+  --muted: #6b8c6b;
+  --border: rgba(0,0,0,0.09);
+  --nav-bg: rgba(244,247,244,0.97);
+  --radius: 16px;
+  --font-display: 'Bebas Neue', sans-serif;
+  --font-body: 'Manrope', sans-serif;
+}
+
+/* ТЕМА: БЕЛОСНЕЖНАЯ */
+[data-theme="snow"] {
+  --bg: #f8f9fc;
+  --bg2: #f0f2f7;
+  --bg3: #ffffff;
+  --surface: #e8ecf4;
+  --accent: #2563eb;
+  --accent2: #1d4ed8;
+  --gold: #d97706;
+  --text: #0f172a;
+  --muted: #94a3b8;
+  --border: rgba(0,0,0,0.08);
+  --nav-bg: rgba(248,249,252,0.97);
+}
+
+/* ТЕМА: ЗАКАТ */
+[data-theme="sunset"] {
+  --bg: #fdf6f0;
+  --bg2: #faeee4;
+  --bg3: #ffffff;
+  --surface: #f5e2d4;
+  --accent: #ea580c;
+  --accent2: #c2410c;
+  --gold: #d97706;
+  --text: #1c0d04;
+  --muted: #a06040;
+  --border: rgba(0,0,0,0.08);
+  --nav-bg: rgba(253,246,240,0.97);
+}
+
+/* ТЕМА: ЛАВАНДА */
+[data-theme="lavender"] {
+  --bg: #f5f3ff;
+  --bg2: #ede9fe;
+  --bg3: #ffffff;
+  --surface: #e4dffd;
+  --accent: #7c3aed;
+  --accent2: #6d28d9;
+  --gold: #d97706;
+  --text: #1e1040;
+  --muted: #8b80b0;
+  --border: rgba(0,0,0,0.08);
+  --nav-bg: rgba(245,243,255,0.97);
+}
+
+/* ТЕМА: НОЧЬ */
+[data-theme="dark"] {
   --bg: #0a0f1e;
   --bg2: #111827;
   --bg3: #1a2235;
@@ -27,69 +91,6 @@
   --muted: #64748b;
   --border: rgba(255,255,255,0.07);
   --nav-bg: rgba(10,15,30,0.95);
-  --radius: 16px;
-  --font-display: 'Bebas Neue', sans-serif;
-  --font-body: 'Manrope', sans-serif;
-}
-
-/* THEME: LIGHT */
-[data-theme="light"] {
-  --bg: #f0f4f8;
-  --bg2: #e2e8f0;
-  --bg3: #ffffff;
-  --surface: #e8edf5;
-  --accent: #16a34a;
-  --accent2: #15803d;
-  --gold: #d97706;
-  --text: #0f172a;
-  --muted: #94a3b8;
-  --border: rgba(0,0,0,0.08);
-  --nav-bg: rgba(240,244,248,0.97);
-}
-
-/* THEME: OCEAN */
-[data-theme="ocean"] {
-  --bg: #050d1a;
-  --bg2: #0a1628;
-  --bg3: #0f2040;
-  --surface: #162a52;
-  --accent: #3b82f6;
-  --accent2: #2563eb;
-  --gold: #f59e0b;
-  --text: #e0f0ff;
-  --muted: #5b7fa6;
-  --border: rgba(59,130,246,0.12);
-  --nav-bg: rgba(5,13,26,0.97);
-}
-
-/* THEME: FLAME */
-[data-theme="flame"] {
-  --bg: #180a04;
-  --bg2: #271006;
-  --bg3: #331508;
-  --surface: #451d0a;
-  --accent: #f97316;
-  --accent2: #ea580c;
-  --gold: #fbbf24;
-  --text: #fff7ed;
-  --muted: #7c5c45;
-  --border: rgba(249,115,22,0.12);
-  --nav-bg: rgba(24,10,4,0.97);
-}
-
-/* THEME: ROYAL */
-[data-theme="royal"] {
-  --bg: #0d0818;
-  --bg2: #150d28;
-  --bg3: #1e1038;
-  --surface: #2a1850;
-  --accent: #a855f7;
-  --accent2: #9333ea;
-  --gold: #f59e0b;
-  --text: #f3e8ff;
-  --muted: #6b4e8a;
-  --border: rgba(168,85,247,0.12);
-  --nav-bg: rgba(13,8,24,0.97);
 }
 * { margin:0; padding:0; box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
 html, body { height:100%; background:var(--bg); color:var(--text); font-family:var(--font-body); overflow:hidden; }
@@ -142,7 +143,7 @@ nav {
 .header-logo span { color:var(--accent); }
 .avatar {
   width:40px; height:40px; border-radius:50%;
-  background:linear-gradient(135deg,#22c55e,#16a34a);
+  background:linear-gradient(135deg,var(--accent),var(--accent2));
   display:flex; align-items:center; justify-content:center;
   font-weight:700; font-size:15px; color:#fff; cursor:pointer;
 }
@@ -205,7 +206,7 @@ nav {
 }
 .session-court {
   width:52px; height:52px; border-radius:12px;
-  background:linear-gradient(135deg,#1a3a25,#0d2018);
+  background:var(--surface);
   border:1px solid rgba(34,197,94,0.2);
   display:flex; flex-direction:column; align-items:center; justify-content:center;
   flex-shrink:0;
@@ -306,7 +307,7 @@ nav {
 }
 .loyalty-badge {
   width:70px; height:70px; border-radius:50%; margin:0 auto 10px;
-  background:linear-gradient(135deg,#f59e0b,#d97706);
+  background:linear-gradient(135deg,var(--gold),#b45309);
   display:flex; align-items:center; justify-content:center;
   font-size:30px; box-shadow:0 0 30px rgba(245,158,11,0.3);
 }
@@ -386,7 +387,7 @@ nav {
 .profile-avatar-wrap { display:flex; flex-direction:column; align-items:center; padding:24px 20px 16px; }
 .profile-avatar-big {
   width:80px; height:80px; border-radius:50%;
-  background:linear-gradient(135deg,#22c55e,#16a34a);
+  background:linear-gradient(135deg,var(--accent),var(--accent2));
   display:flex; align-items:center; justify-content:center;
   font-family:var(--font-display); font-size:32px; color:#fff; letter-spacing:2px;
   box-shadow:0 0 30px rgba(34,197,94,0.3);
@@ -425,11 +426,11 @@ nav {
 }
 .theme-dot:active { transform:scale(0.9); }
 .theme-dot.active { border-color:var(--text); transform:scale(1.1); }
-.theme-dot.t-dark  { background:linear-gradient(135deg,#0a0f1e,#22c55e); }
-.theme-dot.t-light { background:linear-gradient(135deg,#f0f4f8,#16a34a); }
-.theme-dot.t-ocean { background:linear-gradient(135deg,#050d1a,#3b82f6); }
-.theme-dot.t-flame { background:linear-gradient(135deg,#180a04,#f97316); }
-.theme-dot.t-royal { background:linear-gradient(135deg,#0d0818,#a855f7); }
+.theme-dot.t-default { background:linear-gradient(135deg,#f4f7f4,#16a34a); }
+.theme-dot.t-snow    { background:linear-gradient(135deg,#f8f9fc,#2563eb); }
+.theme-dot.t-sunset  { background:linear-gradient(135deg,#fdf6f0,#ea580c); }
+.theme-dot.t-lavender{ background:linear-gradient(135deg,#f5f3ff,#7c3aed); }
+.theme-dot.t-dark    { background:linear-gradient(135deg,#0a0f1e,#22c55e); }
 .theme-label { font-size:12px; color:var(--muted); margin-left:4px; }
 .success-overlay {
   position:fixed; inset:0; background:rgba(10,15,30,0.95); z-index:500;
@@ -520,10 +521,10 @@ nav {
         <div class="session-time">19:00 — 20:00</div>
         <div class="session-date">Сегодня, 29 мая</div>
         <div class="session-players" style="margin-top:6px;">
-          <div class="session-avatar" style="background:#1e4d2b;">АП</div>
-          <div class="session-avatar" style="background:#1a2d4e;">СМ</div>
-          <div class="session-avatar" style="background:#3d1a4e;">ДК</div>
-          <div class="session-avatar" style="background:#4e3d1a;">ТН</div>
+          <div class="session-avatar" style="background:var(--surface);">АП</div>
+          <div class="session-avatar" style="background:var(--surface);">СМ</div>
+          <div class="session-avatar" style="background:var(--surface);">ДК</div>
+          <div class="session-avatar" style="background:var(--surface);">ТН</div>
         </div>
       </div>
       <div class="session-countdown">
@@ -874,12 +875,12 @@ nav {
     <div style="padding:14px 20px 10px; border-bottom:1px solid var(--border);">
       <div style="font-size:11px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:1.5px;margin-bottom:12px;">Тема оформления</div>
       <div style="display:flex;gap:12px;align-items:center;">
-        <div class="theme-dot t-dark active" id="td-dark" onclick="setTheme('dark','td-dark')" title="Ночь"></div>
-        <div class="theme-dot t-light" id="td-light" onclick="setTheme('light','td-light')" title="Свет"></div>
-        <div class="theme-dot t-ocean" id="td-ocean" onclick="setTheme('ocean','td-ocean')" title="Океан"></div>
-        <div class="theme-dot t-flame" id="td-flame" onclick="setTheme('flame','td-flame')" title="Огонь"></div>
-        <div class="theme-dot t-royal" id="td-royal" onclick="setTheme('royal','td-royal')" title="Роял"></div>
-        <span class="theme-label" id="themeLabel">Ночь</span>
+        <div class="theme-dot t-default active" id="td-default" onclick="setTheme('default','td-default')" title="Зелёный"></div>
+        <div class="theme-dot t-snow"    id="td-snow"    onclick="setTheme('snow','td-snow')"       title="Синий"></div>
+        <div class="theme-dot t-sunset"  id="td-sunset"  onclick="setTheme('sunset','td-sunset')"   title="Закат"></div>
+        <div class="theme-dot t-lavender"id="td-lavender"onclick="setTheme('lavender','td-lavender')"title="Лаванда"></div>
+        <div class="theme-dot t-dark"    id="td-dark"    onclick="setTheme('dark','td-dark')"       title="Ночь"></div>
+        <span class="theme-label" id="themeLabel">Зелёный</span>
       </div>
     </div>
     <div class="menu-item" onclick="showToast('👋 Пригласи друга — получи 200 баллов!')">
@@ -1113,11 +1114,11 @@ function showDirectorPanel() {
 }
 
 // THEME SWITCHER
-const themeNames = { dark:'Ночь', light:'Свет', ocean:'Океан', flame:'Огонь', royal:'Роял' };
-const themeBg = { dark:'#0a0f1e', light:'#f0f4f8', ocean:'#050d1a', flame:'#180a04', royal:'#0d0818' };
+const themeNames = { default:'Зелёный', snow:'Синий', sunset:'Закат', lavender:'Лаванда', dark:'Ночь' };
+const themeBg = { default:'#f4f7f4', snow:'#f8f9fc', sunset:'#fdf6f0', lavender:'#f5f3ff', dark:'#0a0f1e' };
 function setTheme(name, dotId) {
   const html = document.documentElement;
-  if (name === 'dark') {
+  if (name === 'default') {
     html.removeAttribute('data-theme');
   } else {
     html.setAttribute('data-theme', name);
@@ -1125,7 +1126,7 @@ function setTheme(name, dotId) {
   document.querySelectorAll('.theme-dot').forEach(d => d.classList.remove('active'));
   document.getElementById(dotId).classList.add('active');
   document.getElementById('themeLabel').textContent = themeNames[name];
-  document.getElementById('themeColorMeta').setAttribute('content', themeBg[name] || '#0a0f1e');
+  document.getElementById('themeColorMeta').setAttribute('content', themeBg[name] || '#f4f7f4');
   localStorage.setItem('pp-theme', name);
   localStorage.setItem('pp-theme-dot', dotId);
 }
