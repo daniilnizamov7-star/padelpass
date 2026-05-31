@@ -23,11 +23,7 @@
     }
   ],
   "rewrites": [
-    { "source": "/admin", "destination": "/admin-x9k4p.html" }
+    { "source": "/admin", "destination": "/admin.html" }
   ],
-  "cleanUrls": true
+  "cleanUrls": false
 }
-"rewrites": [
-  { "source": "/landing", "destination": "/padelpass-landing.html" },
-  { "source": "/",        "destination": "/padelpass-index.html" }
-]
