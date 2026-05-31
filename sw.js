@@ -1,5 +1,5 @@
-// PadelPass SW v2
-const CACHE = 'padelpass-v2';
+// PadelPass SW v3
+const CACHE = 'padelpass-v3';
 
 // Только локальные файлы — без cross-origin шрифтов
 const PRECACHE = [
