@@ -1,4 +1,8 @@
 {
+  "rewrites": [
+    { "source": "/admin", "destination": "/admin.html" },
+    { "source": "/", "destination": "/index.html" }
+  ],
   "headers": [
     {
       "source": "/sw.js",
@@ -6,17 +10,6 @@
         { "key": "Cache-Control", "value": "no-cache, no-store, must-revalidate" },
         { "key": "Service-Worker-Allowed", "value": "/" }
       ]
-    },
-    {
-      "source": "/manifest.json",
-      "headers": [
-        { "key": "Content-Type", "value": "application/manifest+json" }
-      ]
     }
-  ],
-  "rewrites": [
-    { "source": "/admin", "destination": "/admin.html" },
-    { "source": "/landing", "destination": "/landing.html" },
-    { "source": "/", "destination": "/index.html" }
   ]
 }
