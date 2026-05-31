@@ -27,3 +27,7 @@
   ],
   "cleanUrls": true
 }
+"rewrites": [
+  { "source": "/landing", "destination": "/padelpass-landing.html" },
+  { "source": "/",        "destination": "/padelpass-index.html" }
+]
