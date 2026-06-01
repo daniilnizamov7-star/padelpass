@@ -3,1144 +3,898 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta name="theme-color" content="#0c1a0c">
-<meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="description" content="PadelPass — приложение твоего падел-клуба. Бронируй корты, зарабатывай баллы, побеждай в турнирах.">
+<meta name="theme-color" content="#f7f8f5">
 <meta property="og:title" content="PadelPass — Твой падел в телефоне">
 <meta property="og:description" content="Бронируй корты за 30 секунд. Зарабатывай баллы. Побеждай.">
+<meta name="description" content="PadelPass — приложение твоего падел-клуба. Бронируй корты, зарабатывай баллы, побеждай в турнирах.">
 <title>PadelPass — Падел-клуб Челябинск</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Unbounded:wght@400;700;900&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
 <style>
-/* ═══════════════════════════════
-   VARIABLES
-═══════════════════════════════ */
+/* ── TOKENS ─────────────────────────────── */
 :root {
-  --bg:     #0c1a0c;
-  --bg2:    #111f11;
-  --card:   #182818;
-  --lime:   #c8f135;
-  --green:  #22c55e;
-  --white:  #f0f7f0;
-  --gray:   #6b8c6b;
-  --border: rgba(200,241,53,0.12);
-  --ease:   cubic-bezier(0.22,1,0.36,1);
-  --fh:     'Unbounded', sans-serif;
-  --fb:     'Inter', sans-serif;
+  --bg:   #f7f8f5;
+  --bg1:  #f0f2eb;
+  --bg2:  #ffffff;
+  --bg3:  #e8ebe0;
+  --lime: #d4f53c;
+  --lime2:#2d6a00;
+  --text: #0f1208;
+  --dim:  rgba(15,18,8,.5);
+  --dim2: rgba(15,18,8,.55);
+  --dim3: rgba(15,18,8,.06);
+  --bord: rgba(15,18,8,.08);
+  --r:    16px;
+  --rr:   24px;
+  --font: -apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif;
+  --mono: 'SF Mono','Fira Code',monospace;
 }
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
-html{scroll-behavior:smooth;}
-body{background:var(--bg);color:var(--white);font-family:var(--fb);font-weight:300;overflow-x:hidden;line-height:1.6;}
-::selection{background:var(--lime);color:#0c1a0c;}
+html{scroll-behavior:smooth;font-size:16px;}
+body{
+  background:var(--bg);color:var(--text);
+  font-family:var(--font);font-weight:400;
+  line-height:1.5;overflow-x:hidden;
+}
+::selection{background:var(--lime);color:#080808;}
 a{text-decoration:none;color:inherit;}
+img{max-width:100%;}
 
-/* ═══════════════════════════════
-   REVEALS
-═══════════════════════════════ */
-.up{opacity:0;transform:translateY(32px);transition:opacity .7s var(--ease),transform .7s var(--ease);}
-.up.in{opacity:1;transform:none;}
-.ul{opacity:0;transform:translateX(-32px);transition:opacity .7s var(--ease),transform .7s var(--ease);}
-.ul.in{opacity:1;transform:none;}
-.ur{opacity:0;transform:translateX(32px);transition:opacity .7s var(--ease),transform .7s var(--ease);}
-.ur.in{opacity:1;transform:none;}
-.d1{transition-delay:.08s}.d2{transition-delay:.16s}.d3{transition-delay:.24s}
-.d4{transition-delay:.32s}.d5{transition-delay:.4s}
+/* ── GRAIN OVERLAY ──────────────────────── */
+body::after{
+  content:'';position:fixed;inset:0;z-index:999;pointer-events:none;
+  background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='.06'/%3E%3C/svg%3E");
+  opacity:.3;mix-blend-mode:multiply;
+}
 
-/* ═══════════════════════════════
-   NAV
-═══════════════════════════════ */
+/* ── NAV ────────────────────────────────── */
 nav{
   position:fixed;top:0;left:0;right:0;z-index:100;
   display:flex;align-items:center;justify-content:space-between;
-  padding:20px 32px;
-  transition:all .3s;
+  padding:20px 40px;
+  transition:all .35s ease;
 }
-nav.stuck{
-  background:rgba(12,26,12,.94);
-  backdrop-filter:blur(20px);
-  padding:14px 32px;
-  border-bottom:1px solid var(--border);
+nav.on{
+  background:rgba(247,248,245,.95);
+  backdrop-filter:blur(24px) saturate(1.8);
+  -webkit-backdrop-filter:blur(24px) saturate(1.8);
+  border-bottom:1px solid var(--bord);
+  padding:14px 40px;
 }
-.logo{font-family:var(--fh);font-size:17px;font-weight:900;letter-spacing:-.3px;}
-.logo b{color:var(--lime);}
-.nav-btn{
-  background:var(--lime);color:#0c1a0c;
-  border:none;border-radius:100px;
-  padding:11px 24px;font-family:var(--fb);font-size:13px;font-weight:600;
-  cursor:pointer;transition:all .2s;
-  box-shadow:0 4px 20px rgba(200,241,53,.3);
+.logo{
+  font-size:15px;font-weight:700;letter-spacing:.5px;
+  color:var(--text);
 }
-.nav-btn:hover{transform:translateY(-2px);box-shadow:0 8px 28px rgba(200,241,53,.45);}
-.nav-mob{display:none;background:none;border:none;color:var(--white);cursor:pointer;padding:4px;}
+.logo em{color:var(--lime);font-style:normal;}
+.nav-pill{
+  background:var(--lime);color:#080808;border:none;
+  border-radius:100px;padding:10px 22px;
+  font-size:13px;font-weight:700;cursor:pointer;
+  font-family:var(--font);letter-spacing:.2px;
+  transition:transform .15s,box-shadow .2s;
+}
+.nav-pill:hover{transform:scale(1.04);box-shadow:0 0 28px rgba(212,245,60,.45);}
+.nav-mob{display:none;background:none;border:none;cursor:pointer;color:var(--text);padding:4px;}
 
-/* ═══════════════════════════════
-   HERO
-═══════════════════════════════ */
+/* ── MOB DRAWER ─────────────────────────── */
+.drawer{
+  position:fixed;inset:0;z-index:200;
+  background:#f0f2eb;
+  display:flex;flex-direction:column;
+  padding:28px 28px 40px;
+  transform:translateX(100%);transition:transform .38s ease;
+}
+.drawer.open{transform:none;}
+.drawer-close{align-self:flex-end;background:none;border:none;color:var(--text);font-size:26px;cursor:pointer;line-height:1;width:32px;height:32px;display:flex;align-items:center;justify-content:center;}
+.drawer-links{display:flex;flex-direction:column;margin-top:32px;flex:1;}
+.drawer-links a{
+  font-size:32px;font-weight:700;color:rgba(242,242,242,.3);
+  padding:14px 0;border-bottom:1px solid var(--bord);
+  transition:color .2s;
+}
+.drawer-links a:active{color:var(--lime);}
+.drawer-bottom{padding-top:24px;}
+
+/* ── HERO ───────────────────────────────── */
 #hero{
   min-height:100svh;
-  display:grid;grid-template-columns:1fr 1fr;
-  align-items:center;
-  gap:40px;
-  max-width:1200px;margin:0 auto;
-  padding:120px 40px 60px;
+  padding:140px 40px 80px;
+  max-width:1160px;margin:0 auto;
+  display:flex;flex-direction:column;
+  justify-content:center;
   position:relative;
 }
 
-/* animated court lines bg */
-.hero-bg{
-  position:fixed;inset:0;z-index:-1;overflow:hidden;pointer-events:none;
-}
-.hero-bg svg{width:100%;height:100%;opacity:.04;}
-
-.hero-tag{
+/* big eyebrow tag */
+.tag{
   display:inline-flex;align-items:center;gap:8px;
-  background:rgba(200,241,53,.08);border:1px solid var(--border);
-  border-radius:100px;padding:6px 16px;
-  font-size:11px;font-weight:500;color:var(--lime);
-  letter-spacing:1.5px;text-transform:uppercase;
-  margin-bottom:24px;
-  opacity:0;animation:fadeUp .7s .1s var(--ease) forwards;
+  background:var(--dim3);border:1px solid var(--bord);
+  border-radius:100px;padding:7px 16px;
+  font-size:12px;font-weight:500;color:var(--dim);
+  letter-spacing:.5px;margin-bottom:32px;
+  width:fit-content;
 }
-.pulse{width:6px;height:6px;border-radius:50%;background:var(--lime);animation:pulse 2s infinite;}
-@keyframes pulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.3;transform:scale(.8)}}
+.dot{width:6px;height:6px;border-radius:50%;background:var(--lime);animation:blink 2.5s ease-in-out infinite;}
+@keyframes blink{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.3;transform:scale(.75)}}
 
-.hero-h1{
-  font-family:var(--fh);
-  font-size:clamp(38px,6vw,76px);
-  font-weight:900;
-  line-height:.95;
-  letter-spacing:-3px;
-  margin-bottom:24px;
+/* massive display type */
+.hero-h{
+  font-size:clamp(52px,10vw,128px);
+  font-weight:800;line-height:.9;letter-spacing:-4px;
+  margin-bottom:36px;
+  color:var(--text);
 }
-.hero-h1 .line{display:block;overflow:hidden;}
-.hero-h1 .w{
-  display:inline-block;
-  animation:wordUp .85s var(--ease) both;
-  opacity:0;
-}
-@keyframes wordUp{from{opacity:0;transform:translateY(105%)}to{opacity:1;transform:none}}
-.hero-h1 .lime{color:var(--lime);}
-.hero-h1 .outline{
+.hero-h .accent{color:var(--lime);}
+.hero-h .stroke{
   color:transparent;
-  -webkit-text-stroke:2px rgba(200,241,53,.5);
+  -webkit-text-stroke:1.5px rgba(15,18,8,.18);
 }
 
-.hero-p{
-  font-size:clamp(15px,1.6vw,18px);color:rgba(240,247,240,.55);
-  max-width:440px;margin-bottom:36px;line-height:1.7;
-  opacity:0;animation:fadeUp .7s .6s var(--ease) forwards;
+.hero-row{
+  display:flex;align-items:flex-end;
+  justify-content:space-between;
+  gap:40px;flex-wrap:wrap;
 }
-@keyframes fadeUp{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:none}}
+.hero-left-bottom{max-width:480px;}
+.hero-desc{
+  font-size:17px;line-height:1.65;color:var(--dim);
+  margin-bottom:28px;font-weight:300;
+}
+.hero-btns{display:flex;gap:12px;align-items:center;flex-wrap:wrap;}
+.btn{
+  display:inline-flex;align-items:center;gap:9px;
+  border-radius:100px;padding:14px 28px;
+  font-family:var(--font);font-size:14px;font-weight:600;
+  cursor:pointer;transition:all .2s;letter-spacing:.2px;
+}
+.btn-lime{
+  background:var(--lime);color:#080808;border:none;
+  box-shadow:0 0 0 rgba(212,245,60,0);
+}
+.btn-lime:hover{box-shadow:0 0 32px rgba(212,245,60,.4);transform:translateY(-1px);}
+.btn-outline{
+  background:none;border:1px solid var(--bord);color:var(--dim);
+}
+.btn-outline:hover{border-color:rgba(242,242,242,.25);color:var(--text);}
 
-.hero-actions{
-  display:flex;gap:14px;align-items:center;flex-wrap:wrap;
-  opacity:0;animation:fadeUp .7s .8s var(--ease) forwards;
-}
-.btn-primary{
-  display:inline-flex;align-items:center;gap:10px;
-  background:var(--lime);color:#0c1a0c;
-  border:none;border-radius:100px;
-  padding:17px 32px;font-family:var(--fb);font-size:15px;font-weight:600;
-  cursor:pointer;transition:all .2s;
-  box-shadow:0 8px 32px rgba(200,241,53,.35);
-}
-.btn-primary:hover{transform:translateY(-3px);box-shadow:0 14px 44px rgba(200,241,53,.5);}
-.btn-ghost{
-  display:inline-flex;align-items:center;gap:6px;
-  background:none;border:none;
-  color:rgba(240,247,240,.4);font-family:var(--fb);font-size:14px;font-weight:300;
-  cursor:pointer;transition:color .2s;padding:4px 0;
-}
-.btn-ghost:hover{color:var(--white);}
-
-.hero-trust{
-  display:flex;align-items:center;gap:16px;margin-top:36px;
-  opacity:0;animation:fadeUp .7s 1s var(--ease) forwards;
-}
-.trust-avatars{display:flex;}
-.trust-av{
+/* trust row */
+.trust{display:flex;align-items:center;gap:14px;margin-top:28px;}
+.avs{display:flex;}
+.av{
   width:32px;height:32px;border-radius:50%;
   border:2px solid var(--bg);
   display:flex;align-items:center;justify-content:center;
-  font-size:11px;font-weight:700;
-  margin-left:-8px;
+  font-size:10px;font-weight:700;color:#fff;
+  margin-left:-9px;flex-shrink:0;
 }
-.trust-av:first-child{margin-left:0;}
-.trust-text{font-size:12px;color:var(--gray);}
-.trust-text b{color:var(--lime);}
+.av:first-child{margin-left:0;}
+.trust-text{font-size:12px;color:var(--dim2);}
+.trust-text strong{color:var(--lime);}
 
-/* ═══════════════════════════════
-   PHONE MOCKUP
-═══════════════════════════════ */
-.hero-phone-wrap{
-  display:flex;justify-content:center;align-items:center;
-  position:relative;
-  opacity:0;animation:fadeUp .9s .3s var(--ease) forwards;
+/* hero right — stat cards */
+.hero-stats{display:flex;flex-direction:column;gap:10px;flex-shrink:0;}
+.hstat{
+  background:var(--bg2);border:1px solid var(--bord);
+  border-radius:var(--r);padding:16px 20px;
+  min-width:160px;
 }
-.phone-glow{
-  position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);
-  width:340px;height:480px;border-radius:50%;
-  background:radial-gradient(ellipse,rgba(200,241,53,.1) 0%,transparent 70%);
-  animation:glow 4s ease-in-out infinite;
-  pointer-events:none;
-}
-@keyframes glow{0%,100%{transform:translate(-50%,-50%) scale(1)}50%{transform:translate(-50%,-50%) scale(1.12)}}
+.hstat-n{font-size:36px;font-weight:800;letter-spacing:-2px;line-height:1;color:var(--text);}
+.hstat-n span{font-size:.45em;color:var(--lime);font-weight:600;vertical-align:top;margin-top:4px;display:inline-block;}
+.hstat-d{font-size:11px;color:var(--dim2);margin-top:4px;line-height:1.3;}
 
-.phone{
-  width:260px;
-  background:#0a120a;
-  border-radius:44px;
-  border:7px solid #1e301e;
-  box-shadow:
-    0 0 0 1px rgba(200,241,53,.08),
-    0 40px 80px rgba(0,0,0,.7),
-    inset 0 1px 0 rgba(255,255,255,.04);
+/* ── TICKER ──────────────────────────────── */
+.ticker{
   overflow:hidden;
-  animation:float 5s ease-in-out infinite;
-  position:relative;z-index:1;
+  border-top:1px solid var(--bord);border-bottom:1px solid var(--bord);
+  padding:13px 0;background:#f0f2eb;
 }
-@keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-14px)}}
-
-.ph-notch{
-  width:80px;height:24px;background:#0a120a;
-  border-radius:0 0 16px 16px;margin:0 auto;
-  display:flex;align-items:center;justify-content:center;
+.ticker-inner{display:inline-flex;white-space:nowrap;animation:scroll 32s linear infinite;}
+@keyframes scroll{to{transform:translateX(-50%)}}
+.ti{
+  display:inline-flex;align-items:center;
+  padding:0 22px;
+  font-size:11px;font-weight:600;letter-spacing:1.5px;text-transform:uppercase;
+  color:var(--dim2);
 }
-.ph-notch-dot{width:7px;height:7px;border-radius:50%;background:#1e301e;border:2px solid #2a402a;}
+.ti.hi{color:var(--lime);}
+.ti::after{content:'·';margin-left:22px;opacity:.3;}
 
-.ph-body{background:#0d180d;}
+/* ── SECTION SHELL ───────────────────────── */
+.shell{max-width:1160px;margin:0 auto;padding:100px 40px;}
+.section-bg-1{background:var(--bg);}
+.section-bg-2{background:#f0f2eb;}
 
-/* Home screen */
-.ph-header{
-  padding:10px 14px;display:flex;align-items:center;justify-content:space-between;
-  background:#111f11;border-bottom:1px solid rgba(200,241,53,.06);
+/* labels */
+.label{
+  display:inline-flex;align-items:center;gap:6px;
+  font-size:11px;font-weight:600;letter-spacing:1.5px;
+  text-transform:uppercase;color:var(--dim2);
+  margin-bottom:16px;
 }
-.ph-logo{font-family:var(--fh);font-size:12px;font-weight:900;}
-.ph-logo b{color:var(--lime);}
-.ph-ava{
-  width:26px;height:26px;border-radius:50%;
-  background:linear-gradient(135deg,var(--lime),#8fd400);
-  display:flex;align-items:center;justify-content:center;
-  font-size:9px;font-weight:700;color:#0c1a0c;
-}
+.label::before{content:'';display:block;width:16px;height:1px;background:var(--dim2);}
 
-.ph-hero-card{
-  margin:10px 10px 8px;
-  background:linear-gradient(135deg,#0f2a0f,#182818);
-  border-radius:16px;padding:14px;
-  border:1px solid rgba(200,241,53,.1);
+/* headings */
+h2.disp{
+  font-size:clamp(28px,4.5vw,56px);
+  font-weight:800;letter-spacing:-2px;line-height:.97;
+  color:var(--text);margin-bottom:14px;
+}
+h2.disp .acc{color:var(--lime);}
+p.lead{font-size:16px;color:var(--dim);line-height:1.65;max-width:480px;font-weight:300;}
+
+/* ── BENTO GRID (features) ───────────────── */
+.bento{
+  display:grid;
+  grid-template-columns:1.15fr 1fr 1fr;
+  grid-template-rows:auto auto;
+  gap:12px;margin-top:52px;
+}
+.bento-cell{
+  background:var(--bg2);border:1px solid var(--bord);
+  border-radius:var(--rr);padding:28px;
+  transition:border-color .25s,transform .2s;
   position:relative;overflow:hidden;
 }
-.ph-hero-card::before{
-  content:'';position:absolute;top:-20px;right:-20px;
-  width:80px;height:80px;border-radius:50%;
-  background:radial-gradient(circle,rgba(200,241,53,.12),transparent 70%);
+.bento-cell:hover{border-color:rgba(242,242,242,.16);transform:translateY(-2px);}
+.bento-cell.span2{grid-row:span 2;}
+.bento-cell.lime-bg{
+  background:var(--lime);
+  border-color:transparent;
 }
-.ph-hi{font-size:8px;color:var(--lime);font-weight:500;letter-spacing:1px;text-transform:uppercase;}
-.ph-name{font-family:var(--fh);font-size:16px;font-weight:900;letter-spacing:-.5px;margin-top:2px;}
-.ph-lvl{
-  display:inline-flex;align-items:center;gap:4px;
-  background:rgba(200,241,53,.1);border:1px solid rgba(200,241,53,.2);
-  border-radius:20px;padding:2px 8px;margin-top:6px;
-  font-size:8px;font-weight:600;color:var(--lime);
-}
-.ph-stats{display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px;margin-top:10px;}
-.ph-stat-n{font-family:var(--fh);font-size:17px;font-weight:900;line-height:1;}
-.ph-stat-l{font-size:7px;color:var(--gray);margin-top:1px;}
+.bento-cell.lime-bg:hover{transform:translateY(-2px);}
+.bento-cell.lime-bg .cell-title{color:#080808;}
+.bento-cell.lime-bg .cell-text{color:rgba(8,8,8,.6);}
+.bento-cell.lime-bg .cell-icon{filter:none;}
 
-.ph-next{
-  margin:0 10px 8px;padding:10px 12px;
-  background:#182818;border-radius:12px;
-  border:1px solid rgba(200,241,53,.07);
-  display:flex;align-items:center;gap:10px;
+.cell-icon{font-size:28px;margin-bottom:16px;display:block;}
+.cell-title{font-size:17px;font-weight:700;letter-spacing:-.5px;margin-bottom:8px;color:var(--text);}
+.cell-text{font-size:13px;color:var(--dim);line-height:1.6;}
+.cell-tag{
+  display:inline-block;margin-top:14px;
+  background:rgba(242,242,242,.07);border:1px solid var(--bord);
+  border-radius:100px;padding:4px 13px;
+  font-size:11px;font-weight:600;color:var(--dim);
 }
-.ph-court-badge{
-  width:36px;height:36px;border-radius:10px;
-  background:rgba(200,241,53,.08);border:1px solid rgba(200,241,53,.15);
-  display:flex;flex-direction:column;align-items:center;justify-content:center;flex-shrink:0;
+.bento-cell.lime-bg .cell-tag{background:rgba(8,8,8,.12);border-color:rgba(8,8,8,.15);color:#080808;}
+
+/* booking preview inside bento */
+.preview-slots{
+  margin-top:auto;padding-top:20px;
+  display:grid;grid-template-columns:repeat(3,1fr);gap:6px;
 }
-.ph-court-n{font-family:var(--fh);font-size:16px;font-weight:900;color:var(--lime);line-height:1;}
-.ph-court-l{font-size:6px;color:var(--gray);text-transform:uppercase;}
-.ph-next-info{flex:1;}
-.ph-next-time{font-size:12px;font-weight:600;}
-.ph-next-date{font-size:9px;color:var(--gray);margin-top:1px;}
-.ph-countdown{text-align:right;}
-.ph-cd-n{font-family:var(--fh);font-size:18px;font-weight:900;color:var(--lime);line-height:1;}
-.ph-cd-l{font-size:7px;color:var(--gray);}
-
-.ph-pts-card{
-  margin:0 10px 10px;padding:12px;
-  background:linear-gradient(135deg,#0f2a0f,#182818);
-  border-radius:12px;border:1px solid rgba(200,241,53,.1);
-  display:flex;align-items:center;gap:10px;
+.ps{
+  padding:8px 4px;border-radius:9px;text-align:center;
+  font-size:11px;font-weight:600;
+  border:1px solid rgba(15,18,8,.06);
+  background:rgba(15,18,8,.03);
+  color:rgba(15,18,8,.4);transition:all .25s;
 }
-.ph-pts-n{font-family:var(--fh);font-size:22px;font-weight:900;color:var(--lime);line-height:1;}
-.ph-pts-l{font-size:8px;color:var(--gray);}
-.ph-pts-bar{margin-top:4px;background:rgba(255,255,255,.06);border-radius:3px;height:3px;width:100px;}
-.ph-pts-fill{height:100%;background:var(--lime);border-radius:3px;width:68%;animation:barFill 2s 1.5s ease forwards;transform-origin:left;transform:scaleX(0);}
-@keyframes barFill{to{transform:scaleX(1)}}
-.ph-pts-badge{margin-left:auto;background:rgba(200,241,53,.1);border:1px solid rgba(200,241,53,.2);border-radius:20px;padding:3px 8px;font-size:8px;font-weight:600;color:var(--lime);}
+.ps sub{display:block;font-size:9px;margin-top:1px;opacity:.65;}
+.ps.on{background:var(--lime);color:#080808;border-color:var(--lime);}
+.ps.bk{opacity:.2;cursor:default;}
 
-.ph-nav{
-  display:flex;justify-content:space-around;
-  padding:8px 0 6px;
-  background:#111f11;
-  border-top:1px solid rgba(200,241,53,.06);
+/* levels inside bento */
+.mini-levels{margin-top:18px;display:flex;flex-direction:column;gap:6px;}
+.ml{
+  display:flex;justify-content:space-between;align-items:center;
+  padding:9px 12px;border-radius:10px;
+  background:rgba(15,18,8,.03);border:1px solid rgba(15,18,8,.05);
+  font-size:12px;font-weight:600;color:var(--text);
 }
-.ph-nav-i{display:flex;flex-direction:column;align-items:center;gap:2px;font-size:7px;color:var(--gray);}
-.ph-nav-i.on{color:var(--lime);}
+.ml.cur{background:rgba(116,163,0,.08);border-color:rgba(116,163,0,.25);color:var(--lime);}
+.ml span{font-size:11px;color:var(--dim2);font-weight:400;}
 
-/* ═══════════════════════════════
-   TICKER
-═══════════════════════════════ */
-.ticker{
-  overflow:hidden;background:#0a120a;
-  border-top:1px solid var(--border);border-bottom:1px solid var(--border);
-  padding:12px 0;
-}
-.ticker-t{display:inline-flex;white-space:nowrap;animation:tick 28s linear infinite;}
-@keyframes tick{to{transform:translateX(-50%)}}
-.ti{display:inline-flex;align-items:center;gap:12px;padding:0 18px;
-  font-family:var(--fh);font-size:10px;font-weight:700;
-  color:rgba(240,247,240,.18);text-transform:uppercase;letter-spacing:2px;}
-.ti.hi{color:var(--lime);}
-.ti-dot{width:3px;height:3px;border-radius:50%;background:var(--border);}
-
-/* ═══════════════════════════════
-   SECTION BASE
-═══════════════════════════════ */
-.section{max-width:1200px;margin:0 auto;padding:100px 40px;}
-.s-tag{font-size:10px;font-weight:500;color:var(--lime);text-transform:uppercase;
-  letter-spacing:2px;display:flex;align-items:center;gap:8px;margin-bottom:14px;}
-.s-tag::before{content:'';display:block;width:18px;height:1px;background:var(--lime);}
-.s-h{font-family:var(--fh);font-size:clamp(26px,4vw,52px);font-weight:900;
-  letter-spacing:-2px;line-height:1.0;margin-bottom:16px;}
-.s-sub{font-size:16px;color:rgba(240,247,240,.45);font-weight:300;
-  line-height:1.7;max-width:500px;}
-.lime{color:var(--lime);}
-
-/* ═══════════════════════════════
-   STEPS — HOW IT WORKS
-═══════════════════════════════ */
-#how{background:var(--bg);}
+/* ── STEPS ───────────────────────────────── */
 .steps-grid{
   display:grid;grid-template-columns:repeat(3,1fr);
-  gap:2px;margin-top:56px;
-  background:var(--border);border-radius:20px;overflow:hidden;
+  gap:1px;background:var(--bord);
+  border-radius:var(--rr);overflow:hidden;
+  margin-top:52px;
 }
 .step{
-  background:var(--bg2);padding:36px 28px;
+  background:#f0f2eb;padding:36px 28px;
   position:relative;overflow:hidden;
-  transition:background .25s;
+  transition:background .2s;
 }
-.step:hover{background:var(--card);}
+.step:hover{background:var(--bg2);}
 .step-num{
-  position:absolute;top:-8px;right:14px;
-  font-family:var(--fh);font-size:88px;font-weight:900;
-  color:rgba(200,241,53,.04);line-height:1;pointer-events:none;
+  position:absolute;bottom:-12px;right:10px;
+  font-size:88px;font-weight:800;line-height:1;
+  color:rgba(242,242,242,.04);pointer-events:none;
+  letter-spacing:-4px;
 }
-.step-emoji{font-size:32px;margin-bottom:18px;display:block;}
-.step-title{font-family:var(--fh);font-size:17px;font-weight:700;
-  letter-spacing:-.5px;margin-bottom:10px;}
-.step-text{font-size:13px;color:rgba(240,247,240,.45);line-height:1.65;}
-.step-line{
-  display:block;width:32px;height:2px;
-  background:var(--lime);border-radius:2px;margin-top:20px;
+.step-icon{font-size:32px;margin-bottom:20px;display:block;}
+.step-title{font-size:16px;font-weight:700;letter-spacing:-.4px;margin-bottom:10px;color:var(--text);}
+.step-text{font-size:13px;color:var(--dim);line-height:1.6;}
+.step-bar{
+  display:block;width:24px;height:2px;
+  background:var(--lime);border-radius:2px;margin-top:22px;
   transition:width .3s;
 }
-.step:hover .step-line{width:56px;}
+.step:hover .step-bar{width:48px;}
 
-/* ═══════════════════════════════
-   BENEFITS — BIG CARDS
-═══════════════════════════════ */
-#benefits{background:var(--bg2);}
-.benefits-grid{
-  display:grid;
-  grid-template-columns:1.3fr 1fr;
-  grid-template-rows:auto auto;
-  gap:16px;margin-top:56px;
-}
-.benefit-card{
-  border-radius:20px;padding:32px;
-  background:var(--card);
-  border:1px solid rgba(255,255,255,.04);
-  transition:border-color .25s,transform .2s;
-  overflow:hidden;position:relative;
-}
-.benefit-card:hover{border-color:var(--border);transform:translateY(-2px);}
-.benefit-card.tall{grid-row:span 2;display:flex;flex-direction:column;justify-content:space-between;}
-.benefit-card.accent{background:linear-gradient(135deg,#0f2a0f,#1a3a1a);border-color:rgba(200,241,53,.15);}
-.bc-icon{font-size:32px;margin-bottom:18px;}
-.bc-title{font-family:var(--fh);font-size:20px;font-weight:700;letter-spacing:-.5px;margin-bottom:10px;}
-.bc-text{font-size:13px;color:rgba(240,247,240,.45);line-height:1.65;}
-.bc-tag{
-  display:inline-block;margin-top:16px;
-  background:rgba(200,241,53,.08);border:1px solid var(--border);
-  border-radius:100px;padding:4px 12px;
-  font-size:11px;font-weight:500;color:var(--lime);
-}
-
-/* Booking visual inside card */
-.bc-booking{margin-top:20px;}
-.bc-slots{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;}
-.bc-slot{
-  padding:9px 4px;border-radius:10px;text-align:center;
-  font-size:11px;font-weight:500;
-  border:1px solid rgba(255,255,255,.06);background:rgba(255,255,255,.03);
-  color:rgba(240,247,240,.5);transition:all .3s;
-}
-.bc-slot.on{background:var(--lime);color:#0c1a0c;border-color:var(--lime);}
-.bc-slot.off{opacity:.3;}
-.bc-slot sub{display:block;font-size:9px;margin-top:1px;opacity:.7;}
-
-/* Loyalty visual */
-.bc-loyalty-visual{margin-top:20px;display:flex;flex-direction:column;gap:10px;}
-.level-pill{
-  display:flex;align-items:center;justify-content:space-between;
-  padding:10px 14px;border-radius:12px;
-  background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.05);
-  font-size:12px;transition:all .25s;
-}
-.level-pill.cur{background:rgba(200,241,53,.07);border-color:rgba(200,241,53,.2);}
-.level-pill.cur .lp-name{color:var(--lime);}
-.lp-name{font-weight:600;font-size:12px;}
-.lp-perk{font-size:11px;color:var(--gray);}
-
-/* Tournament card visual */
-.bc-tourn-vis{
-  margin-top:16px;
-  background:linear-gradient(135deg,#0d1a2e,#162028);
-  border-radius:14px;padding:16px;
-  border:1px solid rgba(168,85,247,.15);
-}
-.bt-prize{font-family:var(--fh);font-size:28px;font-weight:900;color:#fbbf24;letter-spacing:-1px;}
-.bt-label{font-size:10px;color:rgba(240,247,240,.3);margin-top:2px;}
-.bt-bar{margin-top:12px;background:rgba(255,255,255,.06);border-radius:4px;height:5px;overflow:hidden;}
-.bt-fill{width:37.5%;height:100%;background:#a855f7;border-radius:4px;}
-.bt-meta{display:flex;justify-content:space-between;font-size:10px;color:rgba(240,247,240,.3);margin-top:4px;}
-
-/* ═══════════════════════════════
-   STATS STRIP
-═══════════════════════════════ */
-#stats{background:var(--bg);}
+/* ── STATS BAR ───────────────────────────── */
 .stats-strip{
   display:grid;grid-template-columns:repeat(4,1fr);
-  gap:1px;background:var(--border);
-  border-radius:20px;overflow:hidden;
-  margin-top:0;
+  border-top:1px solid var(--bord);
+  border-bottom:1px solid var(--bord);
 }
-.stat-c{
-  background:var(--bg2);padding:44px 28px;
-  text-align:center;transition:background .2s;
+.stat{
+  padding:52px 32px;text-align:center;
+  border-right:1px solid var(--bord);
+  transition:background .2s;
 }
-.stat-c:hover{background:var(--card);}
+.stat:last-child{border-right:none;}
+.stat:hover{background:var(--bg2);}
 .stat-n{
-  font-family:var(--fh);font-size:clamp(36px,4vw,56px);font-weight:900;
-  letter-spacing:-2px;line-height:1;margin-bottom:8px;
+  font-size:clamp(40px,5vw,64px);font-weight:800;
+  letter-spacing:-3px;line-height:1;
+  color:var(--text);margin-bottom:8px;
 }
-.stat-n .u{font-size:.5em;color:var(--lime);vertical-align:top;margin-top:5px;display:inline-block;}
-.stat-d{font-size:13px;color:var(--gray);line-height:1.4;}
+.stat-n em{font-style:normal;color:var(--lime);font-size:.55em;vertical-align:top;margin-top:7px;display:inline-block;}
+.stat-d{font-size:12px;color:var(--dim2);line-height:1.4;text-transform:uppercase;letter-spacing:.5px;}
 
-/* ═══════════════════════════════
-   INSTALL SECTION
-═══════════════════════════════ */
-#install{
-  background:var(--bg2);
-  position:relative;overflow:hidden;
-}
-#install::before{
-  content:'';position:absolute;inset:0;
-  background:radial-gradient(ellipse 70% 50% at 50% 100%,rgba(200,241,53,.06),transparent);
-  pointer-events:none;
-}
-.install-inner{
-  max-width:1200px;margin:0 auto;padding:100px 40px;
-  display:grid;grid-template-columns:1fr 1fr;gap:80px;align-items:center;
-  position:relative;z-index:1;
+/* ── INSTALL ─────────────────────────────── */
+.install-grid{
+  display:grid;grid-template-columns:1fr 1fr;gap:60px;
+  align-items:center;
 }
 .install-h{
-  font-family:var(--fh);font-size:clamp(32px,4.5vw,58px);
-  font-weight:900;letter-spacing:-2px;line-height:.97;margin-bottom:20px;
+  font-size:clamp(32px,4.5vw,58px);font-weight:800;
+  letter-spacing:-2px;line-height:.95;margin-bottom:18px;
+  color:var(--text);
 }
-.install-sub{font-size:16px;color:rgba(240,247,240,.45);font-weight:300;line-height:1.7;margin-bottom:32px;max-width:420px;}
-.install-steps{display:flex;flex-direction:column;gap:14px;margin-bottom:36px;}
-.i-step{display:flex;align-items:center;gap:14px;font-size:14px;color:rgba(240,247,240,.55);}
-.i-step-n{
-  width:30px;height:30px;border-radius:50%;flex-shrink:0;
-  background:rgba(200,241,53,.08);border:1px solid var(--border);
+.install-h .acc{color:var(--lime);}
+.install-sub{font-size:16px;color:var(--dim);font-weight:300;line-height:1.65;margin-bottom:30px;}
+.install-steps{display:flex;flex-direction:column;gap:11px;margin-bottom:32px;}
+.istep{display:flex;align-items:center;gap:13px;font-size:14px;color:var(--dim);}
+.istep-n{
+  width:28px;height:28px;border-radius:50%;flex-shrink:0;
+  background:rgba(212,245,60,.08);border:1px solid rgba(212,245,60,.18);
   display:flex;align-items:center;justify-content:center;
-  font-family:var(--fh);font-size:12px;font-weight:700;color:var(--lime);
+  font-size:12px;font-weight:700;color:var(--lime);
 }
-.install-btns{display:flex;gap:12px;flex-wrap:wrap;}
+.install-btns{display:flex;gap:10px;flex-wrap:wrap;}
 
-/* Install visual card */
-.install-card{
-  background:var(--card);border:1px solid rgba(200,241,53,.1);
-  border-radius:24px;padding:28px;
+/* install card */
+.icard{
+  background:var(--bg2);border:1px solid var(--bord);
+  border-radius:var(--rr);padding:24px;
 }
-.ic-preview{
-  background:var(--bg);border-radius:14px;overflow:hidden;
-  margin-bottom:18px;border:1px solid rgba(255,255,255,.05);
+.icard-screen{
+  background:#f0f2eb;border-radius:12px;overflow:hidden;
+  margin-bottom:16px;border:1px solid var(--bord);
 }
-.ic-preview-bar{
-  background:#0a120a;padding:10px 14px;
+.icard-bar{
+  background:#e8ebe0;padding:10px 14px;
   display:flex;align-items:center;justify-content:space-between;
-  border-bottom:1px solid rgba(255,255,255,.05);
+  border-bottom:1px solid var(--bord);
 }
-.ic-preview-url{font-size:11px;color:var(--gray);text-align:center;padding:8px;background:#080f08;}
-.ic-banner{
+.icard-url{font-size:11px;color:var(--dim2);text-align:center;padding:8px;}
+.icard-banner{
   display:flex;align-items:center;gap:12px;
-  background:rgba(200,241,53,.06);border:1px solid rgba(200,241,53,.15);
-  border-radius:14px;padding:14px 16px;
+  background:rgba(212,245,60,.06);
+  border:1px solid rgba(212,245,60,.15);
+  border-radius:12px;padding:14px;
 }
-.ic-b-icon{font-size:24px;flex-shrink:0;}
-.ic-b-text{flex:1;}
-.ic-b-title{font-size:13px;font-weight:500;}
-.ic-b-sub{font-size:11px;color:var(--gray);margin-top:1px;}
-.ic-b-btn{
-  background:var(--lime);color:#0c1a0c;
-  border:none;border-radius:10px;
-  padding:8px 14px;font-size:12px;font-weight:600;
-  cursor:pointer;white-space:nowrap;font-family:var(--fb);
-  transition:all .15s;
+.icard-t{flex:1;}
+.icard-title{font-size:13px;font-weight:600;color:var(--text);}
+.icard-sub{font-size:11px;color:var(--dim2);margin-top:2px;}
+.icard-btn{
+  background:var(--lime);color:#080808;border:none;
+  border-radius:9px;padding:9px 16px;
+  font-size:12px;font-weight:700;cursor:pointer;
+  white-space:nowrap;font-family:var(--font);
+  transition:transform .15s;
 }
-.ic-b-btn:hover{transform:scale(1.04);}
-.ic-note{margin-top:14px;font-size:11px;color:var(--gray);text-align:center;line-height:1.5;}
+.icard-btn:hover{transform:scale(1.05);}
+.icard-note{margin-top:12px;font-size:11px;color:var(--dim2);text-align:center;}
 
-/* ═══════════════════════════════
-   SOCIAL PROOF
-═══════════════════════════════ */
-#proof{background:var(--bg);}
-.proof-grid{
+/* ── REVIEWS ─────────────────────────────── */
+.reviews-grid{
   display:grid;grid-template-columns:repeat(3,1fr);
-  gap:16px;margin-top:56px;
+  gap:12px;margin-top:52px;
 }
-.proof-card{
-  background:var(--bg2);border:1px solid rgba(255,255,255,.04);
-  border-radius:20px;padding:28px;transition:border-color .2s;
+.rv{
+  background:var(--bg2);border:1px solid var(--bord);
+  border-radius:var(--rr);padding:26px;
+  transition:border-color .2s;
 }
-.proof-card:hover{border-color:var(--border);}
-.proof-stars{color:#fbbf24;font-size:13px;margin-bottom:14px;letter-spacing:2px;}
-.proof-text{font-size:14px;color:rgba(240,247,240,.6);line-height:1.65;margin-bottom:20px;font-style:italic;}
-.proof-author{display:flex;align-items:center;gap:10px;}
-.proof-av{
-  width:36px;height:36px;border-radius:50%;
+.rv:hover{border-color:rgba(242,242,242,.15);}
+.rv-stars{color:#f59e0b;font-size:13px;margin-bottom:14px;letter-spacing:1px;}
+.rv-text{font-size:14px;color:var(--dim);line-height:1.6;margin-bottom:20px;font-style:italic;}
+.rv-au{display:flex;align-items:center;gap:10px;}
+.rv-av{
+  width:36px;height:36px;border-radius:50%;flex-shrink:0;
   display:flex;align-items:center;justify-content:center;
-  font-size:12px;font-weight:700;color:#0c1a0c;flex-shrink:0;
+  font-size:11px;font-weight:700;color:#fff;
 }
-.proof-name{font-size:13px;font-weight:500;}
-.proof-role{font-size:11px;color:var(--gray);margin-top:1px;}
+.rv-name{font-size:13px;font-weight:600;color:var(--text);}
+.rv-role{font-size:11px;color:var(--dim2);margin-top:2px;}
 
-/* ═══════════════════════════════
-   FINAL CTA
-═══════════════════════════════ */
+/* ── CTA ─────────────────────────────────── */
 #cta{
-  background:var(--bg2);text-align:center;
   position:relative;overflow:hidden;
+  background:#f0f2eb;
+  text-align:center;
 }
 #cta::before{
-  content:'';position:absolute;inset:0;
-  background:
-    linear-gradient(rgba(200,241,53,.04) 1px,transparent 1px),
-    linear-gradient(90deg,rgba(200,241,53,.04) 1px,transparent 1px);
-  background-size:48px 48px;
+  content:'';position:absolute;
+  top:50%;left:50%;transform:translate(-50%,-50%);
+  width:600px;height:600px;border-radius:50%;
+  background:radial-gradient(circle,rgba(212,245,60,.15) 0%,transparent 65%);
+  pointer-events:none;
 }
-.cta-inner{position:relative;z-index:1;padding:120px 40px;}
+.cta-shell{position:relative;z-index:1;padding:120px 40px;}
+.cta-kicker{
+  display:inline-flex;align-items:center;gap:6px;
+  font-size:11px;font-weight:600;letter-spacing:1.5px;
+  text-transform:uppercase;color:var(--dim2);
+  margin-bottom:24px;
+}
 .cta-h{
-  font-family:var(--fh);
-  font-size:clamp(36px,6vw,80px);
-  font-weight:900;letter-spacing:-3px;line-height:.95;
-  margin-bottom:20px;
+  font-size:clamp(40px,7vw,90px);font-weight:800;
+  letter-spacing:-3px;line-height:.9;
+  color:var(--text);margin-bottom:18px;
 }
-.cta-sub{font-size:17px;color:rgba(240,247,240,.4);max-width:460px;margin:0 auto 40px;font-weight:300;line-height:1.7;}
-.cta-btns{display:flex;gap:14px;justify-content:center;flex-wrap:wrap;}
-.cta-note{margin-top:24px;font-size:13px;color:rgba(240,247,240,.2);}
+.cta-h .acc{color:var(--lime2);}
+.cta-sub{font-size:17px;color:var(--dim);max-width:420px;margin:0 auto 40px;line-height:1.65;font-weight:300;}
+.cta-btns{display:flex;gap:12px;justify-content:center;flex-wrap:wrap;}
+.cta-fine{margin-top:20px;font-size:12px;color:var(--dim2);}
 
-/* ═══════════════════════════════
-   FOOTER
-═══════════════════════════════ */
+/* ── FOOTER ──────────────────────────────── */
 footer{
-  background:#060e06;
-  border-top:1px solid var(--border);
+  background:var(--bg);
+  border-top:1px solid var(--bord);
   padding:28px 40px;
   display:flex;align-items:center;justify-content:space-between;
   flex-wrap:wrap;gap:12px;
 }
-.footer-copy{font-size:12px;color:rgba(240,247,240,.2);}
+.fc{font-size:12px;color:var(--dim2);}
 
-/* ═══════════════════════════════
-   MOBILE NAV DRAWER
-═══════════════════════════════ */
-.mob-nav{
-  position:fixed;inset:0;z-index:200;
-  background:var(--bg2);
-  display:flex;flex-direction:column;padding:28px;
-  transform:translateX(100%);transition:transform .4s var(--ease);
-}
-.mob-nav.open{transform:none;}
-.mob-close{
-  align-self:flex-end;background:none;border:none;
-  color:var(--white);font-size:28px;cursor:pointer;line-height:1;
-}
-.mob-links{display:flex;flex-direction:column;gap:4px;margin-top:28px;flex:1;}
-.mob-links a{
-  font-family:var(--fh);font-size:28px;font-weight:900;
-  color:rgba(240,247,240,.4);padding:10px 0;
-  border-bottom:1px solid rgba(255,255,255,.05);
-  transition:color .2s;
-}
-.mob-links a:hover,.mob-links a:active{color:var(--lime);}
-
-/* ═══════════════════════════════
-   SCROLL TOP
-═══════════════════════════════ */
+/* ── SCROLL TOP ──────────────────────────── */
 #top{
   position:fixed;bottom:24px;right:24px;z-index:50;
-  width:42px;height:42px;border-radius:50%;
-  background:var(--card);border:1px solid var(--border);
-  color:var(--gray);cursor:pointer;
+  width:40px;height:40px;border-radius:50%;
+  background:var(--bg2);border:1px solid var(--bord);
+  color:var(--dim);cursor:pointer;
   display:flex;align-items:center;justify-content:center;
   opacity:0;pointer-events:none;transition:all .3s;
 }
 #top.show{opacity:1;pointer-events:all;}
-#top:hover{background:var(--lime);color:#0c1a0c;border-color:var(--lime);}
+#top:hover{background:var(--lime);color:#0f1208;border-color:var(--lime);}
 
-/* ═══════════════════════════════
-   RESPONSIVE
-═══════════════════════════════ */
-@media(max-width:1024px){
-  #hero{grid-template-columns:1fr;text-align:center;}
-  .hero-p{margin-left:auto;margin-right:auto;}
-  .hero-actions{justify-content:center;}
-  .hero-trust{justify-content:center;}
-  .hero-phone-wrap{margin-top:20px;}
-  .benefits-grid{grid-template-columns:1fr 1fr;}
-  .benefit-card.tall{grid-row:auto;}
+/* ── RESPONSIVE ──────────────────────────── */
+@media(max-width:960px){
+  .bento{grid-template-columns:1fr 1fr;}
+  .bento-cell.span2{grid-row:auto;}
+  .install-grid{grid-template-columns:1fr;gap:40px;}
+  .reviews-grid{grid-template-columns:1fr 1fr;}
+  .hero-stats{flex-direction:row;}
   .stats-strip{grid-template-columns:1fr 1fr;}
-  .install-inner{grid-template-columns:1fr;gap:40px;}
-  .proof-grid{grid-template-columns:1fr 1fr;}
+  .stat{border-right:none;border-bottom:1px solid var(--bord);}
+  .stat:nth-child(odd){border-right:1px solid var(--bord);}
+  .stat:nth-last-child(-n+2){border-bottom:none;}
 }
-@media(max-width:768px){
+@media(max-width:640px){
   nav{padding:14px 20px;}
-  nav.stuck{padding:12px 20px;}
-  .nav-btn{display:none;}
-  .nav-mob{display:block;}
-  .section{padding:70px 20px;}
-  #hero{padding:100px 20px 50px;}
-  .hero-h1{letter-spacing:-2px;}
+  nav.on{padding:12px 20px;}
+  .nav-pill{display:none;}
+  .nav-mob{display:flex;}
+  #hero{padding:110px 20px 60px;}
+  .hero-h{letter-spacing:-2px;}
+  .hero-row{flex-direction:column;align-items:flex-start;}
+  .hero-stats{flex-direction:row;flex-wrap:wrap;width:100%;}
+  .hstat{flex:1;min-width:130px;}
+  .shell{padding:70px 20px;}
   .steps-grid{grid-template-columns:1fr;}
-  .benefits-grid{grid-template-columns:1fr;}
-  .benefit-card.tall{grid-row:auto;}
+  .bento{grid-template-columns:1fr;}
+  .bento-cell.span2{grid-row:auto;}
   .stats-strip{grid-template-columns:1fr 1fr;}
-  .stat-c{padding:28px 16px;}
-  .proof-grid{grid-template-columns:1fr;}
-  .install-inner{padding:70px 20px;}
-  .cta-inner{padding:80px 20px;}
+  .stat{padding:32px 16px;}
+  .reviews-grid{grid-template-columns:1fr;}
+  .cta-shell{padding:80px 20px;}
   footer{flex-direction:column;text-align:center;padding:24px 20px;}
+  .install-grid{padding:70px 20px;}
 }
 </style>
 </head>
 <body>
 
-<!-- ══ COURT BACKGROUND ══ -->
-<div class="hero-bg" aria-hidden="true">
-  <svg viewBox="0 0 1440 900" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg">
-    <rect x="180" y="80" width="1080" height="740" stroke="#c8f135" stroke-width="1.5" fill="none"/>
-    <line x1="720" y1="80" x2="720" y2="820" stroke="#c8f135" stroke-width="1"/>
-    <rect x="360" y="80" width="720" height="280" stroke="#c8f135" stroke-width="1" fill="none"/>
-    <rect x="360" y="540" width="720" height="280" stroke="#c8f135" stroke-width="1" fill="none"/>
-    <line x1="180" y1="450" x2="1260" y2="450" stroke="#c8f135" stroke-width="2"/>
-    <circle cx="720" cy="450" r="50" stroke="#c8f135" stroke-width="1" fill="none" stroke-dasharray="8 8"/>
-  </svg>
-</div>
-
-<!-- ══ NAV ══ -->
+<!-- NAV -->
 <nav id="nav">
-  <div class="logo">PADEL<b>PASS</b></div>
-  <button class="nav-btn" onclick="install()">Установить бесплатно</button>
-  <button class="nav-mob" onclick="document.getElementById('mob').classList.add('open')" aria-label="Меню">
-    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+  <div class="logo">PADEL<em>PASS</em></div>
+  <button class="nav-pill" onclick="doInstall()">Установить бесплатно</button>
+  <button class="nav-mob" onclick="document.getElementById('drawer').classList.add('open')" aria-label="Меню">
+    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
       <line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/>
     </svg>
   </button>
 </nav>
 
-<!-- MOBILE DRAWER -->
-<div class="mob-nav" id="mob">
-  <button class="mob-close" onclick="document.getElementById('mob').classList.remove('open')">×</button>
-  <div class="mob-links">
-    <a href="#how" onclick="document.getElementById('mob').classList.remove('open')">Как работает</a>
-    <a href="#benefits" onclick="document.getElementById('mob').classList.remove('open')">Возможности</a>
-    <a href="#install" onclick="document.getElementById('mob').classList.remove('open')">Установить</a>
+<!-- DRAWER -->
+<div class="drawer" id="drawer">
+  <button class="drawer-close" onclick="document.getElementById('drawer').classList.remove('open')">✕</button>
+  <div class="drawer-links">
+    <a href="#how" onclick="document.getElementById('drawer').classList.remove('open')">Как работает</a>
+    <a href="#features" onclick="document.getElementById('drawer').classList.remove('open')">Возможности</a>
+    <a href="#install" onclick="document.getElementById('drawer').classList.remove('open')">Установить</a>
   </div>
-  <div style="margin-top:auto;">
-    <button class="btn-primary" style="width:100%;justify-content:center;font-size:16px;" onclick="install();document.getElementById('mob').classList.remove('open')">
-      Установить бесплатно →
+  <div class="drawer-bottom">
+    <button class="btn btn-lime" style="width:100%;justify-content:center;font-size:15px;padding:16px;" onclick="doInstall();document.getElementById('drawer').classList.remove('open')">
+      Установить бесплатно
     </button>
   </div>
 </div>
 
-<!-- ══ HERO ══ -->
+<!-- ═══ HERO ═══ -->
 <section id="hero">
-  <div class="hero-left">
-    <div class="hero-tag">
-      <div class="pulse"></div>
-      Падел-клуб · Челябинск
-    </div>
-    <h1 class="hero-h1">
-      <span class="line"><span class="w" style="animation-delay:.0s">Твой</span></span>
-      <span class="line"><span class="w lime" style="animation-delay:.1s">падел.</span></span>
-      <span class="line"><span class="w outline" style="animation-delay:.2s">Твои</span></span>
-      <span class="line"><span class="w" style="animation-delay:.3s">правила.</span></span>
-    </h1>
-    <p class="hero-p">
-      Бронируй корты в два касания, зарабатывай баллы за каждую игру и участвуй в турнирах прямо в телефоне.
-    </p>
-    <div class="hero-actions">
-      <button class="btn-primary" onclick="install()">
-        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
-        Установить · Бесплатно
-      </button>
-      <button class="btn-ghost" onclick="document.getElementById('how').scrollIntoView({behavior:'smooth'})">
-        Как это работает →
-      </button>
-    </div>
-    <div class="hero-trust">
-      <div class="trust-avatars">
-        <div class="trust-av" style="background:linear-gradient(135deg,#16803d,#22c55e)">АП</div>
-        <div class="trust-av" style="background:linear-gradient(135deg,#1d4ed8,#3b82f6)">СМ</div>
-        <div class="trust-av" style="background:linear-gradient(135deg,#7c3aed,#a855f7)">МФ</div>
-        <div class="trust-av" style="background:linear-gradient(135deg,#b45309,#f59e0b)">ДК</div>
-        <div class="trust-av" style="background:linear-gradient(135deg,#be123c,#f43f5e)">АН</div>
-      </div>
-      <div class="trust-text"><b>142+ игрока</b> уже в приложении</div>
-    </div>
+  <div class="tag">
+    <div class="dot"></div>
+    Падел-клуб · Челябинск
   </div>
 
-  <div class="hero-phone-wrap">
-    <div class="phone-glow"></div>
-    <div class="phone">
-      <div class="ph-notch"><div class="ph-notch-dot"></div></div>
-      <div class="ph-body">
-        <div class="ph-header">
-          <div class="ph-logo">PADEL<b>PASS</b></div>
-          <div class="ph-ava">АП</div>
+  <h1 class="hero-h">
+    Твой<br>
+    <span class="accent">падел.</span><br>
+    <span class="stroke">Твои</span><br>
+    правила.
+  </h1>
+
+  <div class="hero-row">
+    <div class="hero-left-bottom">
+      <p class="hero-desc">Бронируй корты в два касания, зарабатывай баллы за каждую игру и участвуй в турнирах — прямо в телефоне.</p>
+      <div class="hero-btns">
+        <button class="btn btn-lime" onclick="doInstall()">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+          Установить · Бесплатно
+        </button>
+        <button class="btn btn-outline" onclick="document.getElementById('how').scrollIntoView({behavior:'smooth'})">
+          Как это работает →
+        </button>
+      </div>
+      <div class="trust">
+        <div class="avs">
+          <div class="av" style="background:linear-gradient(135deg,#16803d,#22c55e)">АП</div>
+          <div class="av" style="background:linear-gradient(135deg,#1d4ed8,#3b82f6)">СМ</div>
+          <div class="av" style="background:linear-gradient(135deg,#7c3aed,#a855f7)">МФ</div>
+          <div class="av" style="background:linear-gradient(135deg,#b45309,#f59e0b)">ДК</div>
+          <div class="av" style="background:linear-gradient(135deg,#be123c,#f43f5e)">АН</div>
         </div>
-        <div class="ph-hero-card">
-          <div class="ph-hi">Привет, игрок</div>
-          <div class="ph-name">АЛЕКСЕЙ<br>ПЕТРОВ</div>
-          <div class="ph-lvl">🏆 ИГРОК II</div>
-          <div class="ph-stats">
-            <div><div class="ph-stat-n">47</div><div class="ph-stat-l">Игр</div></div>
-            <div><div class="ph-stat-n">31</div><div class="ph-stat-l">Побед</div></div>
-            <div><div class="ph-stat-n">66%</div><div class="ph-stat-l">Вин%</div></div>
-          </div>
-        </div>
-        <div class="ph-next">
-          <div class="ph-court-badge">
-            <div class="ph-court-n">2</div>
-            <div class="ph-court-l">Корт</div>
-          </div>
-          <div class="ph-next-info">
-            <div class="ph-next-time">19:00 — 20:00</div>
-            <div class="ph-next-date">Сегодня</div>
-          </div>
-          <div class="ph-countdown">
-            <div class="ph-cd-n" id="cd">2:14</div>
-            <div class="ph-cd-l">ч:мин</div>
-          </div>
-        </div>
-        <div class="ph-pts-card">
-          <div>
-            <div class="ph-pts-n">1 240</div>
-            <div class="ph-pts-l">баллов</div>
-            <div class="ph-pts-bar"><div class="ph-pts-fill"></div></div>
-          </div>
-          <div class="ph-pts-badge">ИГРОК</div>
-        </div>
-        <div class="ph-nav">
-          <div class="ph-nav-i on"><span>⌂</span>Главная</div>
-          <div class="ph-nav-i"><span>📅</span>Бронь</div>
-          <div class="ph-nav-i"><span>★</span>Баллы</div>
-          <div class="ph-nav-i"><span>🏆</span>Турниры</div>
-        </div>
+        <div class="trust-text"><strong>142+ игрока</strong> уже в приложении</div>
+      </div>
+    </div>
+    <div class="hero-stats">
+      <div class="hstat">
+        <div class="hstat-n"><span class="cn" data-t="30">0</span><span>сек</span></div>
+        <div class="hstat-d">бронирование<br>корта</div>
+      </div>
+      <div class="hstat">
+        <div class="hstat-n"><span class="cn" data-t="0">0</span><span>₽</span></div>
+        <div class="hstat-d">стоит<br>установка</div>
       </div>
     </div>
   </div>
 </section>
 
-<!-- ══ TICKER ══ -->
+<!-- ═══ TICKER ═══ -->
 <div class="ticker" aria-hidden="true">
-  <div class="ticker-t">
-    <span class="ti hi">Бронь за 30 сек</span><span class="ti-dot"></span>
-    <span class="ti">4 корта онлайн</span><span class="ti-dot"></span>
-    <span class="ti hi">+80 баллов за игру</span><span class="ti-dot"></span>
-    <span class="ti">Турниры с призами</span><span class="ti-dot"></span>
-    <span class="ti hi">Реферальная программа</span><span class="ti-dot"></span>
-    <span class="ti">Push-уведомления</span><span class="ti-dot"></span>
-    <span class="ti hi">Бесплатно навсегда</span><span class="ti-dot"></span>
-    <span class="ti">Работает без интернета</span><span class="ti-dot"></span>
-    <span class="ti hi">Бронь за 30 сек</span><span class="ti-dot"></span>
-    <span class="ti">4 корта онлайн</span><span class="ti-dot"></span>
-    <span class="ti hi">+80 баллов за игру</span><span class="ti-dot"></span>
-    <span class="ti">Турниры с призами</span><span class="ti-dot"></span>
-    <span class="ti hi">Реферальная программа</span><span class="ti-dot"></span>
-    <span class="ti">Push-уведомления</span><span class="ti-dot"></span>
-    <span class="ti hi">Бесплатно навсегда</span><span class="ti-dot"></span>
-    <span class="ti">Работает без интернета</span><span class="ti-dot"></span>
+  <div class="ticker-inner">
+    <span class="ti hi">Бронь за 30 сек</span>
+    <span class="ti">4 корта онлайн</span>
+    <span class="ti hi">+80 баллов за игру</span>
+    <span class="ti">Турниры с призами</span>
+    <span class="ti hi">Реферальная программа</span>
+    <span class="ti">Push-уведомления</span>
+    <span class="ti hi">Бесплатно навсегда</span>
+    <span class="ti">Работает без интернета</span>
+    <span class="ti hi">Бронь за 30 сек</span>
+    <span class="ti">4 корта онлайн</span>
+    <span class="ti hi">+80 баллов за игру</span>
+    <span class="ti">Турниры с призами</span>
+    <span class="ti hi">Реферальная программа</span>
+    <span class="ti">Push-уведомления</span>
+    <span class="ti hi">Бесплатно навсегда</span>
+    <span class="ti">Работает без интернета</span>
   </div>
 </div>
 
-<!-- ══ HOW ══ -->
-<section id="how">
-  <div class="section">
-    <div class="s-tag up">Просто</div>
-    <h2 class="s-h up d1">Три шага<br>до первой игры</h2>
-    <p class="s-sub up d2">Никаких звонков. Никаких очередей. Всё сам — в телефоне.</p>
+<!-- ═══ HOW ═══ -->
+<section id="how" class="section-bg-1">
+  <div class="shell">
+    <div class="label">Просто</div>
+    <h2 class="disp">Три шага<br>до первой игры</h2>
+    <p class="lead">Никаких звонков, никаких очередей.</p>
     <div class="steps-grid">
-      <div class="step up d1">
-        <div class="step-num">1</div>
-        <span class="step-emoji">📲</span>
+      <div class="step">
+        <div class="step-num">01</div>
+        <span class="step-icon">📲</span>
         <div class="step-title">Установи приложение</div>
-        <div class="step-text">Открой страницу в Chrome, нажми «Добавить на главный экран». Никакого App Store — за 5 секунд.</div>
-        <span class="step-line"></span>
+        <div class="step-text">Открой в Chrome → «Добавить на главный экран». Без App Store, за 10 секунд.</div>
+        <span class="step-bar"></span>
       </div>
-      <div class="step up d2">
-        <div class="step-num">2</div>
-        <span class="step-emoji">👤</span>
+      <div class="step">
+        <div class="step-num">02</div>
+        <span class="step-icon">👤</span>
         <div class="step-title">Создай профиль</div>
-        <div class="step-text">Имя и номер телефона — всё. Сразу видишь доступные корты, свои баллы и ближайшие турниры.</div>
-        <span class="step-line"></span>
+        <div class="step-text">Имя и телефон — всё. Сразу видишь корты, баллы и ближайшие турниры.</div>
+        <span class="step-bar"></span>
       </div>
-      <div class="step up d3">
-        <div class="step-num">3</div>
-        <span class="step-emoji">🎾</span>
+      <div class="step">
+        <div class="step-num">03</div>
+        <span class="step-icon">🎾</span>
         <div class="step-title">Играй и зарабатывай</div>
-        <div class="step-text">Каждая игра — это баллы. Копи их, трать на скидки. Чем больше играешь, тем больше привилегий.</div>
-        <span class="step-line"></span>
+        <div class="step-text">Каждая игра — это баллы. Копи, трать на скидки и аренду ракеток.</div>
+        <span class="step-bar"></span>
       </div>
     </div>
   </div>
 </section>
 
-<!-- ══ BENEFITS ══ -->
-<section id="benefits">
-  <div class="section">
-    <div class="s-tag up">Возможности</div>
-    <h2 class="s-h up d1">Всё для игры<br>в одном месте</h2>
-    <div class="benefits-grid">
+<!-- ═══ FEATURES BENTO ═══ -->
+<section id="features" class="section-bg-2">
+  <div class="shell">
+    <div class="label">Возможности</div>
+    <h2 class="disp">Всё для игры<br><span class="acc">в одном месте</span></h2>
+    <div class="bento">
 
-      <!-- Booking — wide tall -->
-      <div class="benefit-card tall accent up d1">
-        <div>
-          <div class="bc-icon">📅</div>
-          <div class="bc-title">Бронируй корт<br>онлайн — 24/7</div>
-          <div class="bc-text">4 корта, все слоты с 8:00 до 23:00. Видишь свободное время в реальном времени. Бронируй, отменяй, переносишь — сам.</div>
-          <span class="bc-tag">Без звонков администратору</span>
-        </div>
-        <div class="bc-booking">
-          <div style="font-size:10px;color:var(--gray);text-transform:uppercase;letter-spacing:1px;margin-bottom:8px;">Корт 2 — сегодня</div>
-          <div class="bc-slots">
-            <div class="bc-slot off">09:00<sub>Занято</sub></div>
-            <div class="bc-slot off">10:00<sub>Занято</sub></div>
-            <div class="bc-slot">11:00<sub>1 200 ₽</sub></div>
-            <div class="bc-slot on" id="bSlot">13:00<sub>Выбрано</sub></div>
-            <div class="bc-slot">14:00<sub>1 200 ₽</sub></div>
-            <div class="bc-slot">16:00<sub>1 500 ₽</sub></div>
+      <!-- tall: booking -->
+      <div class="bento-cell span2" style="display:flex;flex-direction:column;">
+        <span class="cell-icon">📅</span>
+        <div class="cell-title">Бронируй корт онлайн — 24/7</div>
+        <div class="cell-text">4 корта, все слоты с 8:00 до 23:00. Видишь свободное время в реальном времени. Бронируй, отменяй — сам. Напоминание за час автоматически.</div>
+        <span class="cell-tag">Без звонков администратору</span>
+        <div style="margin-top:auto;padding-top:24px;">
+          <div style="font-size:10px;color:var(--dim2);text-transform:uppercase;letter-spacing:1px;margin-bottom:8px;">Корт 2 · сегодня</div>
+          <div class="preview-slots">
+            <div class="ps bk">09:00<sub>Занято</sub></div>
+            <div class="ps bk">10:00<sub>Занято</sub></div>
+            <div class="ps">11:00<sub>1 200 ₽</sub></div>
+            <div class="ps on" id="aslot">13:00<sub>Выбрано ✓</sub></div>
+            <div class="ps">14:00<sub>1 200 ₽</sub></div>
+            <div class="ps">16:00<sub>1 500 ₽</sub></div>
           </div>
         </div>
       </div>
 
-      <!-- Loyalty -->
-      <div class="benefit-card up d2">
-        <div class="bc-icon">⭐</div>
-        <div class="bc-title">Баллы и уровни</div>
-        <div class="bc-text">+80 баллов за каждую игру. Четыре уровня — чем выше, тем больше кешбэк и привилегий.</div>
-        <span class="bc-tag">До +20% кешбэка</span>
-        <div class="bc-loyalty-visual">
-          <div class="level-pill"><span class="lp-name">⚪ Новичок</span><span class="lp-perk">+5% кешбэк</span></div>
-          <div class="level-pill cur"><span class="lp-name">🏆 Игрок</span><span class="lp-perk">+10% кешбэк</span></div>
-          <div class="level-pill"><span class="lp-name">🥇 Про</span><span class="lp-perk">+15% кешбэк</span></div>
-          <div class="level-pill"><span class="lp-name">👑 Чемпион</span><span class="lp-perk">+20% + VIP</span></div>
+      <!-- loyalty -->
+      <div class="bento-cell" style="display:flex;flex-direction:column;">
+        <span class="cell-icon">⭐</span>
+        <div class="cell-title">Баллы и уровни</div>
+        <div class="cell-text">+80 за каждую игру. Выше уровень — больше кешбэк.</div>
+        <span class="cell-tag">До +20% кешбэка</span>
+        <div class="mini-levels">
+          <div class="ml">⚪ Новичок<span>+5%</span></div>
+          <div class="ml cur">🏆 Игрок<span>+10%</span></div>
+          <div class="ml">🥇 Про<span>+15%</span></div>
+          <div class="ml">👑 Чемпион<span>+20%</span></div>
         </div>
       </div>
 
-      <!-- Tournament -->
-      <div class="benefit-card up d1">
-        <div class="bc-icon">🏆</div>
-        <div class="bc-title">Турниры с призами</div>
-        <div class="bc-text">Регулярные турниры, живая сетка, рейтинг клуба. Регистрируйся прямо в приложении.</div>
-        <div class="bc-tourn-vis">
-          <div style="font-size:9px;color:rgba(200,241,53,.5);text-transform:uppercase;letter-spacing:1px;margin-bottom:8px;">June Open 2025</div>
-          <div class="bt-prize">15 000 ₽</div>
-          <div class="bt-label">призовой фонд</div>
-          <div class="bt-bar"><div class="bt-fill"></div></div>
-          <div class="bt-meta"><span>6 / 16 команд</span><span>14–15 июня</span></div>
+      <!-- tournament -->
+      <div class="bento-cell">
+        <span class="cell-icon">🏆</span>
+        <div class="cell-title">Турниры с призами</div>
+        <div class="cell-text">Регулярные турниры, живая сетка, рейтинг клуба. Регистрация в приложении.</div>
+        <div style="margin-top:16px;background:rgba(168,85,247,.08);border:1px solid rgba(168,85,247,.15);border-radius:12px;padding:14px;">
+          <div style="font-size:11px;color:rgba(192,132,252,.6);text-transform:uppercase;letter-spacing:1px;margin-bottom:6px;">June Open</div>
+          <div style="font-size:26px;font-weight:800;letter-spacing:-1px;color:#fbbf24;">15 000 ₽</div>
+          <div style="margin-top:10px;background:rgba(255,255,255,.06);border-radius:4px;height:4px;overflow:hidden;"><div style="width:37%;height:100%;background:#a855f7;border-radius:4px;"></div></div>
+          <div style="font-size:10px;color:var(--dim2);margin-top:4px;">6 / 16 команд · 14–15 июня</div>
         </div>
       </div>
 
-      <!-- Referral + push -->
-      <div class="benefit-card up d2">
-        <div class="bc-icon">👥</div>
-        <div class="bc-title">Приведи друга</div>
-        <div class="bc-text">Поделись ссылкой — вы оба получите по 200 баллов. Без ограничений на количество рефералов.</div>
-        <span class="bc-tag">+200 ★ за каждого друга</span>
-        <div style="margin-top:20px;padding:14px;background:rgba(200,241,53,.04);border:1px solid var(--border);border-radius:12px;display:flex;align-items:center;gap:10px;">
-          <span style="font-size:20px;">🔔</span>
-          <div>
-            <div style="font-size:12px;font-weight:500;">Напоминание за 1 час</div>
-            <div style="font-size:11px;color:var(--gray);margin-top:2px;">Push о ближайшей игре</div>
-          </div>
-          <div style="margin-left:auto;width:34px;height:18px;border-radius:9px;background:var(--lime);position:relative;flex-shrink:0;">
-            <div style="width:14px;height:14px;background:#0c1a0c;border-radius:50%;position:absolute;right:2px;top:2px;"></div>
-          </div>
-        </div>
+      <!-- referral -->
+      <div class="bento-cell lime-bg">
+        <span class="cell-icon">👥</span>
+        <div class="cell-title">Приведи друга</div>
+        <div class="cell-text">Поделись ссылкой — вы оба получите по 200 баллов. Без ограничений.</div>
+        <span class="cell-tag">+200 ★ за каждого</span>
+      </div>
+
+      <!-- push -->
+      <div class="bento-cell">
+        <span class="cell-icon">🔔</span>
+        <div class="cell-title">Push-уведомления</div>
+        <div class="cell-text">Напоминание за час до игры. Новости турниров. Всё приходит само.</div>
+        <span class="cell-tag">Автоматически</span>
       </div>
 
     </div>
   </div>
 </section>
 
-<!-- ══ STATS ══ -->
-<section id="stats">
-  <div class="section" style="padding-top:0;padding-bottom:0;">
-    <div class="stats-strip">
-      <div class="stat-c up d1">
-        <div class="stat-n"><span class="cn" data-t="142">0</span><span class="u">+</span></div>
-        <div class="stat-d">игроков уже<br>в приложении</div>
-      </div>
-      <div class="stat-c up d2">
-        <div class="stat-n"><span class="cn" data-t="30">0</span><span class="u">сек</span></div>
-        <div class="stat-d">время брони<br>корта</div>
-      </div>
-      <div class="stat-c up d3">
-        <div class="stat-n"><span class="cn" data-t="4">0</span></div>
-        <div class="stat-d">корта<br>онлайн 24/7</div>
-      </div>
-      <div class="stat-c up d4">
-        <div class="stat-n"><span class="cn" data-t="0">0</span><span class="u">₽</span></div>
-        <div class="stat-d">стоит<br>установка</div>
-      </div>
-    </div>
+<!-- ═══ STATS ═══ -->
+<section id="stats" class="section-bg-1">
+  <div class="stats-strip">
+    <div class="stat"><div class="stat-n"><span class="cn" data-t="142">0</span><em>+</em></div><div class="stat-d">игроков<br>в приложении</div></div>
+    <div class="stat"><div class="stat-n"><span class="cn" data-t="30">0</span><em>сек</em></div><div class="stat-d">бронирование<br>корта</div></div>
+    <div class="stat"><div class="stat-n"><span class="cn" data-t="4">0</span></div><div class="stat-d">корта<br>онлайн 24/7</div></div>
+    <div class="stat"><div class="stat-n"><span class="cn" data-t="0">0</span><em>₽</em></div><div class="stat-d">стоит<br>установка</div></div>
   </div>
 </section>
 
-<!-- ══ INSTALL ══ -->
-<section id="install">
-  <div class="install-inner">
-    <div class="ul">
-      <div class="s-tag" style="margin-bottom:16px;">Установка</div>
-      <div class="install-h">Твой клуб<br>в <span class="lime">одно</span><br>нажатие</div>
-      <p class="install-sub">Никакого App Store. Работает на любом телефоне — Android и iOS. Бесплатно.</p>
+<!-- ═══ INSTALL ═══ -->
+<section id="install" class="section-bg-2">
+  <div class="install-grid shell">
+    <div>
+      <div class="label" style="margin-bottom:16px;">Установка</div>
+      <div class="install-h">Твой клуб<br>в <span class="acc">одно</span><br>нажатие</div>
+      <p class="install-sub">Никакого App Store. Android и iOS. Бесплатно.</p>
       <div class="install-steps">
-        <div class="i-step"><div class="i-step-n">1</div>Открой эту страницу в браузере Chrome</div>
-        <div class="i-step"><div class="i-step-n">2</div>Нажми меню ⋮ → «Добавить на главный экран»</div>
-        <div class="i-step"><div class="i-step-n">3</div>Готово — иконка PadelPass на твоём экране</div>
+        <div class="istep"><div class="istep-n">1</div>Открой страницу в Chrome</div>
+        <div class="istep"><div class="istep-n">2</div>Нажми ⋮ → «Добавить на главный экран»</div>
+        <div class="istep"><div class="istep-n">3</div>Иконка PadelPass на экране — готово</div>
       </div>
       <div class="install-btns">
-        <button class="btn-primary" onclick="install()">
-          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+        <button class="btn btn-lime" onclick="doInstall()">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
           Установить сейчас
         </button>
-        <a href="index.html" class="btn-ghost" target="_blank">Открыть в браузере →</a>
+        <a href="index.html" class="btn btn-outline" target="_blank">Открыть →</a>
       </div>
     </div>
-    <div class="install-card ur d2">
-      <div class="ic-preview">
-        <div class="ic-preview-bar">
-          <div class="logo" style="font-size:13px;">PADEL<b style="color:var(--lime)">PASS</b></div>
-          <div style="width:20px;height:20px;background:var(--card);border-radius:4px;display:flex;align-items:center;justify-content:center;font-size:10px;color:var(--gray);">⋮</div>
+    <div class="icard">
+      <div class="icard-screen">
+        <div class="icard-bar">
+          <div class="logo">PADEL<em>PASS</em></div>
+          <div style="font-size:16px;color:var(--dim2);">⋮</div>
         </div>
-        <div class="ic-preview-url">padelpass-phi.vercel.app</div>
+        <div class="icard-url">padelpass-phi.vercel.app</div>
       </div>
-      <div class="ic-banner">
-        <div class="ic-b-icon">📲</div>
-        <div class="ic-b-text">
-          <div class="ic-b-title">Добавить PadelPass</div>
-          <div class="ic-b-sub">На главный экран</div>
+      <div class="icard-banner">
+        <span style="font-size:24px;">📲</span>
+        <div class="icard-t">
+          <div class="icard-title">Добавить PadelPass</div>
+          <div class="icard-sub">На главный экран</div>
         </div>
-        <button class="ic-b-btn" onclick="install()">Добавить</button>
+        <button class="icard-btn" onclick="doInstall()">Добавить</button>
       </div>
-      <div class="ic-note">✓ iOS &nbsp;·&nbsp; ✓ Android &nbsp;·&nbsp; ✓ Бесплатно &nbsp;·&nbsp; ✓ Без App Store</div>
+      <div class="icard-note">iOS · Android · Бесплатно · Без App Store</div>
     </div>
   </div>
 </section>
 
-<!-- ══ SOCIAL PROOF ══ -->
-<section id="proof">
-  <div class="section">
-    <div class="s-tag up">Игроки говорят</div>
-    <h2 class="s-h up d1">Уже играют<br>в PadelPass</h2>
-    <div class="proof-grid">
-      <div class="proof-card up d1">
-        <div class="proof-stars">★★★★★</div>
-        <div class="proof-text">«Наконец-то не надо звонить! Открыл — выбрал время — забронировал. Всё за минуту.»</div>
-        <div class="proof-author">
-          <div class="proof-av" style="background:linear-gradient(135deg,#16803d,#22c55e)">АП</div>
-          <div><div class="proof-name">Алексей Петров</div><div class="proof-role">47 игр в клубе</div></div>
-        </div>
+<!-- ═══ REVIEWS ═══ -->
+<section id="reviews" class="section-bg-1">
+  <div class="shell">
+    <div class="label">Отзывы</div>
+    <h2 class="disp">Уже играют</h2>
+    <div class="reviews-grid">
+      <div class="rv">
+        <div class="rv-stars">★★★★★</div>
+        <div class="rv-text">«Наконец-то без звонков! Открыл — выбрал — забронировал. Всё за минуту.»</div>
+        <div class="rv-au"><div class="rv-av" style="background:linear-gradient(135deg,#16803d,#22c55e)">АП</div><div><div class="rv-name">Алексей Петров</div><div class="rv-role">47 игр в клубе</div></div></div>
       </div>
-      <div class="proof-card up d2">
-        <div class="proof-stars">★★★★★</div>
-        <div class="proof-text">«Баллы копятся быстро — за турнир сразу 300 дали. Уже на уровне Про, кешбэк реально ощущается.»</div>
-        <div class="proof-author">
-          <div class="proof-av" style="background:linear-gradient(135deg,#7c3aed,#a855f7)">МФ</div>
-          <div><div class="proof-name">Максим Фролов</div><div class="proof-role">Уровень Про · 63 игры</div></div>
-        </div>
+      <div class="rv">
+        <div class="rv-stars">★★★★★</div>
+        <div class="rv-text">«Баллы копятся быстро. Уровень Про — кешбэк реально чувствуется.»</div>
+        <div class="rv-au"><div class="rv-av" style="background:linear-gradient(135deg,#7c3aed,#a855f7)">МФ</div><div><div class="rv-name">Максим Фролов</div><div class="rv-role">Уровень Про · 63 игры</div></div></div>
       </div>
-      <div class="proof-card up d3">
-        <div class="proof-stars">★★★★★</div>
-        <div class="proof-text">«Приложение как нативное — установил одной кнопкой, работает быстро. Друга пригласил — оба получили баллы.»</div>
-        <div class="proof-author">
-          <div class="proof-av" style="background:linear-gradient(135deg,#1d4ed8,#3b82f6)">СМ</div>
-          <div><div class="proof-name">Дмитрий Смирнов</div><div class="proof-role">38 игр · реферал</div></div>
-        </div>
+      <div class="rv">
+        <div class="rv-stars">★★★★★</div>
+        <div class="rv-text">«Установил за 10 секунд. Пригласил друга — оба получили баллы. Огонь!»</div>
+        <div class="rv-au"><div class="rv-av" style="background:linear-gradient(135deg,#1d4ed8,#3b82f6)">СМ</div><div><div class="rv-name">Дмитрий Смирнов</div><div class="rv-role">38 игр · реферал</div></div></div>
       </div>
     </div>
   </div>
 </section>
 
-<!-- ══ FINAL CTA ══ -->
+<!-- ═══ CTA ═══ -->
 <section id="cta">
-  <div class="cta-inner">
-    <div class="s-tag up" style="justify-content:center;">Начни сегодня</div>
-    <h2 class="cta-h up d1">
-      Корт ждёт.<br>
-      <span class="lime">Ты готов?</span>
-    </h2>
-    <p class="cta-sub up d2">Установи приложение и забронируй первый корт прямо сейчас.</p>
-    <div class="cta-btns up d3">
-      <button class="btn-primary" style="font-size:16px;padding:18px 40px;" onclick="install()">
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+  <div class="cta-shell">
+    <div class="cta-kicker">Начни сегодня</div>
+    <h2 class="cta-h">Корт ждёт.<br><span class="acc">Ты готов?</span></h2>
+    <p class="cta-sub">Установи приложение и забронируй первый корт прямо сейчас.</p>
+    <div class="cta-btns">
+      <button class="btn btn-lime" style="font-size:15px;padding:16px 36px;" onclick="doInstall()">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
         Установить бесплатно
       </button>
-      <a href="index.html" class="btn-ghost" style="font-size:15px;" target="_blank">Сначала посмотреть →</a>
+      <a href="index.html" class="btn btn-outline" style="font-size:15px;padding:15px 28px;" target="_blank">Сначала посмотреть →</a>
     </div>
-    <div class="cta-note up d4">Бесплатно · Без регистрации карты · Android и iOS</div>
+    <div class="cta-fine">Бесплатно · Без регистрации карты · Android и iOS</div>
   </div>
 </section>
 
-<!-- ══ FOOTER ══ -->
+<!-- FOOTER -->
 <footer>
-  <div class="logo">PADEL<b style="color:var(--lime)">PASS</b></div>
-  <div class="footer-copy">Падел-клуб · Челябинск · 2025</div>
-  <div class="footer-copy">Приложение клуба</div>
+  <div class="logo">PADEL<em>PASS</em></div>
+  <div class="fc">Падел-клуб · Челябинск · 2025</div>
+  <div class="fc">Приложение клуба</div>
 </footer>
 
 <button id="top" onclick="window.scrollTo({top:0,behavior:'smooth'})" aria-label="Наверх">
-  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M18 15l-6-6-6 6"/></svg>
+  <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 15l-6-6-6 6"/></svg>
 </button>
 
 <script>
-// ── NAV ──────────────────────────────────────────
-const nav = document.getElementById('nav');
-const top = document.getElementById('top');
-window.addEventListener('scroll', () => {
-  nav.classList.toggle('stuck', scrollY > 60);
-  top.classList.toggle('show', scrollY > 400);
-}, {passive:true});
+// NAV
+const nav=document.getElementById('nav'),top=document.getElementById('top');
+window.addEventListener('scroll',()=>{
+  nav.classList.toggle('on',scrollY>60);
+  top.classList.toggle('show',scrollY>500);
+},{passive:true});
 
-// ── REVEAL ───────────────────────────────────────
-const ro = new IntersectionObserver(entries => {
-  entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('in'); ro.unobserve(e.target); } });
-}, {threshold:.1, rootMargin:'0px 0px -24px 0px'});
-document.querySelectorAll('.up,.ul,.ur').forEach(el => ro.observe(el));
-
-// ── COUNTERS ─────────────────────────────────────
-function count(el, t, dur=1400) {
-  const s = performance.now();
-  const tick = n => {
-    const p = Math.min((n-s)/dur,1);
-    const e = 1-Math.pow(1-p,3);
-    el.textContent = Math.round(e*t).toLocaleString('ru-RU');
-    if (p<1) requestAnimationFrame(tick);
+// COUNTERS
+function count(el,target,dur=1300){
+  const start=performance.now();
+  const tick=now=>{
+    const p=Math.min((now-start)/dur,1);
+    const e=1-Math.pow(1-p,3);
+    el.textContent=Math.round(e*target).toLocaleString('ru-RU');
+    if(p<1)requestAnimationFrame(tick);
   };
   requestAnimationFrame(tick);
 }
-const co = new IntersectionObserver(entries => {
-  entries.forEach(e => { if (e.isIntersecting) { count(e.target,+e.target.dataset.t); co.unobserve(e.target); } });
+const co=new IntersectionObserver(entries=>{
+  entries.forEach(e=>{if(e.isIntersecting){count(e.target,+e.target.dataset.t);co.unobserve(e.target);}});
 },{threshold:.5});
-document.querySelectorAll('.cn').forEach(el => co.observe(el));
+document.querySelectorAll('.cn').forEach(el=>co.observe(el));
 
-// ── COUNTDOWN ────────────────────────────────────
-function updateCd() {
-  const now = new Date();
-  const t = new Date(); t.setHours(19,0,0,0);
-  if (t<=now) t.setDate(t.getDate()+1);
-  const d = Math.max(0,t-now);
-  const h = Math.floor(d/3600000);
-  const m = Math.floor((d%3600000)/60000);
-  const el = document.getElementById('cd');
-  if (el) el.textContent = h+':'+String(m).padStart(2,'0');
-}
-updateCd(); setInterval(updateCd,60000);
-
-// ── SLOT ANIMATION ───────────────────────────────
-const slots = [...document.querySelectorAll('.bc-slot:not(.off)')];
-let cur = 0;
-setInterval(() => {
+// SLOT ANIMATION
+const slots=[...document.querySelectorAll('.ps:not(.bk)')];
+let si=0;
+setInterval(()=>{
   slots.forEach(s=>s.classList.remove('on'));
-  cur = (cur+1)%slots.length;
-  slots[cur].classList.add('on');
-},2200);
+  si=(si+1)%slots.length;
+  slots[si].classList.add('on');
+},1800);
 
-// ── INSTALL PWA ──────────────────────────────────
-let prompt = null;
-window.addEventListener('beforeinstallprompt', e => { e.preventDefault(); prompt = e; });
-function install() {
-  if (prompt) {
+// INSTALL
+let prompt=null;
+window.addEventListener('beforeinstallprompt',e=>{e.preventDefault();prompt=e;});
+function doInstall(){
+  if(prompt){
     prompt.prompt();
-    prompt.userChoice.then(r => {
-      if (r.outcome==='accepted') toast('✅ PadelPass установлен!');
-      prompt = null;
-    });
-  } else if (window.matchMedia('(display-mode:standalone)').matches) {
+    prompt.userChoice.then(r=>{if(r.outcome==='accepted')toast('✅ PadelPass установлен!');prompt=null;});
+  } else if(window.matchMedia('(display-mode:standalone)').matches){
     toast('✅ Приложение уже установлено!');
   } else {
     document.getElementById('install').scrollIntoView({behavior:'smooth'});
     toast('📲 Нажми ⋮ → «Добавить на главный экран»');
   }
 }
-window.addEventListener('appinstalled', () => toast('🎾 PadelPass добавлен на главный экран!'));
+window.addEventListener('appinstalled',()=>toast('🎾 PadelPass добавлен!'));
 
-// ── TOAST ────────────────────────────────────────
-function toast(msg) {
-  let t = document.getElementById('_toast');
-  if (!t) {
-    t = document.createElement('div'); t.id='_toast';
+// TOAST
+function toast(msg){
+  let t=document.getElementById('_t');
+  if(!t){
+    t=document.createElement('div');t.id='_t';
     Object.assign(t.style,{
       position:'fixed',top:'20px',left:'50%',
-      transform:'translateX(-50%) translateY(-90px)',
-      background:'var(--lime)',color:'#0c1a0c',
-      padding:'12px 24px',borderRadius:'100px',
-      fontSize:'14px',fontWeight:'600',fontFamily:'var(--fb)',
-      zIndex:'9999',transition:'transform .35s var(--ease)',
-      whiteSpace:'nowrap',boxShadow:'0 8px 32px rgba(200,241,53,.4)',
-      pointerEvents:'none'
+      transform:'translateX(-50%) translateY(-80px)',
+      background:'#d4f53c',color:'#080808',
+      padding:'11px 22px',borderRadius:'100px',
+      fontSize:'14px',fontWeight:'700',
+      zIndex:'9999',transition:'transform .3s ease',
+      whiteSpace:'nowrap',pointerEvents:'none',
+      boxShadow:'0 6px 24px rgba(212,245,60,.35)'
     });
     document.body.appendChild(t);
   }
-  t.textContent = msg;
-  t.style.transform = 'translateX(-50%) translateY(0)';
+  t.textContent=msg;
+  t.style.transform='translateX(-50%) translateY(0)';
   clearTimeout(t._t);
-  t._t = setTimeout(()=>t.style.transform='translateX(-50%) translateY(-90px)',3200);
+  t._t=setTimeout(()=>t.style.transform='translateX(-50%) translateY(-80px)',3000);
 }
 
-// ── SMOOTH ANCHORS ───────────────────────────────
-document.querySelectorAll('a[href^="#"]').forEach(a => {
-  a.addEventListener('click', e => {
-    const t = document.querySelector(a.getAttribute('href'));
-    if (t) { e.preventDefault(); t.scrollIntoView({behavior:'smooth'}); }
-  });
-});
+// SMOOTH ANCHORS
+document.querySelectorAll('a[href^="#"]').forEach(a=>a.addEventListener('click',e=>{
+  const t=document.querySelector(a.getAttribute('href'));
+  if(t){e.preventDefault();t.scrollIntoView({behavior:'smooth'});}
+}));
 
-// ── REDUCED MOTION ───────────────────────────────
-if (window.matchMedia('(prefers-reduced-motion:reduce)').matches) {
-  document.querySelectorAll('.up,.ul,.ur').forEach(el=>{el.style.opacity=1;el.style.transform='none';});
-  document.querySelector('.ticker-t').style.animation='none';
-  document.querySelector('.phone').style.animation='none';
-  document.querySelector('.phone-glow').style.animation='none';
-}
+// LOAD FONTS ASYNC - non-blocking
+(function(){
+  const l=document.createElement('link');
+  l.rel='stylesheet';l.media='print';
+  l.href='https://fonts.googleapis.com/css2?family=Syne:wght@700;800&display=swap';
+  l.onload=function(){
+    this.media='all';
+    document.documentElement.style.setProperty('--font',"'Syne',var(--font)");
+  };
+  document.head.appendChild(l);
+})();
 </script>
 </body>
 </html>
