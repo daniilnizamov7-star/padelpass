@@ -2,1264 +2,1145 @@
 <html lang="ru">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<meta name="theme-color" content="#f4f7f4" id="themeColorMeta">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#0c1a0c">
 <meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<meta name="apple-mobile-web-app-title" content="PadelPass">
-<meta name="mobile-web-app-capable" content="yes">
-<meta name="description" content="Бронирование кортов, лояльность и турниры падел-клуба Челябинск">
+<meta name="description" content="PadelPass — приложение твоего падел-клуба. Бронируй корты, зарабатывай баллы, побеждай в турнирах.">
+<meta property="og:title" content="PadelPass — Твой падел в телефоне">
+<meta property="og:description" content="Бронируй корты за 30 секунд. Зарабатывай баллы. Побеждай.">
 <title>PadelPass — Падел-клуб Челябинск</title>
-<link rel="manifest" href="/manifest.json">
-<link rel="apple-touch-icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 192 192'%3E%3Crect width='192' height='192' rx='32' fill='%230a0f1e'/%3E%3Ctext x='96' y='130' font-family='Arial Black' font-size='100' font-weight='900' fill='%2322c55e' text-anchor='middle'%3EP%3C/text%3E%3C/svg%3E">
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Manrope:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Unbounded:wght@400;700;900&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
 <style>
-/* ===== СВЕТЛАЯ ТЕМА — ДЕФОЛТ ===== */
+/* ═══════════════════════════════
+   VARIABLES
+═══════════════════════════════ */
 :root {
-  --bg: #f4f7f4;
-  --bg2: #eaf0ea;
-  --bg3: #ffffff;
-  --surface: #e2ebe2;
-  --accent: #16a34a;
-  --accent2: #15803d;
-  --gold: #d97706;
-  --text: #0f1f0f;
-  --muted: #6b8c6b;
-  --border: rgba(0,0,0,0.09);
-  --nav-bg: rgba(244,247,244,0.97);
-  --radius: 16px;
-  --font-display: 'Bebas Neue', sans-serif;
-  --font-body: 'Manrope', sans-serif;
+  --bg:     #0c1a0c;
+  --bg2:    #111f11;
+  --card:   #182818;
+  --lime:   #c8f135;
+  --green:  #22c55e;
+  --white:  #f0f7f0;
+  --gray:   #6b8c6b;
+  --border: rgba(200,241,53,0.12);
+  --ease:   cubic-bezier(0.22,1,0.36,1);
+  --fh:     'Unbounded', sans-serif;
+  --fb:     'Inter', sans-serif;
 }
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+html{scroll-behavior:smooth;}
+body{background:var(--bg);color:var(--white);font-family:var(--fb);font-weight:300;overflow-x:hidden;line-height:1.6;}
+::selection{background:var(--lime);color:#0c1a0c;}
+a{text-decoration:none;color:inherit;}
 
-/* ТЕМА: БЕЛОСНЕЖНАЯ */
-[data-theme="snow"] {
-  --bg: #f8f9fc;
-  --bg2: #f0f2f7;
-  --bg3: #ffffff;
-  --surface: #e8ecf4;
-  --accent: #2563eb;
-  --accent2: #1d4ed8;
-  --gold: #d97706;
-  --text: #0f172a;
-  --muted: #94a3b8;
-  --border: rgba(0,0,0,0.08);
-  --nav-bg: rgba(248,249,252,0.97);
-}
+/* ═══════════════════════════════
+   REVEALS
+═══════════════════════════════ */
+.up{opacity:0;transform:translateY(32px);transition:opacity .7s var(--ease),transform .7s var(--ease);}
+.up.in{opacity:1;transform:none;}
+.ul{opacity:0;transform:translateX(-32px);transition:opacity .7s var(--ease),transform .7s var(--ease);}
+.ul.in{opacity:1;transform:none;}
+.ur{opacity:0;transform:translateX(32px);transition:opacity .7s var(--ease),transform .7s var(--ease);}
+.ur.in{opacity:1;transform:none;}
+.d1{transition-delay:.08s}.d2{transition-delay:.16s}.d3{transition-delay:.24s}
+.d4{transition-delay:.32s}.d5{transition-delay:.4s}
 
-/* ТЕМА: ЗАКАТ */
-[data-theme="sunset"] {
-  --bg: #fdf6f0;
-  --bg2: #faeee4;
-  --bg3: #ffffff;
-  --surface: #f5e2d4;
-  --accent: #ea580c;
-  --accent2: #c2410c;
-  --gold: #d97706;
-  --text: #1c0d04;
-  --muted: #a06040;
-  --border: rgba(0,0,0,0.08);
-  --nav-bg: rgba(253,246,240,0.97);
+/* ═══════════════════════════════
+   NAV
+═══════════════════════════════ */
+nav{
+  position:fixed;top:0;left:0;right:0;z-index:100;
+  display:flex;align-items:center;justify-content:space-between;
+  padding:20px 32px;
+  transition:all .3s;
 }
-
-/* ТЕМА: ЛАВАНДА */
-[data-theme="lavender"] {
-  --bg: #f5f3ff;
-  --bg2: #ede9fe;
-  --bg3: #ffffff;
-  --surface: #e4dffd;
-  --accent: #7c3aed;
-  --accent2: #6d28d9;
-  --gold: #d97706;
-  --text: #1e1040;
-  --muted: #8b80b0;
-  --border: rgba(0,0,0,0.08);
-  --nav-bg: rgba(245,243,255,0.97);
-}
-
-/* ТЕМА: НОЧЬ */
-[data-theme="dark"] {
-  --bg: #0a0f1e;
-  --bg2: #111827;
-  --bg3: #1a2235;
-  --surface: #1e2d42;
-  --accent: #22c55e;
-  --accent2: #16a34a;
-  --gold: #f59e0b;
-  --text: #f1f5f9;
-  --muted: #64748b;
-  --border: rgba(255,255,255,0.07);
-  --nav-bg: rgba(10,15,30,0.95);
-}
-* { margin:0; padding:0; box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
-html, body { height:100%; background:var(--bg); color:var(--text); font-family:var(--font-body); overflow:hidden; }
-
-/* SPLASH */
-#splash {
-  position:fixed; inset:0; background:var(--bg); display:flex; flex-direction:column;
-  align-items:center; justify-content:center; z-index:999; transition:opacity .5s;
-}
-#splash.hidden { opacity:0; pointer-events:none; }
-.splash-logo { font-family:var(--font-display); font-size:64px; letter-spacing:3px; color:var(--text); line-height:1; }
-.splash-logo span { color:var(--accent); }
-.splash-sub { font-size:13px; color:var(--muted); letter-spacing:3px; text-transform:uppercase; margin-top:6px; }
-.splash-bar { width:120px; height:2px; background:var(--border); border-radius:2px; margin-top:32px; overflow:hidden; }
-.splash-fill { height:100%; background:var(--accent); width:0; animation:load 1.4s ease forwards; }
-@keyframes load { to { width:100%; } }
-
-/* LAYOUT */
-#app { display:flex; flex-direction:column; height:100vh; max-width:430px; margin:0 auto; }
-.screen { display:none; flex:1; flex-direction:column; overflow:hidden; }
-.screen.active { display:flex; }
-.scroll-area { flex:1; overflow-y:auto; padding:0 0 80px; }
-.scroll-area::-webkit-scrollbar { display:none; }
-
-/* NAV */
-nav {
-  position:fixed; bottom:0; left:50%; transform:translateX(-50%);
-  width:100%; max-width:430px;
-  background:var(--nav-bg); backdrop-filter:blur(20px);
-  border-top:1px solid var(--border);
-  display:flex; align-items:center; justify-content:space-around;
-  padding:8px 0 max(8px, env(safe-area-inset-bottom));
-  z-index:100;
-}
-.nav-btn {
-  display:flex; flex-direction:column; align-items:center; gap:4px;
-  background:none; border:none; color:var(--muted); cursor:pointer;
-  padding:4px 12px; border-radius:12px; transition:color .2s;
-  font-family:var(--font-body); font-size:10px;
-}
-.nav-btn.active { color:var(--accent); }
-.nav-btn svg { width:22px; height:22px; }
-
-/* HEADER */
-.header {
-  padding:20px 20px 0;
-  display:flex; align-items:center; justify-content:space-between;
-}
-.header-logo { font-family:var(--font-display); font-size:28px; letter-spacing:2px; }
-.header-logo span { color:var(--accent); }
-.avatar {
-  width:40px; height:40px; border-radius:50%;
-  background:linear-gradient(135deg,var(--accent),var(--accent2));
-  display:flex; align-items:center; justify-content:center;
-  font-weight:700; font-size:15px; color:#fff; cursor:pointer;
-}
-
-/* CARDS */
-.card {
-  background:var(--bg3); border:1px solid var(--border);
-  border-radius:var(--radius); padding:16px;
-}
-.card-accent { border-color:rgba(34,197,94,0.3); background:rgba(34,197,94,0.07); }
-
-/* HOME SCREEN */
-.hero-card {
-  margin:16px 20px 0;
-  background:var(--bg3);
-  border:1px solid rgba(34,197,94,0.25);
-  border-radius:20px; padding:20px;
-  position:relative; overflow:hidden;
-}
-.hero-card::before {
-  content:''; position:absolute; top:-60px; right:-40px;
-  width:180px; height:180px; border-radius:50%;
-  background:radial-gradient(circle,rgba(34,197,94,0.15),transparent 70%);
-}
-.hero-greeting { font-size:13px; color:var(--accent); font-weight:600; letter-spacing:1px; text-transform:uppercase; }
-.hero-name { font-family:var(--font-display); font-size:38px; letter-spacing:2px; line-height:1.1; margin-top:2px; }
-.hero-level { display:inline-flex; align-items:center; gap:6px; background:rgba(245,158,11,0.15); border:1px solid rgba(245,158,11,0.3); border-radius:20px; padding:4px 12px; margin-top:10px; }
-.hero-level-text { font-size:12px; font-weight:600; color:var(--gold); }
-.hero-stats { display:grid; grid-template-columns:1fr 1fr 1fr; gap:10px; margin-top:16px; }
-.hero-stat { text-align:center; }
-.hero-stat-num { font-family:var(--font-display); font-size:28px; color:var(--text); letter-spacing:1px; }
-.hero-stat-label { font-size:10px; color:var(--muted); text-transform:uppercase; letter-spacing:1px; margin-top:1px; }
-
-.section-title { font-size:12px; font-weight:700; color:var(--muted); text-transform:uppercase; letter-spacing:2px; margin:20px 20px 10px; }
-
-/* QUICK ACTIONS */
-.quick-grid { display:grid; grid-template-columns:1fr 1fr; gap:10px; padding:0 20px; }
-.quick-btn {
-  background:var(--bg3); border:1px solid var(--border);
-  border-radius:14px; padding:14px; cursor:pointer;
-  transition:transform .15s, border-color .2s; text-align:left;
-  display:flex; flex-direction:column; gap:8px;
-}
-.quick-btn:active { transform:scale(0.97); }
-.quick-btn.primary { border-color:rgba(34,197,94,0.3); background:rgba(34,197,94,0.08); }
-.quick-icon { width:36px; height:36px; border-radius:10px; display:flex; align-items:center; justify-content:center; }
-.quick-icon.green { background:rgba(34,197,94,0.15); }
-.quick-icon.gold { background:rgba(245,158,11,0.15); }
-.quick-icon.blue { background:rgba(59,130,246,0.15); }
-.quick-icon.purple { background:rgba(168,85,247,0.15); }
-.quick-label { font-size:13px; font-weight:600; }
-.quick-sub { font-size:11px; color:var(--muted); }
-
-/* NEXT SESSION */
-.session-card {
-  margin:0 20px;
-  background:var(--bg3); border:1px solid var(--border);
-  border-radius:var(--radius); padding:16px;
-  display:flex; align-items:center; gap:14px;
-}
-.session-court {
-  width:52px; height:52px; border-radius:12px;
-  background:var(--surface);
-  border:1px solid rgba(34,197,94,0.2);
-  display:flex; flex-direction:column; align-items:center; justify-content:center;
-  flex-shrink:0;
-}
-.session-court-num { font-family:var(--font-display); font-size:22px; color:var(--accent); }
-.session-court-label { font-size:9px; color:var(--muted); text-transform:uppercase; }
-.session-info { flex:1; }
-.session-time { font-size:16px; font-weight:700; }
-.session-date { font-size:12px; color:var(--muted); margin-top:2px; }
-.session-players { display:flex; margin-top:6px; gap:-4px; }
-.session-avatar { width:22px; height:22px; border-radius:50%; border:2px solid var(--bg3); background:var(--surface); font-size:9px; font-weight:700; display:flex; align-items:center; justify-content:center; margin-right:-6px; }
-.session-countdown { text-align:right; }
-.session-in { font-size:10px; color:var(--muted); }
-.session-mins { font-family:var(--font-display); font-size:24px; color:var(--accent); line-height:1; }
-.session-mins-label { font-size:9px; color:var(--muted); }
-
-/* LOYALTY PROGRESS */
-.loyalty-bar-wrap { margin:0 20px; padding:14px; background:var(--bg3); border:1px solid var(--border); border-radius:var(--radius); }
-.loyalty-row { display:flex; align-items:center; justify-content:space-between; margin-bottom:10px; }
-.loyalty-name { font-size:14px; font-weight:700; }
-.loyalty-pts { font-size:13px; color:var(--accent); font-weight:600; }
-.loyalty-track { background:var(--surface); border-radius:6px; height:8px; overflow:hidden; }
-.loyalty-fill { height:100%; background:linear-gradient(90deg,var(--accent2),var(--accent)); border-radius:6px; width:68%; transition:width 1s ease; }
-.loyalty-labels { display:flex; justify-content:space-between; margin-top:5px; }
-.loyalty-label-text { font-size:10px; color:var(--muted); }
-
-/* BOOKING SCREEN */
-.booking-header { padding:20px 20px 0; }
-.booking-title { font-family:var(--font-display); font-size:40px; letter-spacing:2px; }
-.booking-sub { font-size:13px; color:var(--muted); margin-top:2px; }
-
-.date-scroll { display:flex; gap:8px; padding:16px 20px; overflow-x:auto; }
-.date-scroll::-webkit-scrollbar { display:none; }
-.date-chip {
-  flex-shrink:0; display:flex; flex-direction:column; align-items:center;
-  padding:10px 14px; border-radius:14px; border:1px solid var(--border);
-  background:var(--bg3); cursor:pointer; transition:all .2s; min-width:52px;
-}
-.date-chip.selected { background:var(--accent); border-color:var(--accent); }
-.date-chip-day { font-size:10px; color:var(--muted); text-transform:uppercase; letter-spacing:1px; }
-.date-chip.selected .date-chip-day { color:rgba(255,255,255,0.8); }
-.date-chip-num { font-family:var(--font-display); font-size:22px; margin-top:1px; }
-.date-chip.selected .date-chip-num { color:#fff; }
-
-.courts-label { padding:0 20px 10px; font-size:12px; font-weight:700; color:var(--muted); text-transform:uppercase; letter-spacing:2px; }
-.court-tabs { display:flex; gap:8px; padding:0 20px 14px; overflow-x:auto; }
-.court-tabs::-webkit-scrollbar { display:none; }
-.court-tab {
-  flex-shrink:0; padding:8px 18px; border-radius:20px; font-size:13px; font-weight:600;
-  border:1px solid var(--border); background:var(--bg3); color:var(--muted); cursor:pointer; transition:all .2s;
-}
-.court-tab.active { background:var(--accent); border-color:var(--accent); color:#fff; }
-
-.time-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:8px; padding:0 20px; }
-.time-slot {
-  padding:12px 8px; border-radius:12px; text-align:center; cursor:pointer;
-  border:1px solid var(--border); background:var(--bg3); transition:all .2s;
-}
-.time-slot:active { transform:scale(0.96); }
-.time-slot.selected { background:var(--accent); border-color:var(--accent); }
-.time-slot.booked { background:var(--bg); border-color:var(--border); opacity:.4; cursor:default; }
-.time-slot-hour { font-size:15px; font-weight:700; }
-.time-slot.selected .time-slot-hour { color:#fff; }
-.time-slot-price { font-size:11px; color:var(--muted); margin-top:2px; }
-.time-slot.selected .time-slot-price { color:rgba(255,255,255,0.8); }
-.time-slot.booked .time-slot-price { color:var(--muted); }
-.time-slot-tag { font-size:9px; color:var(--accent); font-weight:600; text-transform:uppercase; letter-spacing:.5px; }
-
-.book-summary {
-  margin:16px 20px 0; padding:16px;
-  background:rgba(34,197,94,0.08); border:1px solid rgba(34,197,94,0.25);
-  border-radius:var(--radius); display:none;
-}
-.book-summary.visible { display:block; }
-.book-sum-row { display:flex; justify-content:space-between; align-items:center; margin-bottom:8px; }
-.book-sum-label { font-size:13px; color:var(--muted); }
-.book-sum-value { font-size:13px; font-weight:600; }
-.btn-book {
-  margin:12px 0 0; width:100%; padding:14px;
-  background:var(--accent); border:none; border-radius:12px;
-  font-family:var(--font-body); font-size:15px; font-weight:700; color:#fff;
-  cursor:pointer; transition:transform .15s, opacity .2s;
-}
-.btn-book:active { transform:scale(0.98); opacity:.9; }
-
-/* LOYALTY SCREEN */
-.loyalty-header { padding:20px 20px 0; }
-.loyalty-hero {
-  margin:16px 20px 0;
-  background:var(--bg3);
-  border:1px solid rgba(245,158,11,0.25);
-  border-radius:20px; padding:20px; text-align:center; position:relative; overflow:hidden;
-}
-.loyalty-hero::before {
-  content:''; position:absolute; top:-40px; left:50%; transform:translateX(-50%);
-  width:200px; height:200px; border-radius:50%;
-  background:radial-gradient(circle,rgba(245,158,11,0.1),transparent 70%);
-}
-.loyalty-badge {
-  width:70px; height:70px; border-radius:50%; margin:0 auto 10px;
-  background:linear-gradient(135deg,var(--gold),#b45309);
-  display:flex; align-items:center; justify-content:center;
-  font-size:30px; box-shadow:0 0 30px rgba(245,158,11,0.3);
-}
-.loyalty-tier { font-family:var(--font-display); font-size:36px; color:var(--gold); letter-spacing:2px; }
-.loyalty-pts-big { font-size:40px; font-weight:700; margin:4px 0; }
-.loyalty-pts-big span { font-size:16px; color:var(--muted); font-weight:400; }
-.loyalty-next { font-size:12px; color:var(--muted); }
-.loyalty-track2 { margin:12px auto 0; max-width:260px; background:rgba(255,255,255,0.1); border-radius:6px; height:6px; overflow:hidden; }
-.loyalty-fill2 { height:100%; background:linear-gradient(90deg,#d97706,#f59e0b); border-radius:6px; width:68%; }
-
-.tiers-grid { display:grid; grid-template-columns:1fr 1fr; gap:10px; padding:0 20px; }
-.tier-card {
-  padding:14px; border-radius:14px; border:1px solid var(--border); background:var(--bg3);
-  text-align:center;
-}
-.tier-card.current { border-color:rgba(245,158,11,0.4); background:rgba(245,158,11,0.07); }
-.tier-icon { font-size:24px; margin-bottom:6px; }
-.tier-name { font-family:var(--font-display); font-size:18px; letter-spacing:1px; }
-.tier-req { font-size:11px; color:var(--muted); margin-top:3px; }
-.tier-perk { font-size:11px; color:var(--accent); margin-top:4px; font-weight:600; }
-
-.history-item {
-  display:flex; align-items:center; gap:12px; padding:12px 20px;
+nav.stuck{
+  background:rgba(12,26,12,.94);
+  backdrop-filter:blur(20px);
+  padding:14px 32px;
   border-bottom:1px solid var(--border);
 }
-.history-icon { width:36px; height:36px; border-radius:10px; display:flex; align-items:center; justify-content:center; flex-shrink:0; font-size:16px; }
-.history-icon.plus { background:rgba(34,197,94,0.15); }
-.history-icon.minus { background:rgba(239,68,68,0.1); }
-.history-desc { flex:1; }
-.history-title { font-size:13px; font-weight:600; }
-.history-date { font-size:11px; color:var(--muted); margin-top:1px; }
-.history-pts { font-size:15px; font-weight:700; }
-.history-pts.plus { color:var(--accent); }
-.history-pts.minus { color:#ef4444; }
+.logo{font-family:var(--fh);font-size:17px;font-weight:900;letter-spacing:-.3px;}
+.logo b{color:var(--lime);}
+.nav-btn{
+  background:var(--lime);color:#0c1a0c;
+  border:none;border-radius:100px;
+  padding:11px 24px;font-family:var(--fb);font-size:13px;font-weight:600;
+  cursor:pointer;transition:all .2s;
+  box-shadow:0 4px 20px rgba(200,241,53,.3);
+}
+.nav-btn:hover{transform:translateY(-2px);box-shadow:0 8px 28px rgba(200,241,53,.45);}
+.nav-mob{display:none;background:none;border:none;color:var(--white);cursor:pointer;padding:4px;}
 
-/* TOURNAMENTS */
-.tourn-header { padding:20px 20px 0; }
-.tourn-title { font-family:var(--font-display); font-size:40px; letter-spacing:2px; }
+/* ═══════════════════════════════
+   HERO
+═══════════════════════════════ */
+#hero{
+  min-height:100svh;
+  display:grid;grid-template-columns:1fr 1fr;
+  align-items:center;
+  gap:40px;
+  max-width:1200px;margin:0 auto;
+  padding:120px 40px 60px;
+  position:relative;
+}
 
-.tourn-card {
-  margin:16px 20px 0; border-radius:20px; overflow:hidden;
-  background:var(--bg3);
-  border:1px solid rgba(168,85,247,0.25);
+/* animated court lines bg */
+.hero-bg{
+  position:fixed;inset:0;z-index:-1;overflow:hidden;pointer-events:none;
 }
-.tourn-banner {
-  padding:20px; position:relative;
-}
-.tourn-status { display:inline-flex; align-items:center; gap:6px; background:rgba(168,85,247,0.2); border:1px solid rgba(168,85,247,0.4); border-radius:20px; padding:4px 12px; margin-bottom:10px; }
-.tourn-status-dot { width:6px; height:6px; border-radius:50%; background:#a855f7; animation:pulse 1.5s infinite; }
-.tourn-status-text { font-size:11px; font-weight:600; color:#a855f7; text-transform:uppercase; letter-spacing:1px; }
-@keyframes pulse { 0%,100%{opacity:1} 50%{opacity:.4} }
-.tourn-name { font-family:var(--font-display); font-size:28px; letter-spacing:2px; }
-.tourn-date { font-size:13px; color:var(--muted); margin-top:4px; }
-.tourn-prize { display:flex; align-items:center; gap:6px; margin-top:10px; }
-.tourn-prize-amount { font-family:var(--font-display); font-size:26px; color:var(--gold); }
-.tourn-prize-label { font-size:11px; color:var(--muted); }
-.tourn-footer { padding:12px 20px; background:rgba(0,0,0,0.3); display:flex; align-items:center; justify-content:space-between; }
-.tourn-spots { font-size:13px; }
-.tourn-spots strong { color:var(--accent); }
-.btn-join { padding:8px 20px; background:#a855f7; border:none; border-radius:10px; font-family:var(--font-body); font-size:13px; font-weight:700; color:#fff; cursor:pointer; }
+.hero-bg svg{width:100%;height:100%;opacity:.04;}
 
-.bracket-title { padding:0 20px; font-size:12px; font-weight:700; color:var(--muted); text-transform:uppercase; letter-spacing:2px; margin:16px 0 10px; }
-.bracket { padding:0 20px; }
-.bracket-match {
-  display:flex; align-items:stretch; gap:0; margin-bottom:8px;
-  background:var(--bg3); border:1px solid var(--border); border-radius:12px; overflow:hidden;
+.hero-tag{
+  display:inline-flex;align-items:center;gap:8px;
+  background:rgba(200,241,53,.08);border:1px solid var(--border);
+  border-radius:100px;padding:6px 16px;
+  font-size:11px;font-weight:500;color:var(--lime);
+  letter-spacing:1.5px;text-transform:uppercase;
+  margin-bottom:24px;
+  opacity:0;animation:fadeUp .7s .1s var(--ease) forwards;
 }
-.bracket-team { flex:1; padding:10px 12px; display:flex; align-items:center; justify-content:space-between; }
-.bracket-team:first-child { border-right:1px solid var(--border); }
-.bracket-team-name { font-size:13px; font-weight:600; }
-.bracket-team-score { font-family:var(--font-display); font-size:22px; }
-.bracket-team.winner .bracket-team-score { color:var(--accent); }
-.bracket-vs { width:30px; display:flex; align-items:center; justify-content:center; font-size:10px; color:var(--muted); font-weight:700; flex-shrink:0; }
+.pulse{width:6px;height:6px;border-radius:50%;background:var(--lime);animation:pulse 2s infinite;}
+@keyframes pulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.3;transform:scale(.8)}}
 
-/* PROFILE/DIRECTOR */
-.profile-header { padding:20px 20px 0; }
-.profile-avatar-wrap { display:flex; flex-direction:column; align-items:center; padding:24px 20px 16px; }
-.profile-avatar-big {
-  width:80px; height:80px; border-radius:50%;
-  background:linear-gradient(135deg,var(--accent),var(--accent2));
-  display:flex; align-items:center; justify-content:center;
-  font-family:var(--font-display); font-size:32px; color:#fff; letter-spacing:2px;
-  box-shadow:0 0 30px rgba(34,197,94,0.3);
+.hero-h1{
+  font-family:var(--fh);
+  font-size:clamp(38px,6vw,76px);
+  font-weight:900;
+  line-height:.95;
+  letter-spacing:-3px;
+  margin-bottom:24px;
 }
-.profile-name-big { font-family:var(--font-display); font-size:30px; letter-spacing:2px; margin-top:10px; }
-.profile-phone { font-size:13px; color:var(--muted); margin-top:2px; }
-.stats-row { display:grid; grid-template-columns:repeat(3,1fr); gap:10px; padding:0 20px; }
-.stat-item { background:var(--bg3); border:1px solid var(--border); border-radius:14px; padding:14px; text-align:center; }
-.stat-big { font-family:var(--font-display); font-size:30px; color:var(--accent); }
-.stat-small { font-size:11px; color:var(--muted); margin-top:2px; text-transform:uppercase; letter-spacing:.5px; }
+.hero-h1 .line{display:block;overflow:hidden;}
+.hero-h1 .w{
+  display:inline-block;
+  animation:wordUp .85s var(--ease) both;
+  opacity:0;
+}
+@keyframes wordUp{from{opacity:0;transform:translateY(105%)}to{opacity:1;transform:none}}
+.hero-h1 .lime{color:var(--lime);}
+.hero-h1 .outline{
+  color:transparent;
+  -webkit-text-stroke:2px rgba(200,241,53,.5);
+}
 
-.menu-item {
-  display:flex; align-items:center; gap:14px; padding:14px 20px;
-  border-bottom:1px solid var(--border); cursor:pointer; transition:background .15s;
+.hero-p{
+  font-size:clamp(15px,1.6vw,18px);color:rgba(240,247,240,.55);
+  max-width:440px;margin-bottom:36px;line-height:1.7;
+  opacity:0;animation:fadeUp .7s .6s var(--ease) forwards;
 }
-.menu-item:active { background:var(--bg3); }
-.menu-icon { width:36px; height:36px; border-radius:10px; display:flex; align-items:center; justify-content:center; }
-.menu-label { font-size:14px; font-weight:600; flex:1; }
-.menu-arrow { color:var(--muted); }
+@keyframes fadeUp{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:none}}
 
-/* NOTIFICATION TOAST */
-.toast {
-  position:fixed; top:20px; left:50%; transform:translateX(-50%) translateY(-80px);
-  background:var(--accent); color:#fff; padding:12px 20px; border-radius:12px;
-  font-size:14px; font-weight:600; z-index:999; transition:transform .3s;
-  white-space:nowrap; box-shadow:0 8px 24px rgba(34,197,94,0.3);
+.hero-actions{
+  display:flex;gap:14px;align-items:center;flex-wrap:wrap;
+  opacity:0;animation:fadeUp .7s .8s var(--ease) forwards;
 }
-.toast.show { transform:translateX(-50%) translateY(0); }
+.btn-primary{
+  display:inline-flex;align-items:center;gap:10px;
+  background:var(--lime);color:#0c1a0c;
+  border:none;border-radius:100px;
+  padding:17px 32px;font-family:var(--fb);font-size:15px;font-weight:600;
+  cursor:pointer;transition:all .2s;
+  box-shadow:0 8px 32px rgba(200,241,53,.35);
+}
+.btn-primary:hover{transform:translateY(-3px);box-shadow:0 14px 44px rgba(200,241,53,.5);}
+.btn-ghost{
+  display:inline-flex;align-items:center;gap:6px;
+  background:none;border:none;
+  color:rgba(240,247,240,.4);font-family:var(--fb);font-size:14px;font-weight:300;
+  cursor:pointer;transition:color .2s;padding:4px 0;
+}
+.btn-ghost:hover{color:var(--white);}
 
-/* THEME SWITCHER */
-.theme-picker { display:flex; gap:10px; padding:14px 20px; border-bottom:1px solid var(--border); align-items:center; }
-.theme-dot {
-  width:32px; height:32px; border-radius:50%; cursor:pointer;
-  border:3px solid transparent; transition:transform .2s, border-color .2s;
-  position:relative; flex-shrink:0;
+.hero-trust{
+  display:flex;align-items:center;gap:16px;margin-top:36px;
+  opacity:0;animation:fadeUp .7s 1s var(--ease) forwards;
 }
-.theme-dot:active { transform:scale(0.9); }
-.theme-dot.active { border-color:var(--text); transform:scale(1.1); }
-.theme-dot.t-default { background:linear-gradient(135deg,#f4f7f4,#16a34a); }
-.theme-dot.t-snow    { background:linear-gradient(135deg,#f8f9fc,#2563eb); }
-.theme-dot.t-sunset  { background:linear-gradient(135deg,#fdf6f0,#ea580c); }
-.theme-dot.t-lavender{ background:linear-gradient(135deg,#f5f3ff,#7c3aed); }
-.theme-dot.t-dark    { background:linear-gradient(135deg,#0a0f1e,#22c55e); }
-.theme-label { font-size:12px; color:var(--muted); margin-left:4px; }
-.success-overlay {
-  position:fixed; inset:0; background:rgba(10,15,30,0.95); z-index:500;
-  display:flex; flex-direction:column; align-items:center; justify-content:center;
-  opacity:0; pointer-events:none; transition:opacity .3s;
+.trust-avatars{display:flex;}
+.trust-av{
+  width:32px;height:32px;border-radius:50%;
+  border:2px solid var(--bg);
+  display:flex;align-items:center;justify-content:center;
+  font-size:11px;font-weight:700;
+  margin-left:-8px;
 }
-.success-overlay.show { opacity:1; pointer-events:all; }
-.success-icon { font-size:64px; margin-bottom:16px; }
-.success-title { font-family:var(--font-display); font-size:48px; color:var(--accent); letter-spacing:3px; }
-.success-sub { font-size:15px; color:var(--muted); margin-top:8px; text-align:center; line-height:1.6; }
-.success-card { background:var(--bg3); border:1px solid rgba(34,197,94,0.25); border-radius:20px; padding:20px; margin:20px 30px; width:calc(100% - 60px); }
-.success-row { display:flex; justify-content:space-between; padding:8px 0; border-bottom:1px solid var(--border); }
-.success-row:last-child { border:none; }
-.btn-close-success {
-  margin-top:10px; padding:14px 40px; background:var(--accent);
-  border:none; border-radius:12px; font-family:var(--font-body);
-  font-size:15px; font-weight:700; color:#fff; cursor:pointer;
+.trust-av:first-child{margin-left:0;}
+.trust-text{font-size:12px;color:var(--gray);}
+.trust-text b{color:var(--lime);}
+
+/* ═══════════════════════════════
+   PHONE MOCKUP
+═══════════════════════════════ */
+.hero-phone-wrap{
+  display:flex;justify-content:center;align-items:center;
+  position:relative;
+  opacity:0;animation:fadeUp .9s .3s var(--ease) forwards;
+}
+.phone-glow{
+  position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);
+  width:340px;height:480px;border-radius:50%;
+  background:radial-gradient(ellipse,rgba(200,241,53,.1) 0%,transparent 70%);
+  animation:glow 4s ease-in-out infinite;
+  pointer-events:none;
+}
+@keyframes glow{0%,100%{transform:translate(-50%,-50%) scale(1)}50%{transform:translate(-50%,-50%) scale(1.12)}}
+
+.phone{
+  width:260px;
+  background:#0a120a;
+  border-radius:44px;
+  border:7px solid #1e301e;
+  box-shadow:
+    0 0 0 1px rgba(200,241,53,.08),
+    0 40px 80px rgba(0,0,0,.7),
+    inset 0 1px 0 rgba(255,255,255,.04);
+  overflow:hidden;
+  animation:float 5s ease-in-out infinite;
+  position:relative;z-index:1;
+}
+@keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-14px)}}
+
+.ph-notch{
+  width:80px;height:24px;background:#0a120a;
+  border-radius:0 0 16px 16px;margin:0 auto;
+  display:flex;align-items:center;justify-content:center;
+}
+.ph-notch-dot{width:7px;height:7px;border-radius:50%;background:#1e301e;border:2px solid #2a402a;}
+
+.ph-body{background:#0d180d;}
+
+/* Home screen */
+.ph-header{
+  padding:10px 14px;display:flex;align-items:center;justify-content:space-between;
+  background:#111f11;border-bottom:1px solid rgba(200,241,53,.06);
+}
+.ph-logo{font-family:var(--fh);font-size:12px;font-weight:900;}
+.ph-logo b{color:var(--lime);}
+.ph-ava{
+  width:26px;height:26px;border-radius:50%;
+  background:linear-gradient(135deg,var(--lime),#8fd400);
+  display:flex;align-items:center;justify-content:center;
+  font-size:9px;font-weight:700;color:#0c1a0c;
+}
+
+.ph-hero-card{
+  margin:10px 10px 8px;
+  background:linear-gradient(135deg,#0f2a0f,#182818);
+  border-radius:16px;padding:14px;
+  border:1px solid rgba(200,241,53,.1);
+  position:relative;overflow:hidden;
+}
+.ph-hero-card::before{
+  content:'';position:absolute;top:-20px;right:-20px;
+  width:80px;height:80px;border-radius:50%;
+  background:radial-gradient(circle,rgba(200,241,53,.12),transparent 70%);
+}
+.ph-hi{font-size:8px;color:var(--lime);font-weight:500;letter-spacing:1px;text-transform:uppercase;}
+.ph-name{font-family:var(--fh);font-size:16px;font-weight:900;letter-spacing:-.5px;margin-top:2px;}
+.ph-lvl{
+  display:inline-flex;align-items:center;gap:4px;
+  background:rgba(200,241,53,.1);border:1px solid rgba(200,241,53,.2);
+  border-radius:20px;padding:2px 8px;margin-top:6px;
+  font-size:8px;font-weight:600;color:var(--lime);
+}
+.ph-stats{display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px;margin-top:10px;}
+.ph-stat-n{font-family:var(--fh);font-size:17px;font-weight:900;line-height:1;}
+.ph-stat-l{font-size:7px;color:var(--gray);margin-top:1px;}
+
+.ph-next{
+  margin:0 10px 8px;padding:10px 12px;
+  background:#182818;border-radius:12px;
+  border:1px solid rgba(200,241,53,.07);
+  display:flex;align-items:center;gap:10px;
+}
+.ph-court-badge{
+  width:36px;height:36px;border-radius:10px;
+  background:rgba(200,241,53,.08);border:1px solid rgba(200,241,53,.15);
+  display:flex;flex-direction:column;align-items:center;justify-content:center;flex-shrink:0;
+}
+.ph-court-n{font-family:var(--fh);font-size:16px;font-weight:900;color:var(--lime);line-height:1;}
+.ph-court-l{font-size:6px;color:var(--gray);text-transform:uppercase;}
+.ph-next-info{flex:1;}
+.ph-next-time{font-size:12px;font-weight:600;}
+.ph-next-date{font-size:9px;color:var(--gray);margin-top:1px;}
+.ph-countdown{text-align:right;}
+.ph-cd-n{font-family:var(--fh);font-size:18px;font-weight:900;color:var(--lime);line-height:1;}
+.ph-cd-l{font-size:7px;color:var(--gray);}
+
+.ph-pts-card{
+  margin:0 10px 10px;padding:12px;
+  background:linear-gradient(135deg,#0f2a0f,#182818);
+  border-radius:12px;border:1px solid rgba(200,241,53,.1);
+  display:flex;align-items:center;gap:10px;
+}
+.ph-pts-n{font-family:var(--fh);font-size:22px;font-weight:900;color:var(--lime);line-height:1;}
+.ph-pts-l{font-size:8px;color:var(--gray);}
+.ph-pts-bar{margin-top:4px;background:rgba(255,255,255,.06);border-radius:3px;height:3px;width:100px;}
+.ph-pts-fill{height:100%;background:var(--lime);border-radius:3px;width:68%;animation:barFill 2s 1.5s ease forwards;transform-origin:left;transform:scaleX(0);}
+@keyframes barFill{to{transform:scaleX(1)}}
+.ph-pts-badge{margin-left:auto;background:rgba(200,241,53,.1);border:1px solid rgba(200,241,53,.2);border-radius:20px;padding:3px 8px;font-size:8px;font-weight:600;color:var(--lime);}
+
+.ph-nav{
+  display:flex;justify-content:space-around;
+  padding:8px 0 6px;
+  background:#111f11;
+  border-top:1px solid rgba(200,241,53,.06);
+}
+.ph-nav-i{display:flex;flex-direction:column;align-items:center;gap:2px;font-size:7px;color:var(--gray);}
+.ph-nav-i.on{color:var(--lime);}
+
+/* ═══════════════════════════════
+   TICKER
+═══════════════════════════════ */
+.ticker{
+  overflow:hidden;background:#0a120a;
+  border-top:1px solid var(--border);border-bottom:1px solid var(--border);
+  padding:12px 0;
+}
+.ticker-t{display:inline-flex;white-space:nowrap;animation:tick 28s linear infinite;}
+@keyframes tick{to{transform:translateX(-50%)}}
+.ti{display:inline-flex;align-items:center;gap:12px;padding:0 18px;
+  font-family:var(--fh);font-size:10px;font-weight:700;
+  color:rgba(240,247,240,.18);text-transform:uppercase;letter-spacing:2px;}
+.ti.hi{color:var(--lime);}
+.ti-dot{width:3px;height:3px;border-radius:50%;background:var(--border);}
+
+/* ═══════════════════════════════
+   SECTION BASE
+═══════════════════════════════ */
+.section{max-width:1200px;margin:0 auto;padding:100px 40px;}
+.s-tag{font-size:10px;font-weight:500;color:var(--lime);text-transform:uppercase;
+  letter-spacing:2px;display:flex;align-items:center;gap:8px;margin-bottom:14px;}
+.s-tag::before{content:'';display:block;width:18px;height:1px;background:var(--lime);}
+.s-h{font-family:var(--fh);font-size:clamp(26px,4vw,52px);font-weight:900;
+  letter-spacing:-2px;line-height:1.0;margin-bottom:16px;}
+.s-sub{font-size:16px;color:rgba(240,247,240,.45);font-weight:300;
+  line-height:1.7;max-width:500px;}
+.lime{color:var(--lime);}
+
+/* ═══════════════════════════════
+   STEPS — HOW IT WORKS
+═══════════════════════════════ */
+#how{background:var(--bg);}
+.steps-grid{
+  display:grid;grid-template-columns:repeat(3,1fr);
+  gap:2px;margin-top:56px;
+  background:var(--border);border-radius:20px;overflow:hidden;
+}
+.step{
+  background:var(--bg2);padding:36px 28px;
+  position:relative;overflow:hidden;
+  transition:background .25s;
+}
+.step:hover{background:var(--card);}
+.step-num{
+  position:absolute;top:-8px;right:14px;
+  font-family:var(--fh);font-size:88px;font-weight:900;
+  color:rgba(200,241,53,.04);line-height:1;pointer-events:none;
+}
+.step-emoji{font-size:32px;margin-bottom:18px;display:block;}
+.step-title{font-family:var(--fh);font-size:17px;font-weight:700;
+  letter-spacing:-.5px;margin-bottom:10px;}
+.step-text{font-size:13px;color:rgba(240,247,240,.45);line-height:1.65;}
+.step-line{
+  display:block;width:32px;height:2px;
+  background:var(--lime);border-radius:2px;margin-top:20px;
+  transition:width .3s;
+}
+.step:hover .step-line{width:56px;}
+
+/* ═══════════════════════════════
+   BENEFITS — BIG CARDS
+═══════════════════════════════ */
+#benefits{background:var(--bg2);}
+.benefits-grid{
+  display:grid;
+  grid-template-columns:1.3fr 1fr;
+  grid-template-rows:auto auto;
+  gap:16px;margin-top:56px;
+}
+.benefit-card{
+  border-radius:20px;padding:32px;
+  background:var(--card);
+  border:1px solid rgba(255,255,255,.04);
+  transition:border-color .25s,transform .2s;
+  overflow:hidden;position:relative;
+}
+.benefit-card:hover{border-color:var(--border);transform:translateY(-2px);}
+.benefit-card.tall{grid-row:span 2;display:flex;flex-direction:column;justify-content:space-between;}
+.benefit-card.accent{background:linear-gradient(135deg,#0f2a0f,#1a3a1a);border-color:rgba(200,241,53,.15);}
+.bc-icon{font-size:32px;margin-bottom:18px;}
+.bc-title{font-family:var(--fh);font-size:20px;font-weight:700;letter-spacing:-.5px;margin-bottom:10px;}
+.bc-text{font-size:13px;color:rgba(240,247,240,.45);line-height:1.65;}
+.bc-tag{
+  display:inline-block;margin-top:16px;
+  background:rgba(200,241,53,.08);border:1px solid var(--border);
+  border-radius:100px;padding:4px 12px;
+  font-size:11px;font-weight:500;color:var(--lime);
+}
+
+/* Booking visual inside card */
+.bc-booking{margin-top:20px;}
+.bc-slots{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;}
+.bc-slot{
+  padding:9px 4px;border-radius:10px;text-align:center;
+  font-size:11px;font-weight:500;
+  border:1px solid rgba(255,255,255,.06);background:rgba(255,255,255,.03);
+  color:rgba(240,247,240,.5);transition:all .3s;
+}
+.bc-slot.on{background:var(--lime);color:#0c1a0c;border-color:var(--lime);}
+.bc-slot.off{opacity:.3;}
+.bc-slot sub{display:block;font-size:9px;margin-top:1px;opacity:.7;}
+
+/* Loyalty visual */
+.bc-loyalty-visual{margin-top:20px;display:flex;flex-direction:column;gap:10px;}
+.level-pill{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:10px 14px;border-radius:12px;
+  background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.05);
+  font-size:12px;transition:all .25s;
+}
+.level-pill.cur{background:rgba(200,241,53,.07);border-color:rgba(200,241,53,.2);}
+.level-pill.cur .lp-name{color:var(--lime);}
+.lp-name{font-weight:600;font-size:12px;}
+.lp-perk{font-size:11px;color:var(--gray);}
+
+/* Tournament card visual */
+.bc-tourn-vis{
+  margin-top:16px;
+  background:linear-gradient(135deg,#0d1a2e,#162028);
+  border-radius:14px;padding:16px;
+  border:1px solid rgba(168,85,247,.15);
+}
+.bt-prize{font-family:var(--fh);font-size:28px;font-weight:900;color:#fbbf24;letter-spacing:-1px;}
+.bt-label{font-size:10px;color:rgba(240,247,240,.3);margin-top:2px;}
+.bt-bar{margin-top:12px;background:rgba(255,255,255,.06);border-radius:4px;height:5px;overflow:hidden;}
+.bt-fill{width:37.5%;height:100%;background:#a855f7;border-radius:4px;}
+.bt-meta{display:flex;justify-content:space-between;font-size:10px;color:rgba(240,247,240,.3);margin-top:4px;}
+
+/* ═══════════════════════════════
+   STATS STRIP
+═══════════════════════════════ */
+#stats{background:var(--bg);}
+.stats-strip{
+  display:grid;grid-template-columns:repeat(4,1fr);
+  gap:1px;background:var(--border);
+  border-radius:20px;overflow:hidden;
+  margin-top:0;
+}
+.stat-c{
+  background:var(--bg2);padding:44px 28px;
+  text-align:center;transition:background .2s;
+}
+.stat-c:hover{background:var(--card);}
+.stat-n{
+  font-family:var(--fh);font-size:clamp(36px,4vw,56px);font-weight:900;
+  letter-spacing:-2px;line-height:1;margin-bottom:8px;
+}
+.stat-n .u{font-size:.5em;color:var(--lime);vertical-align:top;margin-top:5px;display:inline-block;}
+.stat-d{font-size:13px;color:var(--gray);line-height:1.4;}
+
+/* ═══════════════════════════════
+   INSTALL SECTION
+═══════════════════════════════ */
+#install{
+  background:var(--bg2);
+  position:relative;overflow:hidden;
+}
+#install::before{
+  content:'';position:absolute;inset:0;
+  background:radial-gradient(ellipse 70% 50% at 50% 100%,rgba(200,241,53,.06),transparent);
+  pointer-events:none;
+}
+.install-inner{
+  max-width:1200px;margin:0 auto;padding:100px 40px;
+  display:grid;grid-template-columns:1fr 1fr;gap:80px;align-items:center;
+  position:relative;z-index:1;
+}
+.install-h{
+  font-family:var(--fh);font-size:clamp(32px,4.5vw,58px);
+  font-weight:900;letter-spacing:-2px;line-height:.97;margin-bottom:20px;
+}
+.install-sub{font-size:16px;color:rgba(240,247,240,.45);font-weight:300;line-height:1.7;margin-bottom:32px;max-width:420px;}
+.install-steps{display:flex;flex-direction:column;gap:14px;margin-bottom:36px;}
+.i-step{display:flex;align-items:center;gap:14px;font-size:14px;color:rgba(240,247,240,.55);}
+.i-step-n{
+  width:30px;height:30px;border-radius:50%;flex-shrink:0;
+  background:rgba(200,241,53,.08);border:1px solid var(--border);
+  display:flex;align-items:center;justify-content:center;
+  font-family:var(--fh);font-size:12px;font-weight:700;color:var(--lime);
+}
+.install-btns{display:flex;gap:12px;flex-wrap:wrap;}
+
+/* Install visual card */
+.install-card{
+  background:var(--card);border:1px solid rgba(200,241,53,.1);
+  border-radius:24px;padding:28px;
+}
+.ic-preview{
+  background:var(--bg);border-radius:14px;overflow:hidden;
+  margin-bottom:18px;border:1px solid rgba(255,255,255,.05);
+}
+.ic-preview-bar{
+  background:#0a120a;padding:10px 14px;
+  display:flex;align-items:center;justify-content:space-between;
+  border-bottom:1px solid rgba(255,255,255,.05);
+}
+.ic-preview-url{font-size:11px;color:var(--gray);text-align:center;padding:8px;background:#080f08;}
+.ic-banner{
+  display:flex;align-items:center;gap:12px;
+  background:rgba(200,241,53,.06);border:1px solid rgba(200,241,53,.15);
+  border-radius:14px;padding:14px 16px;
+}
+.ic-b-icon{font-size:24px;flex-shrink:0;}
+.ic-b-text{flex:1;}
+.ic-b-title{font-size:13px;font-weight:500;}
+.ic-b-sub{font-size:11px;color:var(--gray);margin-top:1px;}
+.ic-b-btn{
+  background:var(--lime);color:#0c1a0c;
+  border:none;border-radius:10px;
+  padding:8px 14px;font-size:12px;font-weight:600;
+  cursor:pointer;white-space:nowrap;font-family:var(--fb);
+  transition:all .15s;
+}
+.ic-b-btn:hover{transform:scale(1.04);}
+.ic-note{margin-top:14px;font-size:11px;color:var(--gray);text-align:center;line-height:1.5;}
+
+/* ═══════════════════════════════
+   SOCIAL PROOF
+═══════════════════════════════ */
+#proof{background:var(--bg);}
+.proof-grid{
+  display:grid;grid-template-columns:repeat(3,1fr);
+  gap:16px;margin-top:56px;
+}
+.proof-card{
+  background:var(--bg2);border:1px solid rgba(255,255,255,.04);
+  border-radius:20px;padding:28px;transition:border-color .2s;
+}
+.proof-card:hover{border-color:var(--border);}
+.proof-stars{color:#fbbf24;font-size:13px;margin-bottom:14px;letter-spacing:2px;}
+.proof-text{font-size:14px;color:rgba(240,247,240,.6);line-height:1.65;margin-bottom:20px;font-style:italic;}
+.proof-author{display:flex;align-items:center;gap:10px;}
+.proof-av{
+  width:36px;height:36px;border-radius:50%;
+  display:flex;align-items:center;justify-content:center;
+  font-size:12px;font-weight:700;color:#0c1a0c;flex-shrink:0;
+}
+.proof-name{font-size:13px;font-weight:500;}
+.proof-role{font-size:11px;color:var(--gray);margin-top:1px;}
+
+/* ═══════════════════════════════
+   FINAL CTA
+═══════════════════════════════ */
+#cta{
+  background:var(--bg2);text-align:center;
+  position:relative;overflow:hidden;
+}
+#cta::before{
+  content:'';position:absolute;inset:0;
+  background:
+    linear-gradient(rgba(200,241,53,.04) 1px,transparent 1px),
+    linear-gradient(90deg,rgba(200,241,53,.04) 1px,transparent 1px);
+  background-size:48px 48px;
+}
+.cta-inner{position:relative;z-index:1;padding:120px 40px;}
+.cta-h{
+  font-family:var(--fh);
+  font-size:clamp(36px,6vw,80px);
+  font-weight:900;letter-spacing:-3px;line-height:.95;
+  margin-bottom:20px;
+}
+.cta-sub{font-size:17px;color:rgba(240,247,240,.4);max-width:460px;margin:0 auto 40px;font-weight:300;line-height:1.7;}
+.cta-btns{display:flex;gap:14px;justify-content:center;flex-wrap:wrap;}
+.cta-note{margin-top:24px;font-size:13px;color:rgba(240,247,240,.2);}
+
+/* ═══════════════════════════════
+   FOOTER
+═══════════════════════════════ */
+footer{
+  background:#060e06;
+  border-top:1px solid var(--border);
+  padding:28px 40px;
+  display:flex;align-items:center;justify-content:space-between;
+  flex-wrap:wrap;gap:12px;
+}
+.footer-copy{font-size:12px;color:rgba(240,247,240,.2);}
+
+/* ═══════════════════════════════
+   MOBILE NAV DRAWER
+═══════════════════════════════ */
+.mob-nav{
+  position:fixed;inset:0;z-index:200;
+  background:var(--bg2);
+  display:flex;flex-direction:column;padding:28px;
+  transform:translateX(100%);transition:transform .4s var(--ease);
+}
+.mob-nav.open{transform:none;}
+.mob-close{
+  align-self:flex-end;background:none;border:none;
+  color:var(--white);font-size:28px;cursor:pointer;line-height:1;
+}
+.mob-links{display:flex;flex-direction:column;gap:4px;margin-top:28px;flex:1;}
+.mob-links a{
+  font-family:var(--fh);font-size:28px;font-weight:900;
+  color:rgba(240,247,240,.4);padding:10px 0;
+  border-bottom:1px solid rgba(255,255,255,.05);
+  transition:color .2s;
+}
+.mob-links a:hover,.mob-links a:active{color:var(--lime);}
+
+/* ═══════════════════════════════
+   SCROLL TOP
+═══════════════════════════════ */
+#top{
+  position:fixed;bottom:24px;right:24px;z-index:50;
+  width:42px;height:42px;border-radius:50%;
+  background:var(--card);border:1px solid var(--border);
+  color:var(--gray);cursor:pointer;
+  display:flex;align-items:center;justify-content:center;
+  opacity:0;pointer-events:none;transition:all .3s;
+}
+#top.show{opacity:1;pointer-events:all;}
+#top:hover{background:var(--lime);color:#0c1a0c;border-color:var(--lime);}
+
+/* ═══════════════════════════════
+   RESPONSIVE
+═══════════════════════════════ */
+@media(max-width:1024px){
+  #hero{grid-template-columns:1fr;text-align:center;}
+  .hero-p{margin-left:auto;margin-right:auto;}
+  .hero-actions{justify-content:center;}
+  .hero-trust{justify-content:center;}
+  .hero-phone-wrap{margin-top:20px;}
+  .benefits-grid{grid-template-columns:1fr 1fr;}
+  .benefit-card.tall{grid-row:auto;}
+  .stats-strip{grid-template-columns:1fr 1fr;}
+  .install-inner{grid-template-columns:1fr;gap:40px;}
+  .proof-grid{grid-template-columns:1fr 1fr;}
+}
+@media(max-width:768px){
+  nav{padding:14px 20px;}
+  nav.stuck{padding:12px 20px;}
+  .nav-btn{display:none;}
+  .nav-mob{display:block;}
+  .section{padding:70px 20px;}
+  #hero{padding:100px 20px 50px;}
+  .hero-h1{letter-spacing:-2px;}
+  .steps-grid{grid-template-columns:1fr;}
+  .benefits-grid{grid-template-columns:1fr;}
+  .benefit-card.tall{grid-row:auto;}
+  .stats-strip{grid-template-columns:1fr 1fr;}
+  .stat-c{padding:28px 16px;}
+  .proof-grid{grid-template-columns:1fr;}
+  .install-inner{padding:70px 20px;}
+  .cta-inner{padding:80px 20px;}
+  footer{flex-direction:column;text-align:center;padding:24px 20px;}
 }
 </style>
 </head>
 <body>
 
-<!-- SPLASH -->
-<div id="splash">
-  <div class="splash-logo">PADEL<span>PASS</span></div>
-  <div class="splash-sub">Челябинск • Падел-клуб</div>
-  <div class="splash-bar"><div class="splash-fill"></div></div>
+<!-- ══ COURT BACKGROUND ══ -->
+<div class="hero-bg" aria-hidden="true">
+  <svg viewBox="0 0 1440 900" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg">
+    <rect x="180" y="80" width="1080" height="740" stroke="#c8f135" stroke-width="1.5" fill="none"/>
+    <line x1="720" y1="80" x2="720" y2="820" stroke="#c8f135" stroke-width="1"/>
+    <rect x="360" y="80" width="720" height="280" stroke="#c8f135" stroke-width="1" fill="none"/>
+    <rect x="360" y="540" width="720" height="280" stroke="#c8f135" stroke-width="1" fill="none"/>
+    <line x1="180" y1="450" x2="1260" y2="450" stroke="#c8f135" stroke-width="2"/>
+    <circle cx="720" cy="450" r="50" stroke="#c8f135" stroke-width="1" fill="none" stroke-dasharray="8 8"/>
+  </svg>
 </div>
 
-<!-- TOAST -->
-<div class="toast" id="toast"></div>
-
-<!-- BOOKING SUCCESS -->
-<div class="success-overlay" id="successOverlay">
-  <div class="success-icon">🎾</div>
-  <div class="success-title">ГОТОВО!</div>
-  <div class="success-sub">Корт забронирован.<br>Ждём тебя на игре!</div>
-  <div class="success-card" id="successCard"></div>
-  <button class="btn-close-success" onclick="closeSuccess()">Отлично!</button>
-</div>
-
-<!-- APP -->
-<div id="app">
-
-<!-- ===== HOME SCREEN ===== -->
-<div class="screen active" id="screen-home">
-  <div class="scroll-area">
-    <div class="header">
-      <div class="header-logo">PADEL<span>PASS</span></div>
-      <div style="display:flex;gap:10px;align-items:center;">
-        <div style="width:10px;height:10px;border-radius:50%;background:var(--accent);box-shadow:0 0 8px var(--accent);"></div>
-        <div class="avatar" onclick="switchScreen('profile')">АП</div>
-      </div>
-    </div>
-
-    <!-- HERO -->
-    <div class="hero-card">
-      <div class="hero-greeting">Добро пожаловать</div>
-      <div class="hero-name">АЛЕКСЕЙ<br>ПЕТРОВ</div>
-      <div class="hero-level">
-        <span>🏆</span>
-        <span class="hero-level-text">ИГРОК — II уровень</span>
-      </div>
-      <div class="hero-stats">
-        <div class="hero-stat">
-          <div class="hero-stat-num">47</div>
-          <div class="hero-stat-label">Игр</div>
-        </div>
-        <div class="hero-stat">
-          <div class="hero-stat-num">31</div>
-          <div class="hero-stat-label">Побед</div>
-        </div>
-        <div class="hero-stat">
-          <div class="hero-stat-num">66%</div>
-          <div class="hero-stat-label">Винрейт</div>
-        </div>
-      </div>
-    </div>
-
-    <!-- NEXT SESSION -->
-    <div class="section-title">Ближайшая игра</div>
-    <div class="session-card">
-      <div class="session-court">
-        <div class="session-court-num">2</div>
-        <div class="session-court-label">Корт</div>
-      </div>
-      <div class="session-info">
-        <div class="session-time">19:00 — 20:00</div>
-        <div class="session-date">Сегодня, 29 мая</div>
-        <div class="session-players" style="margin-top:6px;">
-          <div class="session-avatar" style="background:var(--surface);">АП</div>
-          <div class="session-avatar" style="background:var(--surface);">СМ</div>
-          <div class="session-avatar" style="background:var(--surface);">ДК</div>
-          <div class="session-avatar" style="background:var(--surface);">ТН</div>
-        </div>
-      </div>
-      <div class="session-countdown">
-        <div class="session-in">через</div>
-        <div class="session-mins" id="countdown">2:14</div>
-        <div class="session-mins-label">ч:мин</div>
-      </div>
-    </div>
-
-    <!-- QUICK ACTIONS -->
-    <div class="section-title">Быстрые действия</div>
-    <div class="quick-grid">
-      <div class="quick-btn primary" onclick="switchScreen('booking')">
-        <div class="quick-icon green">
-          <svg viewBox="0 0 24 24" fill="none" stroke="#22c55e" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg>
-        </div>
-        <div class="quick-label">Забронировать</div>
-        <div class="quick-sub">4 корта доступны</div>
-      </div>
-      <div class="quick-btn" onclick="switchScreen('loyalty')">
-        <div class="quick-icon gold">
-          <svg viewBox="0 0 24 24" fill="none" stroke="#f59e0b" stroke-width="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
-        </div>
-        <div class="quick-label">Лояльность</div>
-        <div class="quick-sub">1 240 баллов</div>
-      </div>
-      <div class="quick-btn" onclick="switchScreen('tournaments')">
-        <div class="quick-icon purple">
-          <svg viewBox="0 0 24 24" fill="none" stroke="#a855f7" stroke-width="2"><path d="M6 9H4a2 2 0 0 0-2 2v3a2 2 0 0 0 2 2h2v-7zM20 9h-2v7h2a2 2 0 0 0 2-2v-3a2 2 0 0 0-2-2z"/><path d="M6 5a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2V5z"/></svg>
-        </div>
-        <div class="quick-label">Турниры</div>
-        <div class="quick-sub">1 активный</div>
-      </div>
-      <div class="quick-btn" onclick="showToast('📊 Аналитика — модуль директора')">
-        <div class="quick-icon blue">
-          <svg viewBox="0 0 24 24" fill="none" stroke="#3b82f6" stroke-width="2"><path d="M18 20V10M12 20V4M6 20v-6"/></svg>
-        </div>
-        <div class="quick-label">Статистика</div>
-        <div class="quick-sub">Win rate растёт</div>
-      </div>
-    </div>
-
-    <!-- LOYALTY BAR -->
-    <div class="section-title">Прогресс уровня</div>
-    <div class="loyalty-bar-wrap">
-      <div class="loyalty-row">
-        <span class="loyalty-name">Игрок → Про</span>
-        <span class="loyalty-pts">1 240 / 1 800 ⭐</span>
-      </div>
-      <div class="loyalty-track"><div class="loyalty-fill"></div></div>
-      <div class="loyalty-labels">
-        <span class="loyalty-label-text">🏆 Игрок</span>
-        <span class="loyalty-label-text">560 до уровня Про</span>
-        <span class="loyalty-label-text">🥇 Про</span>
-      </div>
-    </div>
-
-    <div style="height:16px;"></div>
-  </div>
-</div>
-
-<!-- ===== BOOKING SCREEN ===== -->
-<div class="screen" id="screen-booking">
-  <div class="scroll-area">
-    <div class="booking-header">
-      <div class="booking-title">БРОНЬ</div>
-      <div class="booking-sub">Выберите дату, корт и время</div>
-    </div>
-
-    <!-- DATES -->
-    <div class="date-scroll" id="dateScroll"></div>
-
-    <!-- COURTS -->
-    <div class="courts-label">Корт</div>
-    <div class="court-tabs">
-      <div class="court-tab active" onclick="selectCourt(this,1)">Корт 1</div>
-      <div class="court-tab" onclick="selectCourt(this,2)">Корт 2</div>
-      <div class="court-tab" onclick="selectCourt(this,3)">Корт 3</div>
-      <div class="court-tab" onclick="selectCourt(this,4)">Корт 4</div>
-    </div>
-
-    <!-- TIME SLOTS -->
-    <div class="courts-label">Время</div>
-    <div class="time-grid" id="timeGrid"></div>
-
-    <!-- SUMMARY -->
-    <div class="book-summary" id="bookSummary">
-      <div class="book-sum-row">
-        <span class="book-sum-label">Корт</span>
-        <span class="book-sum-value" id="sumCourt">—</span>
-      </div>
-      <div class="book-sum-row">
-        <span class="book-sum-label">Дата</span>
-        <span class="book-sum-value" id="sumDate">—</span>
-      </div>
-      <div class="book-sum-row">
-        <span class="book-sum-label">Время</span>
-        <span class="book-sum-value" id="sumTime">—</span>
-      </div>
-      <div class="book-sum-row" style="border:none;">
-        <span class="book-sum-label">Стоимость</span>
-        <span class="book-sum-value" id="sumPrice" style="color:var(--accent);font-size:18px;">—</span>
-      </div>
-      <button class="btn-book" onclick="confirmBooking()">Подтвердить бронирование</button>
-    </div>
-    <div style="height:16px;"></div>
-  </div>
-</div>
-
-<!-- ===== LOYALTY SCREEN ===== -->
-<div class="screen" id="screen-loyalty">
-  <div class="scroll-area">
-    <div class="loyalty-header">
-      <div class="booking-title">БОНУСЫ</div>
-      <div class="booking-sub">Играй больше — получай больше</div>
-    </div>
-
-    <div class="loyalty-hero">
-      <div class="loyalty-badge">🏆</div>
-      <div class="loyalty-tier">ИГРОК</div>
-      <div class="loyalty-pts-big">1 240 <span>баллов</span></div>
-      <div class="loyalty-next">До уровня Про: 560 баллов</div>
-      <div class="loyalty-track2"><div class="loyalty-fill2"></div></div>
-    </div>
-
-    <div class="section-title">Уровни клуба</div>
-    <div class="tiers-grid">
-      <div class="tier-card">
-        <div class="tier-icon">⚪</div>
-        <div class="tier-name">НОВИЧОК</div>
-        <div class="tier-req">0 — 499 баллов</div>
-        <div class="tier-perk">+5% кешбэк</div>
-      </div>
-      <div class="tier-card current">
-        <div class="tier-icon">🏆</div>
-        <div class="tier-name">ИГРОК</div>
-        <div class="tier-req">500 — 1 799 баллов</div>
-        <div class="tier-perk">+10% кешбэк ✓</div>
-      </div>
-      <div class="tier-card">
-        <div class="tier-icon">🥇</div>
-        <div class="tier-name">ПРО</div>
-        <div class="tier-req">1 800 — 3 999 баллов</div>
-        <div class="tier-perk">+15% кешбэк</div>
-      </div>
-      <div class="tier-card">
-        <div class="tier-icon">👑</div>
-        <div class="tier-name">ЧЕМПИОН</div>
-        <div class="tier-req">от 4 000 баллов</div>
-        <div class="tier-perk">+20% + VIP-слоты</div>
-      </div>
-    </div>
-
-    <div class="section-title">История начислений</div>
-    <div class="history-item">
-      <div class="history-icon plus">🎾</div>
-      <div class="history-desc">
-        <div class="history-title">Игра на Корте 2</div>
-        <div class="history-date">Сегодня, 14:00</div>
-      </div>
-      <div class="history-pts plus">+80</div>
-    </div>
-    <div class="history-item">
-      <div class="history-icon plus">👥</div>
-      <div class="history-desc">
-        <div class="history-title">Реферальный бонус</div>
-        <div class="history-date">27 мая</div>
-      </div>
-      <div class="history-pts plus">+200</div>
-    </div>
-    <div class="history-item">
-      <div class="history-icon minus">🛒</div>
-      <div class="history-desc">
-        <div class="history-title">Скидка на аренду ракетки</div>
-        <div class="history-date">25 мая</div>
-      </div>
-      <div class="history-pts minus">−50</div>
-    </div>
-    <div class="history-item">
-      <div class="history-icon plus">🎾</div>
-      <div class="history-desc">
-        <div class="history-title">Игра на Корте 1</div>
-        <div class="history-date">22 мая</div>
-      </div>
-      <div class="history-pts plus">+80</div>
-    </div>
-    <div class="history-item">
-      <div class="history-icon plus">🏆</div>
-      <div class="history-desc">
-        <div class="history-title">Турнир «Май Open» — 2 место</div>
-        <div class="history-date">18 мая</div>
-      </div>
-      <div class="history-pts plus">+300</div>
-    </div>
-    <div style="height:16px;"></div>
-  </div>
-</div>
-
-<!-- ===== TOURNAMENTS SCREEN ===== -->
-<div class="screen" id="screen-tournaments">
-  <div class="scroll-area">
-    <div class="tourn-header">
-      <div class="tourn-title">ТУРНИРЫ</div>
-      <div class="booking-sub">Соревнуйся и побеждай</div>
-    </div>
-
-    <div class="tourn-card">
-      <div class="tourn-banner">
-        <div class="tourn-status">
-          <div class="tourn-status-dot"></div>
-          <div class="tourn-status-text">Идёт регистрация</div>
-        </div>
-        <div class="tourn-name">JUNE OPEN 2025</div>
-        <div class="tourn-date">📅 14–15 июня • Все корты</div>
-        <div class="tourn-prize">
-          <span style="font-size:20px;">🏆</span>
-          <div class="tourn-prize-amount">15 000 ₽</div>
-          <div class="tourn-prize-label">призовой фонд</div>
-        </div>
-      </div>
-      <div class="tourn-footer">
-        <div class="tourn-spots">Зарегистрировано: <strong>6 / 16</strong> команд</div>
-        <button class="btn-join" onclick="showToast('✅ Вы зарегистрированы на June Open!')">Участвовать</button>
-      </div>
-    </div>
-
-    <div class="bracket-title">Сетка — Май Open (завершён)</div>
-    <div class="bracket">
-      <div style="font-size:11px;color:var(--muted);margin-bottom:8px;text-transform:uppercase;letter-spacing:1px;">Полуфинал</div>
-      <div class="bracket-match">
-        <div class="bracket-team winner">
-          <span class="bracket-team-name">Петров / Смирнов</span>
-          <span class="bracket-team-score" style="color:var(--accent);">6</span>
-        </div>
-        <div class="bracket-vs">vs</div>
-        <div class="bracket-team">
-          <span class="bracket-team-name">Козлов / Иванов</span>
-          <span class="bracket-team-score" style="color:var(--muted);">4</span>
-        </div>
-      </div>
-      <div class="bracket-match" style="margin-top:6px;">
-        <div class="bracket-team winner">
-          <span class="bracket-team-name">Фролов / Орлов</span>
-          <span class="bracket-team-score" style="color:var(--accent);">6</span>
-        </div>
-        <div class="bracket-vs">vs</div>
-        <div class="bracket-team">
-          <span class="bracket-team-name">Дятлов / Нечаев</span>
-          <span class="bracket-team-score" style="color:var(--muted);">3</span>
-        </div>
-      </div>
-      <div style="font-size:11px;color:var(--muted);margin:12px 0 8px;text-transform:uppercase;letter-spacing:1px;">Финал</div>
-      <div class="bracket-match">
-        <div class="bracket-team">
-          <span class="bracket-team-name">Петров / Смирнов</span>
-          <span class="bracket-team-score" style="color:var(--muted);">4</span>
-        </div>
-        <div class="bracket-vs">vs</div>
-        <div class="bracket-team winner">
-          <span class="bracket-team-name">👑 Фролов / Орлов</span>
-          <span class="bracket-team-score" style="color:var(--accent);">6</span>
-        </div>
-      </div>
-    </div>
-
-    <div class="section-title" style="margin-top:16px;">Рейтинг игроков</div>
-    <div style="padding:0 20px;">
-      <div class="history-item" style="padding:10px 0; background:rgba(245,158,11,0.05); border-radius:12px; border-bottom:none; padding:12px;">
-        <div style="font-family:var(--font-display);font-size:22px;color:var(--gold);min-width:28px;">1</div>
-        <div class="history-desc"><div class="history-title">Фролов Максим</div><div class="history-date">3 победы в турнирах</div></div>
-        <div style="font-size:13px;font-weight:700;color:var(--gold);">2 400 ⭐</div>
-      </div>
-      <div class="history-item" style="padding:10px 0;">
-        <div style="font-family:var(--font-display);font-size:22px;color:var(--muted);min-width:28px;">2</div>
-        <div class="history-desc"><div class="history-title">Петров Алексей</div><div class="history-date">Это ты 🎾</div></div>
-        <div style="font-size:13px;font-weight:700;color:var(--accent);">1 240 ⭐</div>
-      </div>
-      <div class="history-item" style="padding:10px 0;">
-        <div style="font-family:var(--font-display);font-size:22px;color:var(--muted);min-width:28px;">3</div>
-        <div class="history-desc"><div class="history-title">Смирнов Дмитрий</div><div class="history-date">2 победы в турнирах</div></div>
-        <div style="font-size:13px;font-weight:700;color:var(--muted);">980 ⭐</div>
-      </div>
-    </div>
-    <div style="height:16px;"></div>
-  </div>
-</div>
-
-<!-- ===== PROFILE SCREEN ===== -->
-<div class="screen" id="screen-profile">
-  <div class="scroll-area">
-    <div style="padding:20px 20px 0; display:flex; align-items:center; justify-content:space-between;">
-      <div class="booking-title" style="font-family:var(--font-display);font-size:40px;letter-spacing:2px;">ПРОФИЛЬ</div>
-      <div style="padding:6px 14px;background:rgba(168,85,247,0.15);border:1px solid rgba(168,85,247,0.3);border-radius:20px;font-size:12px;font-weight:600;color:#a855f7;" onclick="showToast('👋 Добро пожаловать, директор!')">Директор</div>
-    </div>
-
-    <div class="profile-avatar-wrap">
-      <div class="profile-avatar-big">АП</div>
-      <div class="profile-name-big">АЛЕКСЕЙ ПЕТРОВ</div>
-      <div class="profile-phone">+7 (951) 448-96-66</div>
-    </div>
-
-    <div class="stats-row">
-      <div class="stat-item">
-        <div class="stat-big">47</div>
-        <div class="stat-small">Игр</div>
-      </div>
-      <div class="stat-item">
-        <div class="stat-big">31</div>
-        <div class="stat-small">Побед</div>
-      </div>
-      <div class="stat-item">
-        <div class="stat-big">1 240</div>
-        <div class="stat-small">Баллов</div>
-      </div>
-    </div>
-
-    <div class="section-title" style="margin-top:16px;">Меню</div>
-    <div class="menu-item" onclick="switchScreen('booking')">
-      <div class="menu-icon" style="background:rgba(34,197,94,0.15);">
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#22c55e" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg>
-      </div>
-      <div class="menu-label">Мои бронирования</div>
-      <div class="menu-arrow">›</div>
-    </div>
-    <div class="menu-item" onclick="switchScreen('loyalty')">
-      <div class="menu-icon" style="background:rgba(245,158,11,0.15);">
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#f59e0b" stroke-width="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
-      </div>
-      <div class="menu-label">Бонусные баллы</div>
-      <div class="menu-arrow">›</div>
-    </div>
-    <div class="menu-item" onclick="showDirectorPanel()">
-      <div class="menu-icon" style="background:rgba(239,68,68,0.12);">
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#ef4444" stroke-width="2"><path d="M18 20V10M12 20V4M6 20v-6"/></svg>
-      </div>
-      <div class="menu-label">Аналитика директора</div>
-      <div class="menu-arrow">›</div>
-    </div>
-    <div class="menu-item" onclick="showToast('📲 Уведомления настроены')" style="cursor:pointer;">
-      <div class="menu-icon" style="background:rgba(59,130,246,0.12);">
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#3b82f6" stroke-width="2"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9M13.73 21a2 2 0 0 1-3.46 0"/></svg>
-      </div>
-      <div class="menu-label">Уведомления</div>
-      <div class="menu-arrow">›</div>
-    </div>
-
-    <!-- THEME SWITCHER -->
-    <div style="padding:14px 20px 10px; border-bottom:1px solid var(--border);">
-      <div style="font-size:11px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:1.5px;margin-bottom:12px;">Тема оформления</div>
-      <div style="display:flex;gap:12px;align-items:center;">
-        <div class="theme-dot t-default active" id="td-default" onclick="setTheme('default','td-default')" title="Зелёный"></div>
-        <div class="theme-dot t-snow"    id="td-snow"    onclick="setTheme('snow','td-snow')"       title="Синий"></div>
-        <div class="theme-dot t-sunset"  id="td-sunset"  onclick="setTheme('sunset','td-sunset')"   title="Закат"></div>
-        <div class="theme-dot t-lavender"id="td-lavender"onclick="setTheme('lavender','td-lavender')"title="Лаванда"></div>
-        <div class="theme-dot t-dark"    id="td-dark"    onclick="setTheme('dark','td-dark')"       title="Ночь"></div>
-        <span class="theme-label" id="themeLabel">Зелёный</span>
-      </div>
-    </div>
-    <div class="menu-item" onclick="showToast('👋 Пригласи друга — получи 200 баллов!')">
-      <div class="menu-icon" style="background:rgba(168,85,247,0.12);">
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#a855f7" stroke-width="2"><path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="8.5" cy="7" r="4"/><line x1="20" y1="8" x2="20" y2="14"/><line x1="23" y1="11" x2="17" y2="11"/></svg>
-      </div>
-      <div class="menu-label">Пригласить друга</div>
-      <div class="menu-arrow">›</div>
-    </div>
-
-    <!-- DIRECTOR PANEL (hidden by default) -->
-    <div id="directorPanel" style="display:none; padding:0 20px; margin-top:4px;">
-      <div style="background:var(--bg3);border:1px solid rgba(239,68,68,0.25);border-radius:var(--radius);padding:16px;margin-bottom:10px;">
-        <div style="font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:1px;margin-bottom:12px;">Аналитика — сегодня</div>
-        <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">
-          <div style="background:var(--bg);border-radius:10px;padding:12px;text-align:center;">
-            <div style="font-family:var(--font-display);font-size:28px;color:var(--accent);">18</div>
-            <div style="font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;">Броней</div>
-          </div>
-          <div style="background:var(--bg);border-radius:10px;padding:12px;text-align:center;">
-            <div style="font-family:var(--font-display);font-size:28px;color:var(--gold);">54к</div>
-            <div style="font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;">Выручка ₽</div>
-          </div>
-          <div style="background:var(--bg);border-radius:10px;padding:12px;text-align:center;">
-            <div style="font-family:var(--font-display);font-size:28px;color:#a855f7;">78%</div>
-            <div style="font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;">Загрузка</div>
-          </div>
-          <div style="background:var(--bg);border-radius:10px;padding:12px;text-align:center;">
-            <div style="font-family:var(--font-display);font-size:28px;color:#3b82f6;">142</div>
-            <div style="font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;">Игроков</div>
-          </div>
-        </div>
-        <div style="margin-top:12px; padding-top:12px; border-top:1px solid var(--border);">
-          <div style="font-size:12px;color:var(--muted);margin-bottom:8px;">Загрузка по кортам сегодня</div>
-          <div style="display:flex;flex-direction:column;gap:6px;">
-            <div><div style="display:flex;justify-content:space-between;font-size:11px;margin-bottom:3px;"><span>Корт 1</span><span style="color:var(--accent);">90%</span></div><div style="background:var(--surface);border-radius:4px;height:6px;overflow:hidden;"><div style="width:90%;height:100%;background:var(--accent);border-radius:4px;"></div></div></div>
-            <div><div style="display:flex;justify-content:space-between;font-size:11px;margin-bottom:3px;"><span>Корт 2</span><span style="color:var(--accent);">80%</span></div><div style="background:var(--surface);border-radius:4px;height:6px;overflow:hidden;"><div style="width:80%;height:100%;background:var(--accent);border-radius:4px;"></div></div></div>
-            <div><div style="display:flex;justify-content:space-between;font-size:11px;margin-bottom:3px;"><span>Корт 3</span><span style="color:var(--gold);">60%</span></div><div style="background:var(--surface);border-radius:4px;height:6px;overflow:hidden;"><div style="width:60%;height:100%;background:var(--gold);border-radius:4px;"></div></div></div>
-            <div><div style="display:flex;justify-content:space-between;font-size:11px;margin-bottom:3px;"><span>Корт 4</span><span style="color:var(--muted);">40%</span></div><div style="background:var(--surface);border-radius:4px;height:6px;overflow:hidden;"><div style="width:40%;height:100%;background:var(--muted);border-radius:4px;"></div></div></div>
-          </div>
-        </div>
-      </div>
-    </div>
-    <div style="height:16px;"></div>
-  </div>
-</div>
-
-<!-- NAV -->
-<nav>
-  <button class="nav-btn active" id="nav-home" onclick="switchScreen('home')">
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
-    Главная
-  </button>
-  <button class="nav-btn" id="nav-booking" onclick="switchScreen('booking')">
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg>
-    Бронь
-  </button>
-  <button class="nav-btn" id="nav-loyalty" onclick="switchScreen('loyalty')">
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
-    Бонусы
-  </button>
-  <button class="nav-btn" id="nav-tournaments" onclick="switchScreen('tournaments')">
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9H4a2 2 0 0 0-2 2v3a2 2 0 0 0 2 2h2v-7zM20 9h-2v7h2a2 2 0 0 0 2-2v-3a2 2 0 0 0-2-2z"/><path d="M6 5a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2V5z"/></svg>
-    Турниры
-  </button>
-  <button class="nav-btn" id="nav-profile" onclick="switchScreen('profile')">
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
-    Профиль
+<!-- ══ NAV ══ -->
+<nav id="nav">
+  <div class="logo">PADEL<b>PASS</b></div>
+  <button class="nav-btn" onclick="install()">Установить бесплатно</button>
+  <button class="nav-mob" onclick="document.getElementById('mob').classList.add('open')" aria-label="Меню">
+    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+      <line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/>
+    </svg>
   </button>
 </nav>
-</div>
 
-<script>
-// STATE
-let selectedDate = 0;
-let selectedCourt = 1;
-let selectedTime = null;
-let directorVisible = false;
-
-// SPLASH
-setTimeout(() => {
-  document.getElementById('splash').classList.add('hidden');
-}, 1800);
-
-// SCREEN NAVIGATION
-function switchScreen(name) {
-  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
-  document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
-  document.getElementById('screen-' + name).classList.add('active');
-  const navBtn = document.getElementById('nav-' + name);
-  if (navBtn) navBtn.classList.add('active');
-}
-
-// TOAST
-let toastTimer;
-function showToast(msg) {
-  const t = document.getElementById('toast');
-  t.textContent = msg;
-  t.classList.add('show');
-  clearTimeout(toastTimer);
-  toastTimer = setTimeout(() => t.classList.remove('show'), 2800);
-}
-
-// COUNTDOWN
-function updateCountdown() {
-  const now = new Date();
-  const target = new Date();
-  target.setHours(19, 0, 0, 0);
-  if (target <= now) target.setDate(target.getDate() + 1);
-  const diff = Math.max(0, target - now);
-  const h = Math.floor(diff / 3600000);
-  const m = Math.floor((diff % 3600000) / 60000);
-  document.getElementById('countdown').textContent = h + ':' + String(m).padStart(2,'0');
-}
-updateCountdown();
-setInterval(updateCountdown, 60000);
-
-// DATES
-function initDates() {
-  const days = ['Вс','Пн','Вт','Ср','Чт','Пт','Сб'];
-  const container = document.getElementById('dateScroll');
-  container.innerHTML = '';
-  const today = new Date();
-  for (let i = 0; i < 7; i++) {
-    const d = new Date(today);
-    d.setDate(today.getDate() + i);
-    const chip = document.createElement('div');
-    chip.className = 'date-chip' + (i === 0 ? ' selected' : '');
-    chip.innerHTML = `<div class="date-chip-day">${i===0?'Сег':days[d.getDay()]}</div><div class="date-chip-num">${d.getDate()}</div>`;
-    chip.onclick = () => {
-      document.querySelectorAll('.date-chip').forEach(c => c.classList.remove('selected'));
-      chip.classList.add('selected');
-      selectedDate = i;
-      selectedTime = null;
-      renderSlots();
-      updateSummary();
-    };
-    container.appendChild(chip);
-  }
-}
-
-// SLOTS
-const bookedSlots = {
-  '0-1': [8,10,14],
-  '0-2': [9,11,19],
-  '0-3': [13,15],
-  '0-4': [10,12,18],
-  '1-1': [9,11,16],
-  '1-2': [8,14,20],
-};
-const prices = { 8:900,9:900,10:1200,11:1200,12:1200,13:1200,14:1200,15:1200,16:1500,17:1500,18:1500,19:1500,20:1500,21:900,22:900 };
-
-function renderSlots() {
-  const grid = document.getElementById('timeGrid');
-  grid.innerHTML = '';
-  const booked = bookedSlots[selectedDate + '-' + selectedCourt] || [];
-  for (let h = 8; h <= 22; h++) {
-    const isBooked = booked.includes(h);
-    const isSelected = selectedTime === h;
-    const price = prices[h] || 1200;
-    const slot = document.createElement('div');
-    slot.className = 'time-slot' + (isBooked ? ' booked' : '') + (isSelected ? ' selected' : '');
-    const isPeak = h >= 16 && h <= 21;
-    slot.innerHTML = `
-      <div class="time-slot-hour">${h}:00</div>
-      <div class="time-slot-price">${isBooked ? 'Занято' : price + ' ₽'}</div>
-      ${isPeak && !isBooked ? '<div class="time-slot-tag">Пик</div>' : ''}
-    `;
-    if (!isBooked) {
-      slot.onclick = () => {
-        selectedTime = h;
-        renderSlots();
-        updateSummary();
-      };
-    }
-    grid.appendChild(slot);
-  }
-}
-
-function selectCourt(el, num) {
-  document.querySelectorAll('.court-tab').forEach(t => t.classList.remove('active'));
-  el.classList.add('active');
-  selectedCourt = num;
-  selectedTime = null;
-  renderSlots();
-  updateSummary();
-}
-
-function updateSummary() {
-  const s = document.getElementById('bookSummary');
-  if (selectedTime === null) { s.classList.remove('visible'); return; }
-  s.classList.add('visible');
-  const days = ['сегодня','завтра','послезавтра','в чт','в пт','в сб','в вс'];
-  document.getElementById('sumCourt').textContent = 'Корт ' + selectedCourt;
-  document.getElementById('sumDate').textContent = days[selectedDate] || ('через ' + selectedDate + ' дня');
-  document.getElementById('sumTime').textContent = selectedTime + ':00 — ' + (selectedTime+1) + ':00';
-  document.getElementById('sumPrice').textContent = (prices[selectedTime] || 1200) + ' ₽';
-}
-
-function confirmBooking() {
-  if (!selectedTime) return;
-  const days = ['Сегодня','Завтра','Послезавтра'];
-  const overlay = document.getElementById('successOverlay');
-  document.getElementById('successCard').innerHTML = `
-    <div class="success-row"><span style="color:var(--muted)">Корт</span><span style="font-weight:700">Корт ${selectedCourt}</span></div>
-    <div class="success-row"><span style="color:var(--muted)">Дата</span><span style="font-weight:700">${days[selectedDate] || '29 мая'}</span></div>
-    <div class="success-row"><span style="color:var(--muted)">Время</span><span style="font-weight:700">${selectedTime}:00 — ${selectedTime+1}:00</span></div>
-    <div class="success-row"><span style="color:var(--muted)">Оплата</span><span style="font-weight:700;color:var(--accent)">${prices[selectedTime] || 1200} ₽</span></div>
-    <div class="success-row" style="border-top:1px solid var(--border);margin-top:4px;padding-top:8px;"><span style="color:var(--accent)">Начислено</span><span style="font-weight:700;color:var(--accent)">+80 баллов 🎾</span></div>
-  `;
-  overlay.classList.add('show');
-  if (bookedSlots[selectedDate + '-' + selectedCourt] === undefined) bookedSlots[selectedDate + '-' + selectedCourt] = [];
-  bookedSlots[selectedDate + '-' + selectedCourt].push(selectedTime);
-  selectedTime = null;
-  renderSlots();
-  updateSummary();
-}
-
-function closeSuccess() {
-  document.getElementById('successOverlay').classList.remove('show');
-  switchScreen('home');
-  showToast('🎾 Корт забронирован! +80 баллов');
-}
-
-function showDirectorPanel() {
-  directorVisible = !directorVisible;
-  document.getElementById('directorPanel').style.display = directorVisible ? 'block' : 'none';
-  if (directorVisible) {
-    document.getElementById('directorPanel').scrollIntoView({ behavior: 'smooth', block: 'start' });
-  }
-}
-
-// THEME SWITCHER
-const themeNames = { default:'Зелёный', snow:'Синий', sunset:'Закат', lavender:'Лаванда', dark:'Ночь' };
-const themeBg = { default:'#f4f7f4', snow:'#f8f9fc', sunset:'#fdf6f0', lavender:'#f5f3ff', dark:'#0a0f1e' };
-function setTheme(name, dotId) {
-  const html = document.documentElement;
-  if (name === 'default') {
-    html.removeAttribute('data-theme');
-  } else {
-    html.setAttribute('data-theme', name);
-  }
-  document.querySelectorAll('.theme-dot').forEach(d => d.classList.remove('active'));
-  document.getElementById(dotId).classList.add('active');
-  document.getElementById('themeLabel').textContent = themeNames[name];
-  document.getElementById('themeColorMeta').setAttribute('content', themeBg[name] || '#f4f7f4');
-  localStorage.setItem('pp-theme', name);
-  localStorage.setItem('pp-theme-dot', dotId);
-}
-// restore saved theme
-const savedTheme = localStorage.getItem('pp-theme');
-const savedDot = localStorage.getItem('pp-theme-dot');
-if (savedTheme && savedDot) setTheme(savedTheme, savedDot);
-
-// INIT
-initDates();
-renderSlots();
-</script>
-
-<!-- UPDATE BANNER -->
-<div id="updateBanner" style="
-  display:none; position:fixed; top:0; left:50%; transform:translateX(-50%);
-  width:100%; max-width:430px; background:#f59e0b; color:#1a0a00;
-  padding:12px 20px; z-index:9999; text-align:center;
-  font-family:var(--font-body); font-size:14px; font-weight:700;
-  box-shadow:0 2px 12px rgba(0,0,0,0.3); cursor:pointer;
-" onclick="location.reload()">
-  🔄 Доступно обновление — нажмите чтобы обновить
-</div>
-
-<!-- INSTALL PROMPT — скрыт по умолчанию, показывается только JS -->
-<div id="installBanner" style="
-  position:fixed; bottom:90px; left:50%; transform:translateX(-50%);
-  width:calc(100% - 32px); max-width:398px;
-  background:var(--bg3); border:1px solid rgba(22,163,74,0.3);
-  border-radius:16px; padding:14px 16px; z-index:500;
-  font-family:var(--font-body); box-shadow:0 8px 32px rgba(0,0,0,0.15);
-  align-items:center; gap:12px; display:none;
-">
-  <div style="font-size:28px;">📲</div>
-  <div style="flex:1;">
-    <div style="font-size:14px;font-weight:700;color:var(--text);">Установить PadelPass</div>
-    <div style="font-size:12px;color:var(--muted);margin-top:2px;">Добавить на главный экран</div>
+<!-- MOBILE DRAWER -->
+<div class="mob-nav" id="mob">
+  <button class="mob-close" onclick="document.getElementById('mob').classList.remove('open')">×</button>
+  <div class="mob-links">
+    <a href="#how" onclick="document.getElementById('mob').classList.remove('open')">Как работает</a>
+    <a href="#benefits" onclick="document.getElementById('mob').classList.remove('open')">Возможности</a>
+    <a href="#install" onclick="document.getElementById('mob').classList.remove('open')">Установить</a>
   </div>
-  <button id="installBtn" style="
-    padding:8px 14px; background:var(--accent); border:none; border-radius:10px;
-    font-family:var(--font-body); font-size:13px; font-weight:700; color:#fff; cursor:pointer;
-  ">Установить</button>
-  <button id="installClose" style="
-    background:none; border:none; color:var(--muted); font-size:20px; cursor:pointer; padding:0 4px; line-height:1;
-  ">×</button>
+  <div style="margin-top:auto;">
+    <button class="btn-primary" style="width:100%;justify-content:center;font-size:16px;" onclick="install();document.getElementById('mob').classList.remove('open')">
+      Установить бесплатно →
+    </button>
+  </div>
 </div>
 
+<!-- ══ HERO ══ -->
+<section id="hero">
+  <div class="hero-left">
+    <div class="hero-tag">
+      <div class="pulse"></div>
+      Падел-клуб · Челябинск
+    </div>
+    <h1 class="hero-h1">
+      <span class="line"><span class="w" style="animation-delay:.0s">Твой</span></span>
+      <span class="line"><span class="w lime" style="animation-delay:.1s">падел.</span></span>
+      <span class="line"><span class="w outline" style="animation-delay:.2s">Твои</span></span>
+      <span class="line"><span class="w" style="animation-delay:.3s">правила.</span></span>
+    </h1>
+    <p class="hero-p">
+      Бронируй корты в два касания, зарабатывай баллы за каждую игру и участвуй в турнирах прямо в телефоне.
+    </p>
+    <div class="hero-actions">
+      <button class="btn-primary" onclick="install()">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+        Установить · Бесплатно
+      </button>
+      <button class="btn-ghost" onclick="document.getElementById('how').scrollIntoView({behavior:'smooth'})">
+        Как это работает →
+      </button>
+    </div>
+    <div class="hero-trust">
+      <div class="trust-avatars">
+        <div class="trust-av" style="background:linear-gradient(135deg,#16803d,#22c55e)">АП</div>
+        <div class="trust-av" style="background:linear-gradient(135deg,#1d4ed8,#3b82f6)">СМ</div>
+        <div class="trust-av" style="background:linear-gradient(135deg,#7c3aed,#a855f7)">МФ</div>
+        <div class="trust-av" style="background:linear-gradient(135deg,#b45309,#f59e0b)">ДК</div>
+        <div class="trust-av" style="background:linear-gradient(135deg,#be123c,#f43f5e)">АН</div>
+      </div>
+      <div class="trust-text"><b>142+ игрока</b> уже в приложении</div>
+    </div>
+  </div>
+
+  <div class="hero-phone-wrap">
+    <div class="phone-glow"></div>
+    <div class="phone">
+      <div class="ph-notch"><div class="ph-notch-dot"></div></div>
+      <div class="ph-body">
+        <div class="ph-header">
+          <div class="ph-logo">PADEL<b>PASS</b></div>
+          <div class="ph-ava">АП</div>
+        </div>
+        <div class="ph-hero-card">
+          <div class="ph-hi">Привет, игрок</div>
+          <div class="ph-name">АЛЕКСЕЙ<br>ПЕТРОВ</div>
+          <div class="ph-lvl">🏆 ИГРОК II</div>
+          <div class="ph-stats">
+            <div><div class="ph-stat-n">47</div><div class="ph-stat-l">Игр</div></div>
+            <div><div class="ph-stat-n">31</div><div class="ph-stat-l">Побед</div></div>
+            <div><div class="ph-stat-n">66%</div><div class="ph-stat-l">Вин%</div></div>
+          </div>
+        </div>
+        <div class="ph-next">
+          <div class="ph-court-badge">
+            <div class="ph-court-n">2</div>
+            <div class="ph-court-l">Корт</div>
+          </div>
+          <div class="ph-next-info">
+            <div class="ph-next-time">19:00 — 20:00</div>
+            <div class="ph-next-date">Сегодня</div>
+          </div>
+          <div class="ph-countdown">
+            <div class="ph-cd-n" id="cd">2:14</div>
+            <div class="ph-cd-l">ч:мин</div>
+          </div>
+        </div>
+        <div class="ph-pts-card">
+          <div>
+            <div class="ph-pts-n">1 240</div>
+            <div class="ph-pts-l">баллов</div>
+            <div class="ph-pts-bar"><div class="ph-pts-fill"></div></div>
+          </div>
+          <div class="ph-pts-badge">ИГРОК</div>
+        </div>
+        <div class="ph-nav">
+          <div class="ph-nav-i on"><span>⌂</span>Главная</div>
+          <div class="ph-nav-i"><span>📅</span>Бронь</div>
+          <div class="ph-nav-i"><span>★</span>Баллы</div>
+          <div class="ph-nav-i"><span>🏆</span>Турниры</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══ TICKER ══ -->
+<div class="ticker" aria-hidden="true">
+  <div class="ticker-t">
+    <span class="ti hi">Бронь за 30 сек</span><span class="ti-dot"></span>
+    <span class="ti">4 корта онлайн</span><span class="ti-dot"></span>
+    <span class="ti hi">+80 баллов за игру</span><span class="ti-dot"></span>
+    <span class="ti">Турниры с призами</span><span class="ti-dot"></span>
+    <span class="ti hi">Реферальная программа</span><span class="ti-dot"></span>
+    <span class="ti">Push-уведомления</span><span class="ti-dot"></span>
+    <span class="ti hi">Бесплатно навсегда</span><span class="ti-dot"></span>
+    <span class="ti">Работает без интернета</span><span class="ti-dot"></span>
+    <span class="ti hi">Бронь за 30 сек</span><span class="ti-dot"></span>
+    <span class="ti">4 корта онлайн</span><span class="ti-dot"></span>
+    <span class="ti hi">+80 баллов за игру</span><span class="ti-dot"></span>
+    <span class="ti">Турниры с призами</span><span class="ti-dot"></span>
+    <span class="ti hi">Реферальная программа</span><span class="ti-dot"></span>
+    <span class="ti">Push-уведомления</span><span class="ti-dot"></span>
+    <span class="ti hi">Бесплатно навсегда</span><span class="ti-dot"></span>
+    <span class="ti">Работает без интернета</span><span class="ti-dot"></span>
+  </div>
+</div>
+
+<!-- ══ HOW ══ -->
+<section id="how">
+  <div class="section">
+    <div class="s-tag up">Просто</div>
+    <h2 class="s-h up d1">Три шага<br>до первой игры</h2>
+    <p class="s-sub up d2">Никаких звонков. Никаких очередей. Всё сам — в телефоне.</p>
+    <div class="steps-grid">
+      <div class="step up d1">
+        <div class="step-num">1</div>
+        <span class="step-emoji">📲</span>
+        <div class="step-title">Установи приложение</div>
+        <div class="step-text">Открой страницу в Chrome, нажми «Добавить на главный экран». Никакого App Store — за 5 секунд.</div>
+        <span class="step-line"></span>
+      </div>
+      <div class="step up d2">
+        <div class="step-num">2</div>
+        <span class="step-emoji">👤</span>
+        <div class="step-title">Создай профиль</div>
+        <div class="step-text">Имя и номер телефона — всё. Сразу видишь доступные корты, свои баллы и ближайшие турниры.</div>
+        <span class="step-line"></span>
+      </div>
+      <div class="step up d3">
+        <div class="step-num">3</div>
+        <span class="step-emoji">🎾</span>
+        <div class="step-title">Играй и зарабатывай</div>
+        <div class="step-text">Каждая игра — это баллы. Копи их, трать на скидки. Чем больше играешь, тем больше привилегий.</div>
+        <span class="step-line"></span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══ BENEFITS ══ -->
+<section id="benefits">
+  <div class="section">
+    <div class="s-tag up">Возможности</div>
+    <h2 class="s-h up d1">Всё для игры<br>в одном месте</h2>
+    <div class="benefits-grid">
+
+      <!-- Booking — wide tall -->
+      <div class="benefit-card tall accent up d1">
+        <div>
+          <div class="bc-icon">📅</div>
+          <div class="bc-title">Бронируй корт<br>онлайн — 24/7</div>
+          <div class="bc-text">4 корта, все слоты с 8:00 до 23:00. Видишь свободное время в реальном времени. Бронируй, отменяй, переносишь — сам.</div>
+          <span class="bc-tag">Без звонков администратору</span>
+        </div>
+        <div class="bc-booking">
+          <div style="font-size:10px;color:var(--gray);text-transform:uppercase;letter-spacing:1px;margin-bottom:8px;">Корт 2 — сегодня</div>
+          <div class="bc-slots">
+            <div class="bc-slot off">09:00<sub>Занято</sub></div>
+            <div class="bc-slot off">10:00<sub>Занято</sub></div>
+            <div class="bc-slot">11:00<sub>1 200 ₽</sub></div>
+            <div class="bc-slot on" id="bSlot">13:00<sub>Выбрано</sub></div>
+            <div class="bc-slot">14:00<sub>1 200 ₽</sub></div>
+            <div class="bc-slot">16:00<sub>1 500 ₽</sub></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Loyalty -->
+      <div class="benefit-card up d2">
+        <div class="bc-icon">⭐</div>
+        <div class="bc-title">Баллы и уровни</div>
+        <div class="bc-text">+80 баллов за каждую игру. Четыре уровня — чем выше, тем больше кешбэк и привилегий.</div>
+        <span class="bc-tag">До +20% кешбэка</span>
+        <div class="bc-loyalty-visual">
+          <div class="level-pill"><span class="lp-name">⚪ Новичок</span><span class="lp-perk">+5% кешбэк</span></div>
+          <div class="level-pill cur"><span class="lp-name">🏆 Игрок</span><span class="lp-perk">+10% кешбэк</span></div>
+          <div class="level-pill"><span class="lp-name">🥇 Про</span><span class="lp-perk">+15% кешбэк</span></div>
+          <div class="level-pill"><span class="lp-name">👑 Чемпион</span><span class="lp-perk">+20% + VIP</span></div>
+        </div>
+      </div>
+
+      <!-- Tournament -->
+      <div class="benefit-card up d1">
+        <div class="bc-icon">🏆</div>
+        <div class="bc-title">Турниры с призами</div>
+        <div class="bc-text">Регулярные турниры, живая сетка, рейтинг клуба. Регистрируйся прямо в приложении.</div>
+        <div class="bc-tourn-vis">
+          <div style="font-size:9px;color:rgba(200,241,53,.5);text-transform:uppercase;letter-spacing:1px;margin-bottom:8px;">June Open 2025</div>
+          <div class="bt-prize">15 000 ₽</div>
+          <div class="bt-label">призовой фонд</div>
+          <div class="bt-bar"><div class="bt-fill"></div></div>
+          <div class="bt-meta"><span>6 / 16 команд</span><span>14–15 июня</span></div>
+        </div>
+      </div>
+
+      <!-- Referral + push -->
+      <div class="benefit-card up d2">
+        <div class="bc-icon">👥</div>
+        <div class="bc-title">Приведи друга</div>
+        <div class="bc-text">Поделись ссылкой — вы оба получите по 200 баллов. Без ограничений на количество рефералов.</div>
+        <span class="bc-tag">+200 ★ за каждого друга</span>
+        <div style="margin-top:20px;padding:14px;background:rgba(200,241,53,.04);border:1px solid var(--border);border-radius:12px;display:flex;align-items:center;gap:10px;">
+          <span style="font-size:20px;">🔔</span>
+          <div>
+            <div style="font-size:12px;font-weight:500;">Напоминание за 1 час</div>
+            <div style="font-size:11px;color:var(--gray);margin-top:2px;">Push о ближайшей игре</div>
+          </div>
+          <div style="margin-left:auto;width:34px;height:18px;border-radius:9px;background:var(--lime);position:relative;flex-shrink:0;">
+            <div style="width:14px;height:14px;background:#0c1a0c;border-radius:50%;position:absolute;right:2px;top:2px;"></div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- ══ STATS ══ -->
+<section id="stats">
+  <div class="section" style="padding-top:0;padding-bottom:0;">
+    <div class="stats-strip">
+      <div class="stat-c up d1">
+        <div class="stat-n"><span class="cn" data-t="142">0</span><span class="u">+</span></div>
+        <div class="stat-d">игроков уже<br>в приложении</div>
+      </div>
+      <div class="stat-c up d2">
+        <div class="stat-n"><span class="cn" data-t="30">0</span><span class="u">сек</span></div>
+        <div class="stat-d">время брони<br>корта</div>
+      </div>
+      <div class="stat-c up d3">
+        <div class="stat-n"><span class="cn" data-t="4">0</span></div>
+        <div class="stat-d">корта<br>онлайн 24/7</div>
+      </div>
+      <div class="stat-c up d4">
+        <div class="stat-n"><span class="cn" data-t="0">0</span><span class="u">₽</span></div>
+        <div class="stat-d">стоит<br>установка</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══ INSTALL ══ -->
+<section id="install">
+  <div class="install-inner">
+    <div class="ul">
+      <div class="s-tag" style="margin-bottom:16px;">Установка</div>
+      <div class="install-h">Твой клуб<br>в <span class="lime">одно</span><br>нажатие</div>
+      <p class="install-sub">Никакого App Store. Работает на любом телефоне — Android и iOS. Бесплатно.</p>
+      <div class="install-steps">
+        <div class="i-step"><div class="i-step-n">1</div>Открой эту страницу в браузере Chrome</div>
+        <div class="i-step"><div class="i-step-n">2</div>Нажми меню ⋮ → «Добавить на главный экран»</div>
+        <div class="i-step"><div class="i-step-n">3</div>Готово — иконка PadelPass на твоём экране</div>
+      </div>
+      <div class="install-btns">
+        <button class="btn-primary" onclick="install()">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+          Установить сейчас
+        </button>
+        <a href="index.html" class="btn-ghost" target="_blank">Открыть в браузере →</a>
+      </div>
+    </div>
+    <div class="install-card ur d2">
+      <div class="ic-preview">
+        <div class="ic-preview-bar">
+          <div class="logo" style="font-size:13px;">PADEL<b style="color:var(--lime)">PASS</b></div>
+          <div style="width:20px;height:20px;background:var(--card);border-radius:4px;display:flex;align-items:center;justify-content:center;font-size:10px;color:var(--gray);">⋮</div>
+        </div>
+        <div class="ic-preview-url">padelpass-phi.vercel.app</div>
+      </div>
+      <div class="ic-banner">
+        <div class="ic-b-icon">📲</div>
+        <div class="ic-b-text">
+          <div class="ic-b-title">Добавить PadelPass</div>
+          <div class="ic-b-sub">На главный экран</div>
+        </div>
+        <button class="ic-b-btn" onclick="install()">Добавить</button>
+      </div>
+      <div class="ic-note">✓ iOS &nbsp;·&nbsp; ✓ Android &nbsp;·&nbsp; ✓ Бесплатно &nbsp;·&nbsp; ✓ Без App Store</div>
+    </div>
+  </div>
+</section>
+
+<!-- ══ SOCIAL PROOF ══ -->
+<section id="proof">
+  <div class="section">
+    <div class="s-tag up">Игроки говорят</div>
+    <h2 class="s-h up d1">Уже играют<br>в PadelPass</h2>
+    <div class="proof-grid">
+      <div class="proof-card up d1">
+        <div class="proof-stars">★★★★★</div>
+        <div class="proof-text">«Наконец-то не надо звонить! Открыл — выбрал время — забронировал. Всё за минуту.»</div>
+        <div class="proof-author">
+          <div class="proof-av" style="background:linear-gradient(135deg,#16803d,#22c55e)">АП</div>
+          <div><div class="proof-name">Алексей Петров</div><div class="proof-role">47 игр в клубе</div></div>
+        </div>
+      </div>
+      <div class="proof-card up d2">
+        <div class="proof-stars">★★★★★</div>
+        <div class="proof-text">«Баллы копятся быстро — за турнир сразу 300 дали. Уже на уровне Про, кешбэк реально ощущается.»</div>
+        <div class="proof-author">
+          <div class="proof-av" style="background:linear-gradient(135deg,#7c3aed,#a855f7)">МФ</div>
+          <div><div class="proof-name">Максим Фролов</div><div class="proof-role">Уровень Про · 63 игры</div></div>
+        </div>
+      </div>
+      <div class="proof-card up d3">
+        <div class="proof-stars">★★★★★</div>
+        <div class="proof-text">«Приложение как нативное — установил одной кнопкой, работает быстро. Друга пригласил — оба получили баллы.»</div>
+        <div class="proof-author">
+          <div class="proof-av" style="background:linear-gradient(135deg,#1d4ed8,#3b82f6)">СМ</div>
+          <div><div class="proof-name">Дмитрий Смирнов</div><div class="proof-role">38 игр · реферал</div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══ FINAL CTA ══ -->
+<section id="cta">
+  <div class="cta-inner">
+    <div class="s-tag up" style="justify-content:center;">Начни сегодня</div>
+    <h2 class="cta-h up d1">
+      Корт ждёт.<br>
+      <span class="lime">Ты готов?</span>
+    </h2>
+    <p class="cta-sub up d2">Установи приложение и забронируй первый корт прямо сейчас.</p>
+    <div class="cta-btns up d3">
+      <button class="btn-primary" style="font-size:16px;padding:18px 40px;" onclick="install()">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+        Установить бесплатно
+      </button>
+      <a href="index.html" class="btn-ghost" style="font-size:15px;" target="_blank">Сначала посмотреть →</a>
+    </div>
+    <div class="cta-note up d4">Бесплатно · Без регистрации карты · Android и iOS</div>
+  </div>
+</section>
+
+<!-- ══ FOOTER ══ -->
+<footer>
+  <div class="logo">PADEL<b style="color:var(--lime)">PASS</b></div>
+  <div class="footer-copy">Падел-клуб · Челябинск · 2025</div>
+  <div class="footer-copy">Приложение клуба</div>
+</footer>
+
+<button id="top" onclick="window.scrollTo({top:0,behavior:'smooth'})" aria-label="Наверх">
+  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M18 15l-6-6-6 6"/></svg>
+</button>
+
 <script>
-// ═══════════════════════════════════════════
-// SERVICE WORKER — network-first + update banner
-// ═══════════════════════════════════════════
-if ('serviceWorker' in navigator) {
-  window.addEventListener('load', async () => {
-    try {
-      const reg = await navigator.serviceWorker.register('/sw.js', { scope: '/' });
+// ── NAV ──────────────────────────────────────────
+const nav = document.getElementById('nav');
+const top = document.getElementById('top');
+window.addEventListener('scroll', () => {
+  nav.classList.toggle('stuck', scrollY > 60);
+  top.classList.toggle('show', scrollY > 400);
+}, {passive:true});
 
-      // Проверять обновления при каждом открытии
-      reg.update();
+// ── REVEAL ───────────────────────────────────────
+const ro = new IntersectionObserver(entries => {
+  entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('in'); ro.unobserve(e.target); } });
+}, {threshold:.1, rootMargin:'0px 0px -24px 0px'});
+document.querySelectorAll('.up,.ul,.ur').forEach(el => ro.observe(el));
 
-      reg.addEventListener('updatefound', () => {
-        const newSW = reg.installing;
-        if (!newSW) return;
-        newSW.addEventListener('statechange', () => {
-          if (newSW.state === 'installed' && navigator.serviceWorker.controller) {
-            document.getElementById('updateBanner').style.display = 'block';
-          }
-        });
-      });
+// ── COUNTERS ─────────────────────────────────────
+function count(el, t, dur=1400) {
+  const s = performance.now();
+  const tick = n => {
+    const p = Math.min((n-s)/dur,1);
+    const e = 1-Math.pow(1-p,3);
+    el.textContent = Math.round(e*t).toLocaleString('ru-RU');
+    if (p<1) requestAnimationFrame(tick);
+  };
+  requestAnimationFrame(tick);
+}
+const co = new IntersectionObserver(entries => {
+  entries.forEach(e => { if (e.isIntersecting) { count(e.target,+e.target.dataset.t); co.unobserve(e.target); } });
+},{threshold:.5});
+document.querySelectorAll('.cn').forEach(el => co.observe(el));
 
-    } catch (err) {
-      console.warn('SW registration failed:', err);
-    }
+// ── COUNTDOWN ────────────────────────────────────
+function updateCd() {
+  const now = new Date();
+  const t = new Date(); t.setHours(19,0,0,0);
+  if (t<=now) t.setDate(t.getDate()+1);
+  const d = Math.max(0,t-now);
+  const h = Math.floor(d/3600000);
+  const m = Math.floor((d%3600000)/60000);
+  const el = document.getElementById('cd');
+  if (el) el.textContent = h+':'+String(m).padStart(2,'0');
+}
+updateCd(); setInterval(updateCd,60000);
 
-    // Перезагрузка при смене контроллера (после обновления)
-    let refreshing = false;
-    navigator.serviceWorker.addEventListener('controllerchange', () => {
-      if (!refreshing) { refreshing = true; location.reload(); }
+// ── SLOT ANIMATION ───────────────────────────────
+const slots = [...document.querySelectorAll('.bc-slot:not(.off)')];
+let cur = 0;
+setInterval(() => {
+  slots.forEach(s=>s.classList.remove('on'));
+  cur = (cur+1)%slots.length;
+  slots[cur].classList.add('on');
+},2200);
+
+// ── INSTALL PWA ──────────────────────────────────
+let prompt = null;
+window.addEventListener('beforeinstallprompt', e => { e.preventDefault(); prompt = e; });
+function install() {
+  if (prompt) {
+    prompt.prompt();
+    prompt.userChoice.then(r => {
+      if (r.outcome==='accepted') toast('✅ PadelPass установлен!');
+      prompt = null;
     });
+  } else if (window.matchMedia('(display-mode:standalone)').matches) {
+    toast('✅ Приложение уже установлено!');
+  } else {
+    document.getElementById('install').scrollIntoView({behavior:'smooth'});
+    toast('📲 Нажми ⋮ → «Добавить на главный экран»');
+  }
+}
+window.addEventListener('appinstalled', () => toast('🎾 PadelPass добавлен на главный экран!'));
+
+// ── TOAST ────────────────────────────────────────
+function toast(msg) {
+  let t = document.getElementById('_toast');
+  if (!t) {
+    t = document.createElement('div'); t.id='_toast';
+    Object.assign(t.style,{
+      position:'fixed',top:'20px',left:'50%',
+      transform:'translateX(-50%) translateY(-90px)',
+      background:'var(--lime)',color:'#0c1a0c',
+      padding:'12px 24px',borderRadius:'100px',
+      fontSize:'14px',fontWeight:'600',fontFamily:'var(--fb)',
+      zIndex:'9999',transition:'transform .35s var(--ease)',
+      whiteSpace:'nowrap',boxShadow:'0 8px 32px rgba(200,241,53,.4)',
+      pointerEvents:'none'
+    });
+    document.body.appendChild(t);
+  }
+  t.textContent = msg;
+  t.style.transform = 'translateX(-50%) translateY(0)';
+  clearTimeout(t._t);
+  t._t = setTimeout(()=>t.style.transform='translateX(-50%) translateY(-90px)',3200);
+}
+
+// ── SMOOTH ANCHORS ───────────────────────────────
+document.querySelectorAll('a[href^="#"]').forEach(a => {
+  a.addEventListener('click', e => {
+    const t = document.querySelector(a.getAttribute('href'));
+    if (t) { e.preventDefault(); t.scrollIntoView({behavior:'smooth'}); }
   });
-}
-
-// ═══════════════════════════════════════════
-// INSTALL PROMPT — правильная логика
-// ═══════════════════════════════════════════
-let deferredPrompt = null;
-
-// Проверяем — уже установлено?
-function isInstalled() {
-  return window.matchMedia('(display-mode: standalone)').matches
-    || window.navigator.standalone === true
-    || document.referrer.includes('android-app://');
-}
-
-// Не показываем если уже запущено как PWA
-if (isInstalled()) {
-  // приложение уже установлено — ничего не делаем
-} else {
-  window.addEventListener('beforeinstallprompt', e => {
-    e.preventDefault();
-    deferredPrompt = e;
-
-    // Показываем баннер только если пользователь не закрывал его раньше
-    const dismissed = sessionStorage.getItem('pp-install-dismissed');
-    if (!dismissed) {
-      const banner = document.getElementById('installBanner');
-      banner.style.display = 'flex';
-    }
-  });
-}
-
-// Кнопка "Установить"
-document.getElementById('installBtn').addEventListener('click', async () => {
-  const banner = document.getElementById('installBanner');
-  banner.style.display = 'none';
-  if (!deferredPrompt) return;
-  deferredPrompt.prompt();
-  const { outcome } = await deferredPrompt.userChoice;
-  deferredPrompt = null;
-  if (outcome === 'accepted') showToast('🎾 PadelPass установлен!');
 });
 
-// Кнопка "×" — закрыть и запомнить на сессию
-document.getElementById('installClose').addEventListener('click', () => {
-  document.getElementById('installBanner').style.display = 'none';
-  sessionStorage.setItem('pp-install-dismissed', '1');
-});
-
-// Когда приложение установлено — убрать баннер
-window.addEventListener('appinstalled', () => {
-  document.getElementById('installBanner').style.display = 'none';
-  deferredPrompt = null;
-  showToast('✅ PadelPass добавлен на главный экран!');
-});
+// ── REDUCED MOTION ───────────────────────────────
+if (window.matchMedia('(prefers-reduced-motion:reduce)').matches) {
+  document.querySelectorAll('.up,.ul,.ur').forEach(el=>{el.style.opacity=1;el.style.transform='none';});
+  document.querySelector('.ticker-t').style.animation='none';
+  document.querySelector('.phone').style.animation='none';
+  document.querySelector('.phone-glow').style.animation='none';
+}
 </script>
 </body>
 </html>
